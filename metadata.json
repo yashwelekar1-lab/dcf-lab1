@@ -1,0 +1,6 @@
+{
+  "name": "DCF Lab",
+  "description": "Institutional-grade Discounted Cash Flow (DCF) valuation calculator with interactive financial models, sensitivity analysis, equity bridges, and scenario modeling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
