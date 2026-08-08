@@ -10,9 +10,8 @@ export default function TopNavigation({
   setActiveTab,
 }: Props) {
   return (
-    <div className="w-full mb-6">
-      <div className="flex items-center gap-3 bg-[#111827] rounded-xl p-2 border border-slate-700">
-
+   <div className="w-full mb-6">
+     <div className="mx-auto flex w-full max-w-[1200px] items-center gap-3 rounded-xl border border-slate-700 bg-[#111827] p-2">
         <button
           onClick={() => setActiveTab("calculator")}
           className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
