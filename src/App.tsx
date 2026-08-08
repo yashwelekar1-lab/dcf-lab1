@@ -423,3 +423,7 @@ if (activeTab === "saved") {
   isOpen={showAbout}
   onClose={() => setShowAbout(false)}
 />
+
+</div>
+);
+}
