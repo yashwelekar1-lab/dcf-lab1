@@ -1,5 +1,4 @@
 import {
-  TrendingUp,
   Download,
   RotateCcw,
   BookOpen,
@@ -52,9 +51,13 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between py-3 gap-3">
           {/* Logo & Brand Title */}
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
-              <TrendingUp className="h-5 w-5 stroke-[2.5]" />
-            </div>
+           <div className="h-11 w-11 flex items-center justify-center">
+  <img
+    src="/DCF Lab logo.png"
+    alt="DCF Lab"
+    className="h-11 w-11 object-contain"
+  />
+</div>
             <div>
               <div className="flex items-center space-x-2">
                 <h1 className="text-xl font-bold tracking-tight font-mono">
