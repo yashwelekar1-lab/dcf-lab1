@@ -58,9 +58,9 @@ export default function TopNavigation({
               : "text-slate-300 hover:bg-slate-800"
           }`}
         >
-         <FolderOpen
+      <FolderOpen
   size={18}
-  className="text-neon green-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
+  className="shrink-0 text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
 />
      <span className="min-w-0 text-[11px] leading-tight sm:text-base">
   Saved Analyses
