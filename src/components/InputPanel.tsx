@@ -135,124 +135,64 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           </p>
         </div>
 
-      {/* Valuation Step Navigation */}
-<div
-  className="
-    mt-6
-    w-full
-    rounded-xl
-    border
-    border-slate-200
-    dark:border-slate-700
-    bg-slate-100
-    dark:bg-slate-800/70
-    p-1
-  "
->
+{/* Valuation Step Navigation */}
+<div className="mt-6 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/70 p-1">
   <div className="grid grid-cols-3 gap-1">
 
-    {/* 1. FCFF */}
     <button
       type="button"
       onClick={() => setActiveTab('fcff')}
-      className={`
-        relative
-        min-h-[64px]
-        rounded-lg
-        px-3
-        py-3
-        text-center
-        transition-all
-        duration-200
-        ${
-          activeTab === 'fcff'
-            ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
-            : 'text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
-        }
-      `}
+      className={
+        activeTab === 'fcff'
+          ? 'relative min-h-[64px] rounded-lg px-3 py-3 text-center bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+          : 'relative min-h-[64px] rounded-lg px-3 py-3 text-center text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
+      }
     >
       <div className="text-sm font-semibold">
         1. FCFF
       </div>
-
       <div className="mt-1 text-xs">
         {inputs.years.length} Year Forecast
       </div>
-
-      {activeTab === 'fcff' && (
-        <div className="absolute bottom-0 left-5 right-5 h-0.5 rounded-full bg-emerald-400" />
-      )}
     </button>
 
-    {/* 2. WACC & TV */}
     <button
       type="button"
       onClick={() => setActiveTab('wacc_tv')}
-      className={`
-        relative
-        min-h-[64px]
-        rounded-lg
-        px-3
-        py-3
-        text-center
-        transition-all
-        duration-200
-        ${
-          activeTab === 'wacc_tv'
-            ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
-            : 'text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
-        }
-      `}
+      className={
+        activeTab === 'wacc_tv'
+          ? 'relative min-h-[64px] rounded-lg px-3 py-3 text-center bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+          : 'relative min-h-[64px] rounded-lg px-3 py-3 text-center text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
+      }
     >
       <div className="text-sm font-semibold">
         2. WACC & TV
       </div>
-
       <div className="mt-1 text-xs">
         Discount Rate
       </div>
-
-      {activeTab === 'wacc_tv' && (
-        <div className="absolute bottom-0 left-5 right-5 h-0.5 rounded-full bg-emerald-400" />
-      )}
     </button>
 
-    {/* 3. Shares & Debt */}
     <button
       type="button"
       onClick={() => setActiveTab('balance_sheet')}
-      className={`
-        relative
-        min-h-[64px]
-        rounded-lg
-        px-3
-        py-3
-        text-center
-        transition-all
-        duration-200
-        ${
-          activeTab === 'balance_sheet'
-            ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
-            : 'text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
-        }
-      `}
+      className={
+        activeTab === 'balance_sheet'
+          ? 'relative min-h-[64px] rounded-lg px-3 py-3 text-center bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+          : 'relative min-h-[64px] rounded-lg px-3 py-3 text-center text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
+      }
     >
       <div className="text-sm font-semibold">
         3. Shares & Debt
       </div>
-
       <div className="mt-1 text-xs">
         Capital Structure
       </div>
-
-      {activeTab === 'balance_sheet' && (
-        <div className="absolute bottom-0 left-5 right-5 h-0.5 rounded-full bg-emerald-400" />
-      )}
     </button>
 
   </div>
 </div>
-      {/* Warnings & Alerts Banner */}
+        {/* Warnings & Alerts Banner */}
       {warnings.length > 0 && (
         <div className="mb-4 space-y-2">
           {warnings.map((warn, i) => (
