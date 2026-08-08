@@ -1,0 +1,55 @@
+import { Sparkles, Calculator, FolderOpen } from "lucide-react";
+
+interface Props {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+}
+
+export default function TopNavigation({
+  activeTab,
+  setActiveTab,
+}: Props) {
+  return (
+    <div className="w-full mb-6">
+      <div className="flex items-center gap-3 bg-[#111827] rounded-xl p-2 border border-slate-700">
+
+        <button
+          onClick={() => setActiveTab("calculator")}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
+            activeTab === "calculator"
+              ? "bg-slate-700 text-white"
+              : "text-slate-300 hover:bg-slate-800"
+          }`}
+        >
+          <Calculator size={18} />
+          DCF Calculator
+        </button>
+
+        <button
+          onClick={() => setActiveTab("intelligence")}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
+            activeTab === "intelligence"
+              ? "border-2 border-emerald-400 text-white bg-slate-800"
+              : "text-slate-300 hover:bg-slate-800"
+          }`}
+        >
+          <Sparkles size={18} />
+          DCF Lab Intelligence
+        </button>
+
+        <button
+          onClick={() => setActiveTab("saved")}
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${
+            activeTab === "saved"
+              ? "bg-slate-700 text-white"
+              : "text-slate-300 hover:bg-slate-800"
+          }`}
+        >
+          <FolderOpen size={18} />
+          Saved Analyses
+        </button>
+
+      </div>
+    </div>
+  );
+}
