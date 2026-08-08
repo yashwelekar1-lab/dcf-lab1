@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center space-x-3">
            <div className="h-11 w-11 flex items-center justify-center">
   <img
-    src="/DCF Lab logo.png"
+    src="/Adobe Express - file.png"
     alt="DCF Lab"
     className="h-11 w-11 object-contain"
   />
