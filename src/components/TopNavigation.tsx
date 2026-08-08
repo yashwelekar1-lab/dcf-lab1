@@ -38,7 +38,7 @@ export default function TopNavigation({
         >
       <Sparkles
   size={18}
-  className="text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
+  className="text-neon green-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
 />
 <div className="flex items-center gap-2">
   <span>DCF Lab Intelligence</span>
@@ -59,7 +59,7 @@ export default function TopNavigation({
         >
          <FolderOpen
   size={18}
-  className="text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
+  className="text-neon green-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
 />
           Saved Analyses
         </button>
