@@ -64,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
   DCF<span className="text-emerald-500"> Lab</span>
 </h1>
               </div>
-             <p className="mt-2 text-sm text-slate-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.30)]">
+             <p className="mt-0.5 text-sm text-slate-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.30)]">
   Discounted Cash Flow Valuation Engine
 </p>
             </div>
