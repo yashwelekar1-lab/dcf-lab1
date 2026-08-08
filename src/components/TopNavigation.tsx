@@ -34,7 +34,14 @@ export default function TopNavigation({
           }`}
         >
           <Sparkles size={18} />
-          DCF Lab Intelligence
+
+<div className="flex items-center gap-2">
+  <span>DCF Lab Intelligence</span>
+
+  <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-semibold tracking-wider text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.35)]">
+    COMING SOON
+  </span>
+</div>
         </button>
 
         <button
