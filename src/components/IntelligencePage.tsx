@@ -1,137 +1,215 @@
 export default function IntelligencePage() {
   return (
-    <main className="relative min-h-[calc(100vh-96px)] overflow-hidden bg-[#02070d] text-white">
+    <main className="relative -mt-6 min-h-[calc(100vh-70px)] overflow-hidden bg-[#02070d] text-white">
 
-      {/* Financial background */}
+      {/* =========================================================
+          FINANCIAL BACKGROUND
+      ========================================================== */}
+
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
 
-        <div className="absolute left-[2%] top-[5%] rotate-[-12deg] text-[80px] font-bold text-slate-700/20">
-          ↗
-        </div>
-
-        <div className="absolute left-[25%] top-[3%] text-[70px] text-slate-700/20">
-          %
-        </div>
-
-        <div className="absolute left-[8%] top-[30%] text-[85px] text-slate-700/20">
-          $
-        </div>
-
-        <div className="absolute right-[8%] top-[18%] text-[80px] text-slate-700/20">
-          ₹
-        </div>
-
-        <div className="absolute right-[24%] top-[7%] text-[65px] text-slate-700/20">
-          ◇
-        </div>
-
-        <div className="absolute bottom-[10%] left-[18%] text-[65px] text-slate-700/20">
-          %
-        </div>
-
-        <div className="absolute bottom-[8%] right-[15%] text-[80px] text-slate-700/20">
-          AI
-        </div>
-
-        {/* Grid */}
+        {/* subtle grid */}
         <div
-          className="absolute inset-0 opacity-[0.08]"
+          className="absolute inset-0 opacity-[0.075]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(50,100,130,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(50,100,130,.4) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
+              "linear-gradient(rgba(73,111,137,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(73,111,137,.45) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
           }}
         />
 
+        {/* top left chart */}
+        <div className="absolute left-[2%] top-[1%] h-[105px] w-[150px] rotate-[-9deg] rounded-lg border border-slate-600/30">
+          <div className="absolute bottom-4 left-5 h-[35px] w-[2px] rotate-[-25deg] bg-slate-600/30" />
+          <div className="absolute bottom-4 left-12 h-[55px] w-[2px] rotate-[15deg] bg-slate-600/30" />
+          <div className="absolute bottom-4 left-[88px] h-[72px] w-[2px] rotate-[32deg] bg-slate-600/30" />
+          <div className="absolute left-7 top-[62px] h-[2px] w-[95px] rotate-[-18deg] bg-slate-600/30" />
+          <span className="absolute right-3 top-2 text-2xl text-slate-600/30">
+            ↗
+          </span>
+        </div>
+
+        {/* pie chart */}
+        <div className="absolute left-[17%] top-[0%] h-[85px] w-[85px] rounded-full border border-slate-600/25">
+          <div className="absolute left-1/2 top-1/2 h-[42px] w-[1px] origin-bottom rotate-[25deg] bg-slate-600/25" />
+          <div className="absolute left-1/2 top-1/2 h-[42px] w-[1px] origin-bottom rotate-[125deg] bg-slate-600/25" />
+          <div className="absolute left-1/2 top-1/2 h-[42px] w-[1px] origin-bottom rotate-[220deg] bg-slate-600/25" />
+        </div>
+
+        {/* percentage */}
+        <div className="absolute left-[28%] top-[3%] text-[55px] text-slate-700/25">
+          %
+        </div>
+
+        {/* dollar */}
+        <div className="absolute left-[7%] top-[35%] text-[76px] font-light text-slate-700/25">
+          $
+        </div>
+
+        {/* rupee */}
+        <div className="absolute right-[7%] top-[32%] text-[68px] font-light text-slate-700/25">
+          ₹
+        </div>
+
+        {/* growth chart */}
+        <div className="absolute right-[22%] top-[0%]">
+          <div className="h-[85px] w-[115px] border-b border-slate-600/25">
+            <div className="absolute bottom-0 left-3 h-[30px] w-[2px] bg-slate-600/25" />
+            <div className="absolute bottom-0 left-9 h-[48px] w-[2px] bg-slate-600/25" />
+            <div className="absolute bottom-0 left-[66px] h-[65px] w-[2px] bg-slate-600/25" />
+            <div className="absolute bottom-0 left-[92px] h-[78px] w-[2px] bg-slate-600/25" />
+          </div>
+          <span className="absolute -right-3 -top-4 text-3xl text-slate-600/25">
+            ↗
+          </span>
+        </div>
+
+        {/* calculator */}
+        <div className="absolute right-[8%] top-[8%] h-[100px] w-[75px] rotate-[7deg] rounded-lg border border-slate-600/25">
+          <div className="grid grid-cols-3 gap-1 p-3 pt-9">
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+            <i className="h-2 rounded bg-slate-600/20" />
+          </div>
+        </div>
+
+        {/* target */}
+        <div className="absolute left-[2%] top-[49%] h-[82px] w-[82px] rounded-full border border-slate-600/25">
+          <div className="absolute inset-[18px] rounded-full border border-slate-600/20" />
+          <div className="absolute inset-[35px] rounded-full border border-slate-600/20" />
+          <div className="absolute left-1/2 top-1/2 h-[1px] w-[40px] -translate-y-1/2 rotate-[-25deg] bg-slate-600/25" />
+        </div>
+
+        {/* annual report */}
+        <div className="absolute right-[2%] top-[35%] h-[115px] w-[92px] rotate-[8deg] rounded border border-slate-600/25">
+          <div className="p-3 text-[8px] text-slate-600/30">
+            ANNUAL
+            <br />
+            REPORT
+          </div>
+          <div className="absolute bottom-4 left-3 h-[35px] w-[4px] bg-slate-600/20" />
+          <div className="absolute bottom-4 left-5 h-[22px] w-[4px] bg-slate-600/20" />
+          <div className="absolute bottom-4 left-7 h-[45px] w-[4px] bg-slate-600/20" />
+        </div>
+
+        {/* lightbulb */}
+        <div className="absolute left-[11%] top-[20%] text-[60px] text-slate-700/20">
+          ♧
+        </div>
+
+        {/* AI */}
+        <div className="absolute bottom-[4%] right-[8%] text-[70px] font-bold text-slate-700/20">
+          AI
+        </div>
+
+        {/* bottom finance cards */}
+        <div className="absolute bottom-[12px] left-[18%] flex gap-3 opacity-25">
+          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
+            REVENUE ↗
+          </span>
+
+          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
+            MARGINS %
+          </span>
+
+          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
+            FCFF ↗
+          </span>
+
+          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
+            VALUE ◉
+          </span>
+        </div>
+
       </div>
 
-      {/* Green glow */}
-      <div className="pointer-events-none absolute left-1/2 top-[45%] h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/[0.04] blur-3xl" />
 
-      {/* Main content */}
-      <section className="relative z-10 flex min-h-[calc(100vh-96px)] flex-col items-center px-5 pt-10">
+      {/* =========================================================
+          CENTER CONTENT
+      ========================================================== */}
 
-        {/* Heading */}
-        <div className="mb-7 text-center">
+      <section className="relative z-10 flex min-h-[calc(100vh-70px)] flex-col items-center px-5 pt-[28px]">
 
-          <h1 className="relative text-[32px] font-bold tracking-tight text-white">
+        {/* TITLE */}
 
-            DCF Lab{" "}
+        <div className="mb-[25px] text-center">
 
-            <span className="text-emerald-400 [text-shadow:0_0_18px_rgba(52,211,153,.3)]">
+          <h1 className="relative text-[32px] font-bold leading-tight tracking-[-0.8px]">
+
+            <span className="text-white">
+              DCF Lab{" "}
+            </span>
+
+            <span className="text-emerald-400 [text-shadow:0_0_16px_rgba(16,185,129,.35)]">
               Intelligence
             </span>
 
-            <span className="absolute -right-6 -top-2 text-[18px] text-emerald-400">
+            <span className="absolute -right-7 -top-2 text-[18px] text-emerald-400">
               ✦
             </span>
 
           </h1>
 
-          <p className="mt-2 max-w-[650px] text-[12px] leading-5 text-slate-400">
+          <p className="mt-2 text-[12px] leading-[1.65] text-slate-400">
             Upload an Annual Report or 10-K and let AI automatically extract
             financial statements,
-            <br className="hidden sm:block" />
+            <br />
             calculate FCFF, WACC, Terminal Value and Intrinsic Value.
           </p>
 
         </div>
 
-        {/* Outer upload card */}
-        <div className="w-full max-w-[490px] rounded-[18px] border border-emerald-500/40 bg-[#07151d]/90 p-[18px] shadow-[0_0_35px_rgba(0,220,160,.10)] backdrop-blur-xl">
 
-          {/* Inner upload area */}
-          <div className="relative flex min-h-[245px] flex-col items-center justify-center rounded-[15px] border border-dashed border-slate-600/70 bg-[#07111a]/70 px-5">
+        {/* =====================================================
+            OUTER UPLOAD CARD
+        ====================================================== */}
 
-            {/* Decorative search */}
-            <span className="absolute left-[37%] top-7 text-[13px] text-emerald-400">
+        <div className="w-[490px] max-w-[92vw] rounded-[18px] border border-emerald-500/40 bg-[#07151d]/95 p-[18px] shadow-[0_0_35px_rgba(0,220,160,.12)]">
+
+          {/* INNER DROP ZONE */}
+
+          <div className="relative flex h-[250px] flex-col items-center justify-center rounded-[15px] border border-dashed border-slate-600/80 bg-[#07111a]/80">
+
+            {/* small search icon */}
+            <span className="absolute left-[37%] top-[29px] text-[13px] text-emerald-400">
               ⌕
             </span>
 
-            {/* Decorative stars */}
-            <span className="absolute right-[37%] top-6 text-[13px] text-emerald-400">
+            {/* sparkles */}
+            <span className="absolute right-[37%] top-[26px] text-[13px] text-emerald-400">
               ✦
             </span>
 
-            <span className="absolute right-[34%] top-[82px] text-[10px] text-emerald-400">
+            <span className="absolute right-[34%] top-[80px] text-[10px] text-emerald-400">
               ✧
             </span>
 
-            {/* File icon */}
-            <div className="relative mb-3 h-[70px] w-[70px]">
 
-              <div className="absolute left-[7px] top-0 flex h-[58px] w-[48px] items-center justify-center rounded-[4px] border border-slate-500 bg-slate-800/70 text-slate-400">
+            {/* FILE ICON */}
 
-                <svg
-                  width="35"
-                  height="40"
-                  viewBox="0 0 35 40"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 2H23L31 10V38H5V2Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M23 2V10H31"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                </svg>
+            <div className="relative mb-[10px] h-[70px] w-[70px]">
+
+              <div className="absolute left-[8px] top-0 h-[59px] w-[46px] rounded-[4px] border border-slate-500/80 bg-slate-800/30">
+
+                <div className="absolute right-0 top-0 h-[15px] w-[15px] border-b border-l border-slate-500/70" />
 
               </div>
 
-              {/* Green upload badge */}
-              <div className="absolute bottom-0 left-0 flex h-[38px] w-[44px] items-center justify-center rounded-[7px] bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_18px_rgba(16,185,129,.3)]">
+              {/* green upload block */}
+
+              <div className="absolute bottom-0 left-0 flex h-[37px] w-[44px] items-center justify-center rounded-[7px] bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_18px_rgba(16,185,129,.35)]">
 
                 <svg
-                  width="25"
-                  height="25"
+                  width="26"
+                  height="26"
                   viewBox="0 0 24 24"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     d="M12 16V4"
@@ -139,6 +217,7 @@ export default function IntelligencePage() {
                     strokeWidth="2.8"
                     strokeLinecap="round"
                   />
+
                   <path
                     d="M7 9L12 4L17 9"
                     stroke="white"
@@ -152,20 +231,26 @@ export default function IntelligencePage() {
 
             </div>
 
-            {/* Upload title */}
+
+            {/* TITLE */}
+
             <h2 className="text-[16px] font-semibold text-slate-100">
               Upload Annual Report / 10-K
             </h2>
 
-            {/* Description */}
-            <p className="mt-1.5 text-[11px] text-slate-400">
+
+            {/* DESCRIPTION */}
+
+            <p className="mt-[7px] text-[11px] text-slate-400">
               Drag & drop your PDF here or click to browse
             </p>
 
-            {/* Choose file button */}
+
+            {/* BUTTON */}
+
             <button
               type="button"
-              className="mt-4 flex h-[40px] min-w-[162px] items-center justify-center gap-2 rounded-[7px] border border-emerald-400 bg-emerald-500/[0.08] px-5 text-[13px] font-semibold text-slate-100 transition-all duration-200 hover:bg-emerald-500/[0.18] hover:shadow-[0_0_20px_rgba(16,185,129,.2)]"
+              className="mt-[15px] flex h-[40px] min-w-[162px] items-center justify-center gap-2 rounded-[7px] border border-emerald-400 bg-transparent px-5 text-[13px] font-semibold text-slate-100 transition-all duration-200 hover:bg-emerald-500/10 hover:shadow-[0_0_18px_rgba(16,185,129,.2)]"
             >
 
               <svg
@@ -173,7 +258,6 @@ export default function IntelligencePage() {
                 height="18"
                 viewBox="0 0 24 24"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   d="M12 16V4"
@@ -181,6 +265,7 @@ export default function IntelligencePage() {
                   strokeWidth="1.8"
                   strokeLinecap="round"
                 />
+
                 <path
                   d="M7 9L12 4L17 9"
                   stroke="currentColor"
@@ -188,6 +273,7 @@ export default function IntelligencePage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
+
                 <path
                   d="M5 20H19"
                   stroke="currentColor"
@@ -200,47 +286,42 @@ export default function IntelligencePage() {
 
             </button>
 
-            {/* File information */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-[9.5px] text-slate-400">
 
-              <span>Max file size: 50MB</span>
+            {/* FOOTER */}
 
-              <span className="text-emerald-400">•</span>
+            <div className="mt-[14px] flex items-center justify-center gap-[7px] text-[9.5px] text-slate-400">
 
-              <span>Supports PDF</span>
+              <span>
+                Max file size: 50MB
+              </span>
 
-              <span className="text-emerald-400">•</span>
+              <span className="text-emerald-400">
+                •
+              </span>
 
-              <span>10-K</span>
+              <span>
+                Supports PDF
+              </span>
 
-              <span className="text-emerald-400">•</span>
+              <span className="text-emerald-400">
+                •
+              </span>
 
-              <span>Annual Reports</span>
+              <span>
+                10-K
+              </span>
+
+              <span className="text-emerald-400">
+                •
+              </span>
+
+              <span>
+                Annual Reports
+              </span>
 
             </div>
 
           </div>
-
-        </div>
-
-        {/* Bottom financial labels */}
-        <div className="pointer-events-none absolute bottom-5 flex items-center justify-center gap-4 opacity-30">
-
-          <span className="rounded border border-slate-600 px-3 py-1 text-[9px] text-slate-500">
-            REVENUE ↗
-          </span>
-
-          <span className="rounded border border-slate-600 px-3 py-1 text-[9px] text-slate-500">
-            MARGINS %
-          </span>
-
-          <span className="rounded border border-slate-600 px-3 py-1 text-[9px] text-slate-500">
-            FCFF ↗
-          </span>
-
-          <span className="rounded border border-slate-600 px-3 py-1 text-[9px] text-slate-500">
-            VALUE ◉
-          </span>
 
         </div>
 
