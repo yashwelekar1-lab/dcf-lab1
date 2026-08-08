@@ -161,7 +161,61 @@ export default function App() {
   const handleExportPDF = () => {
     window.print();
   };
+if (activeTab === "intelligence") {
+  return (
+    <>
+      <Header
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        currency={currency}
+        setCurrency={handleCurrencyChange}
+        unit={unit}
+        setUnit={handleUnitChange}
+        onSelectPreset={handleSelectPreset}
+        onReset={handleReset}
+        onExportPDF={handleExportPDF}
+        onExportCSV={handleExportCSV}
+        onOpenGlossary={() => setIsGlossaryOpen(true)}
+        selectedPresetId={selectedPresetId}
+      />
 
+      <TopNavigation
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+
+      <IntelligencePage />
+    </>
+  );
+}
+
+if (activeTab === "saved") {
+  return (
+    <>
+      <Header
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        currency={currency}
+        setCurrency={handleCurrencyChange}
+        unit={unit}
+        setUnit={handleUnitChange}
+        onSelectPreset={handleSelectPreset}
+        onReset={handleReset}
+        onExportPDF={handleExportPDF}
+        onExportCSV={handleExportCSV}
+        onOpenGlossary={() => setIsGlossaryOpen(true)}
+        selectedPresetId={selectedPresetId}
+      />
+
+      <TopNavigation
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+
+      <SavedAnalysesPage />
+    </>
+  );
+} 
   return (
     <div
       className={`min-h-screen font-sans ${
