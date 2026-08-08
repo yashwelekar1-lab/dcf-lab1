@@ -192,6 +192,8 @@ export const InputPanel: React.FC<InputPanelProps> = ({
 
   </div>
 </div>
+      </div>
+      
         {/* Warnings & Alerts Banner */}
       {warnings.length > 0 && (
         <div className="mb-4 space-y-2">
