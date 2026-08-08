@@ -22,6 +22,7 @@ import { SensitivityHeatmap } from './components/SensitivityHeatmap';
 import { ScenarioComparison } from './components/ScenarioComparison';
 import { FinancialGlossaryModal } from './components/FinancialGlossaryModal';
 import TopNavigation from './components/TopNavigation';
+import IntelligencePage from './components/IntelligencePage';
 
 // Charts
 import { FcffForecastChart } from './components/charts/FcffForecastChart';
