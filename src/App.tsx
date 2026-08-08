@@ -18,6 +18,8 @@ import { Header } from './components/Header';
 import { InputPanel } from './components/InputPanel';
 import { KpiDashboard } from './components/KpiDashboard';
 import { ValuationTable } from './components/ValuationTable';
+import { Header } from './components/Header';
+import { AboutModal } from './components/AboutModal';
 import { SensitivityHeatmap } from './components/SensitivityHeatmap';
 import { ScenarioComparison } from './components/ScenarioComparison';
 import { FinancialGlossaryModal } from './components/FinancialGlossaryModal';
@@ -35,6 +37,7 @@ import { DiscountFactorChart } from './components/charts/DiscountFactorChart';
 import { TvContributionChart } from './components/charts/TvContributionChart';
 
 export default function App() {
+  const [showAbout, setShowAbout] = useState(false);
   // Theme & Unit State
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [currency, setCurrency] = useState<CurrencySymbol>('$');
