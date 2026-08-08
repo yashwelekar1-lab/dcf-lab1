@@ -37,6 +37,7 @@ export default function App() {
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [currency, setCurrency] = useState<CurrencySymbol>('$');
   const [unit, setUnit] = useState<DisplayUnit>('millions');
+  const [activeTab, setActiveTab] = useState("calculator");
   const [selectedPresetId, setSelectedPresetId] = useState<string>('apple_tech');
   const [isGlossaryOpen, setIsGlossaryOpen] = useState<boolean>(false);
 
