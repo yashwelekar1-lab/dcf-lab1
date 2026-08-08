@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
 </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-2x1 font-bold tracking-tight font-mono">
+                <h1 className="text-3x1 font-bold tracking-tight font-mono">
                   DCF<span className="text-emerald-500">Lab</span>
                 </h1>
               </div>
