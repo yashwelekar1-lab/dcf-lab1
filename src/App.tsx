@@ -14,19 +14,18 @@ import {
 } from './utils/dcfCalculator';
 
 // Layout & Component Imports
+// Layout & Component Imports
 import { Header } from './components/Header';
+import { AboutModal } from './components/AboutModal';
 import { InputPanel } from './components/InputPanel';
 import { KpiDashboard } from './components/KpiDashboard';
 import { ValuationTable } from './components/ValuationTable';
-import { Header } from './components/Header';
-import { AboutModal } from './components/AboutModal';
 import { SensitivityHeatmap } from './components/SensitivityHeatmap';
 import { ScenarioComparison } from './components/ScenarioComparison';
 import { FinancialGlossaryModal } from './components/FinancialGlossaryModal';
 import TopNavigation from './components/TopNavigation';
 import IntelligencePage from './components/IntelligencePage';
 import SavedAnalysesPage from './components/SavedAnalysesPage';
-
 // Charts
 import { FcffForecastChart } from './components/charts/FcffForecastChart';
 import { DcfComparisonChart } from './components/charts/DcfComparisonChart';
@@ -179,6 +178,7 @@ if (activeTab === "intelligence") {
         onExportPDF={handleExportPDF}
         onExportCSV={handleExportCSV}
         onOpenGlossary={() => setIsGlossaryOpen(true)}
+        onOpenAbout={() => setShowAbout(true)}
         selectedPresetId={selectedPresetId}
       />
 
@@ -188,6 +188,10 @@ if (activeTab === "intelligence") {
       />
 
       <IntelligencePage />
+      <AboutModal
+  isOpen={showAbout}
+  onClose={() => setShowAbout(false)}
+/>
     </>
   );
 }
@@ -207,6 +211,7 @@ if (activeTab === "saved") {
         onExportPDF={handleExportPDF}
         onExportCSV={handleExportCSV}
         onOpenGlossary={() => setIsGlossaryOpen(true)}
+        onOpenAbout={() => setShowAbout(true)}
         selectedPresetId={selectedPresetId}
       />
 
@@ -216,6 +221,10 @@ if (activeTab === "saved") {
       />
 
       <SavedAnalysesPage />
+      <AboutModal
+  isOpen={showAbout}
+  onClose={() => setShowAbout(false)}
+/>
     </>
   );
 } 
@@ -238,6 +247,7 @@ if (activeTab === "saved") {
         onExportPDF={handleExportPDF}
         onExportCSV={handleExportCSV}
         onOpenGlossary={() => setIsGlossaryOpen(true)}
+        onOpenAbout={() => setShowAbout(true)}
         selectedPresetId={selectedPresetId}
       />
       <TopNavigation
@@ -401,12 +411,15 @@ if (activeTab === "saved") {
         </div>
       </main>
 
-      {/* Financial Glossary & Formula Guide Modal */}
-      <FinancialGlossaryModal
-        isOpen={isGlossaryOpen}
-        onClose={() => setIsGlossaryOpen(false)}
-        darkMode={darkMode}
-      />
-    </div>
-  );
-}
+{/* Financial Glossary & Formula Guide Modal */}
+<FinancialGlossaryModal
+  isOpen={isGlossaryOpen}
+  onClose={() => setIsGlossaryOpen(false)}
+  darkMode={darkMode}
+/>
+
+{/* About DCF Lab Modal */}
+<AboutModal
+  isOpen={showAbout}
+  onClose={() => setShowAbout(false)}
+/>
