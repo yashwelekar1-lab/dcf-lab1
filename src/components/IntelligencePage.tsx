@@ -1,230 +1,275 @@
-export default function IntelligencePage() {
-  return (
-    <main className="relative -mt-6 min-h-[calc(100vh-70px)] overflow-hidden bg-[#02070d] text-white">
+import { useRef, useState } from "react";
 
-      {/* =========================================================
-          FINANCIAL BACKGROUND
-      ========================================================== */}
+export default function IntelligencePage() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleFile = (file: File) => {
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      alert("Please upload a PDF Annual Report or 10-K.");
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      alert("Maximum file size is 50MB.");
+      return;
+    }
+
+    console.log("Selected file:", file);
+
+    // Your backend/upload processing can be connected here later.
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+
+    const file = event.dataTransfer.files?.[0];
+
+    if (file) {
+      handleFile(file);
+    }
+  };
+
+  return (
+    <main className="relative min-h-[calc(100vh-70px)] overflow-hidden bg-[#fbfcfd] text-slate-900">
+
+      {/* =====================================================
+          SOFT BACKGROUND GLOW
+      ====================================================== */}
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
 
-        {/* subtle grid */}
-        <div
-          className="absolute inset-0 opacity-[0.075]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(73,111,137,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(73,111,137,.45) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
+        <div className="absolute left-1/2 top-[220px] h-[430px] w-[650px] -translate-x-1/2 rounded-full bg-emerald-100/30 blur-3xl" />
 
-        {/* top left chart */}
-        <div className="absolute left-[2%] top-[1%] h-[105px] w-[150px] rotate-[-9deg] rounded-lg border border-slate-600/30">
-          <div className="absolute bottom-4 left-5 h-[35px] w-[2px] rotate-[-25deg] bg-slate-600/30" />
-          <div className="absolute bottom-4 left-12 h-[55px] w-[2px] rotate-[15deg] bg-slate-600/30" />
-          <div className="absolute bottom-4 left-[88px] h-[72px] w-[2px] rotate-[32deg] bg-slate-600/30" />
-          <div className="absolute left-7 top-[62px] h-[2px] w-[95px] rotate-[-18deg] bg-slate-600/30" />
-          <span className="absolute right-3 top-2 text-2xl text-slate-600/30">
-            ↗
-          </span>
-        </div>
+        <div className="absolute left-[5%] top-[48%] h-[250px] w-[400px] rounded-full bg-emerald-50/60 blur-3xl" />
 
-        {/* pie chart */}
-        <div className="absolute left-[17%] top-[0%] h-[85px] w-[85px] rounded-full border border-slate-600/25">
-          <div className="absolute left-1/2 top-1/2 h-[42px] w-[1px] origin-bottom rotate-[25deg] bg-slate-600/25" />
-          <div className="absolute left-1/2 top-1/2 h-[42px] w-[1px] origin-bottom rotate-[125deg] bg-slate-600/25" />
-          <div className="absolute left-1/2 top-1/2 h-[42px] w-[1px] origin-bottom rotate-[220deg] bg-slate-600/25" />
-        </div>
-
-        {/* percentage */}
-        <div className="absolute left-[28%] top-[3%] text-[55px] text-slate-700/25">
-          %
-        </div>
-
-        {/* dollar */}
-        <div className="absolute left-[7%] top-[35%] text-[76px] font-light text-slate-700/25">
-          $
-        </div>
-
-        {/* rupee */}
-        <div className="absolute right-[7%] top-[32%] text-[68px] font-light text-slate-700/25">
-          ₹
-        </div>
-
-        {/* growth chart */}
-        <div className="absolute right-[22%] top-[0%]">
-          <div className="h-[85px] w-[115px] border-b border-slate-600/25">
-            <div className="absolute bottom-0 left-3 h-[30px] w-[2px] bg-slate-600/25" />
-            <div className="absolute bottom-0 left-9 h-[48px] w-[2px] bg-slate-600/25" />
-            <div className="absolute bottom-0 left-[66px] h-[65px] w-[2px] bg-slate-600/25" />
-            <div className="absolute bottom-0 left-[92px] h-[78px] w-[2px] bg-slate-600/25" />
-          </div>
-          <span className="absolute -right-3 -top-4 text-3xl text-slate-600/25">
-            ↗
-          </span>
-        </div>
-
-        {/* calculator */}
-        <div className="absolute right-[8%] top-[8%] h-[100px] w-[75px] rotate-[7deg] rounded-lg border border-slate-600/25">
-          <div className="grid grid-cols-3 gap-1 p-3 pt-9">
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-            <i className="h-2 rounded bg-slate-600/20" />
-          </div>
-        </div>
-
-        {/* target */}
-        <div className="absolute left-[2%] top-[49%] h-[82px] w-[82px] rounded-full border border-slate-600/25">
-          <div className="absolute inset-[18px] rounded-full border border-slate-600/20" />
-          <div className="absolute inset-[35px] rounded-full border border-slate-600/20" />
-          <div className="absolute left-1/2 top-1/2 h-[1px] w-[40px] -translate-y-1/2 rotate-[-25deg] bg-slate-600/25" />
-        </div>
-
-        {/* annual report */}
-        <div className="absolute right-[2%] top-[35%] h-[115px] w-[92px] rotate-[8deg] rounded border border-slate-600/25">
-          <div className="p-3 text-[8px] text-slate-600/30">
-            ANNUAL
-            <br />
-            REPORT
-          </div>
-          <div className="absolute bottom-4 left-3 h-[35px] w-[4px] bg-slate-600/20" />
-          <div className="absolute bottom-4 left-5 h-[22px] w-[4px] bg-slate-600/20" />
-          <div className="absolute bottom-4 left-7 h-[45px] w-[4px] bg-slate-600/20" />
-        </div>
-
-        {/* lightbulb */}
-        <div className="absolute left-[11%] top-[20%] text-[60px] text-slate-700/20">
-          ♧
-        </div>
-
-        {/* AI */}
-        <div className="absolute bottom-[4%] right-[8%] text-[70px] font-bold text-slate-700/20">
-          AI
-        </div>
-
-        {/* bottom finance cards */}
-        <div className="absolute bottom-[12px] left-[18%] flex gap-3 opacity-25">
-          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
-            REVENUE ↗
-          </span>
-
-          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
-            MARGINS %
-          </span>
-
-          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
-            FCFF ↗
-          </span>
-
-          <span className="rounded border border-slate-500 px-4 py-2 text-[9px] text-slate-400">
-            VALUE ◉
-          </span>
-        </div>
+        <div className="absolute right-[3%] top-[52%] h-[250px] w-[400px] rounded-full bg-emerald-50/60 blur-3xl" />
 
       </div>
 
 
-      {/* =========================================================
-          CENTER CONTENT
-      ========================================================== */}
+      {/* =====================================================
+          GREEN WAVE BACKGROUND
+      ====================================================== */}
 
-      <section className="relative z-10 flex min-h-[calc(100vh-70px)] flex-col items-center px-5 pt-[28px]">
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[48%] overflow-hidden opacity-[0.55]">
 
-        {/* TITLE */}
+        <svg
+          className="absolute bottom-[-40px] left-[-5%] h-[320px] w-[65%]"
+          viewBox="0 0 700 320"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M-20 235C100 145 180 145 275 185C365 222 430 265 525 210C585 175 635 125 720 115"
+            stroke="#b8f0dc"
+            strokeWidth="1.3"
+          />
 
-        <div className="mb-[25px] text-center">
+          <path
+            d="M-20 242C100 152 180 152 275 192C365 229 430 272 525 217C585 182 635 132 720 122"
+            stroke="#c7f3e3"
+            strokeWidth="1.3"
+          />
 
-          <h1 className="relative text-[32px] font-bold leading-tight tracking-[-0.8px]">
+          <path
+            d="M-20 249C100 159 180 159 275 199C365 236 430 279 525 224C585 189 635 139 720 129"
+            stroke="#d0f5e7"
+            strokeWidth="1.3"
+          />
 
-            <span className="text-white">
-              DCF Lab{" "}
-            </span>
+          <path
+            d="M-20 256C100 166 180 166 275 206C365 243 430 286 525 231C585 196 635 146 720 136"
+            stroke="#d9f7eb"
+            strokeWidth="1.3"
+          />
 
-            <span className="text-emerald-400 [text-shadow:0_0_16px_rgba(16,185,129,.35)]">
+          <path
+            d="M-20 263C100 173 180 173 275 213C365 250 430 293 525 238C585 203 635 153 720 143"
+            stroke="#e0f9ef"
+            strokeWidth="1.3"
+          />
+
+          <path
+            d="M-20 270C100 180 180 180 275 220C365 257 430 300 525 245C585 210 635 160 720 150"
+            stroke="#e6faf2"
+            strokeWidth="1.3"
+          />
+        </svg>
+
+
+        <svg
+          className="absolute bottom-[-45px] right-[-5%] h-[320px] w-[55%]"
+          viewBox="0 0 650 320"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M-20 240C85 160 155 145 250 185C340 222 390 270 485 220C550 185 590 140 680 125"
+            stroke="#b8f0dc"
+            strokeWidth="1.3"
+          />
+
+          <path
+            d="M-20 247C85 167 155 152 250 192C340 229 390 277 485 227C550 192 590 147 680 132"
+            stroke="#c7f3e3"
+            strokeWidth="1.3"
+          />
+
+          <path
+            d="M-20 254C85 174 155 159 250 199C340 236 390 284 485 234C550 199 590 154 680 139"
+            stroke="#d0f5e7"
+            strokeWidth="1.3"
+          />
+
+          <path
+            d="M-20 261C85 181 155 166 250 206C340 243 390 291 485 241C550 206 590 161 680 146"
+            stroke="#d9f7eb"
+            strokeWidth="1.3"
+          />
+
+          <path
+            d="M-20 268C85 188 155 173 250 213C340 250 390 298 485 248C550 213 590 168 680 153"
+            stroke="#e0f9ef"
+            strokeWidth="1.3"
+          />
+
+        </svg>
+
+      </div>
+
+
+      {/* =====================================================
+          MAIN CONTENT
+      ====================================================== */}
+
+      <section className="relative z-10 mx-auto flex min-h-[calc(100vh-70px)] max-w-[1180px] flex-col items-center px-6 pt-[32px]">
+
+        {/* =================================================
+            TITLE
+        ================================================== */}
+
+        <div className="text-center">
+
+          <h1 className="relative text-[30px] font-bold tracking-[-0.8px] text-[#14243a] sm:text-[32px]">
+
+            DCF Lab{" "}
+
+            <span className="text-emerald-500">
               Intelligence
             </span>
 
-            <span className="absolute -right-7 -top-2 text-[18px] text-emerald-400">
+            <span className="absolute -right-6 -top-2 text-[17px] text-emerald-400">
               ✦
             </span>
 
           </h1>
 
-          <p className="mt-2 text-[12px] leading-[1.65] text-slate-400">
+          <p className="mx-auto mt-[7px] max-w-[680px] text-[11px] leading-[1.55] text-slate-500 sm:text-[12px]">
+
             Upload an Annual Report or 10-K and let AI automatically extract
             financial statements,
+
             <br />
+
             calculate FCFF, WACC, Terminal Value and Intrinsic Value.
+
           </p>
 
         </div>
 
 
-        {/* =====================================================
-            OUTER UPLOAD CARD
-        ====================================================== */}
+        {/* =================================================
+            UPLOAD CARD
+        ================================================== */}
 
-        <div className="w-[490px] max-w-[92vw] rounded-[18px] border border-emerald-500/40 bg-[#07151d]/95 p-[18px] shadow-[0_0_35px_rgba(0,220,160,.12)]">
+        <div className="mt-[19px] w-full max-w-[500px] rounded-[18px] border border-emerald-200 bg-white p-[18px] shadow-[0_12px_35px_rgba(16,185,129,0.08)]">
 
           {/* INNER DROP ZONE */}
 
-          <div className="relative flex h-[250px] flex-col items-center justify-center rounded-[15px] border border-dashed border-slate-600/80 bg-[#07111a]/80">
+          <div
+            onDragOver={(event) => {
+              event.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`relative flex h-[220px] cursor-pointer flex-col items-center justify-center rounded-[13px] border border-dashed px-4 transition-all duration-200 ${
+              isDragging
+                ? "border-emerald-400 bg-emerald-50"
+                : "border-slate-200 bg-[#fcfdfd]"
+            }`}
+          >
 
-            {/* small search icon */}
-            <span className="absolute left-[37%] top-[29px] text-[13px] text-emerald-400">
-              ⌕
-            </span>
+            {/* Small decorative sparkle */}
 
-            {/* sparkles */}
-            <span className="absolute right-[37%] top-[26px] text-[13px] text-emerald-400">
+            <span className="absolute left-[38%] top-[22px] text-[12px] text-emerald-400">
               ✦
             </span>
 
-            <span className="absolute right-[34%] top-[80px] text-[10px] text-emerald-400">
-              ✧
+            <span className="absolute right-[37%] top-[22px] text-[12px] text-emerald-400">
+              ✦
             </span>
 
 
-            {/* FILE ICON */}
+            {/* =============================================
+                DOCUMENT ICON
+            ============================================== */}
 
-            <div className="relative mb-[10px] h-[70px] w-[70px]">
+            <div className="relative mb-[9px] h-[66px] w-[68px]">
 
-              <div className="absolute left-[8px] top-0 h-[59px] w-[46px] rounded-[4px] border border-slate-500/80 bg-slate-800/30">
+              {/* document */}
 
-                <div className="absolute right-0 top-0 h-[15px] w-[15px] border-b border-l border-slate-500/70" />
+              <div className="absolute left-[12px] top-0 h-[57px] w-[42px] rounded-[3px] border border-slate-300 bg-gradient-to-br from-white to-slate-100 shadow-sm">
+
+                {/* folded corner */}
+
+                <div className="absolute right-[-1px] top-[-1px] h-[15px] w-[15px] border-b border-l border-slate-300 bg-white" />
+
+                {/* document lines */}
+
+                <div className="absolute left-[8px] top-[24px] h-[2px] w-[24px] rounded bg-slate-200" />
+
+                <div className="absolute left-[8px] top-[31px] h-[2px] w-[18px] rounded bg-slate-200" />
+
+                <div className="absolute left-[8px] top-[38px] h-[2px] w-[21px] rounded bg-slate-200" />
 
               </div>
 
-              {/* green upload block */}
 
-              <div className="absolute bottom-0 left-0 flex h-[37px] w-[44px] items-center justify-center rounded-[7px] bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_18px_rgba(16,185,129,.35)]">
+              {/* green upload badge */}
+
+              <div className="absolute bottom-0 left-0 flex h-[36px] w-[43px] items-center justify-center rounded-[7px] bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-[0_5px_14px_rgba(16,185,129,0.28)]">
 
                 <svg
-                  width="26"
-                  height="26"
+                  width="22"
+                  height="22"
                   viewBox="0 0 24 24"
                   fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
+
                   <path
                     d="M12 16V4"
                     stroke="white"
-                    strokeWidth="2.8"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                   />
 
                   <path
                     d="M7 9L12 4L17 9"
                     stroke="white"
-                    strokeWidth="2.8"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
+
                 </svg>
 
               </div>
@@ -232,42 +277,53 @@ export default function IntelligencePage() {
             </div>
 
 
-            {/* TITLE */}
+            {/* =============================================
+                TITLE
+            ============================================== */}
 
-            <h2 className="text-[16px] font-semibold text-slate-100">
+            <h2 className="text-[15px] font-semibold text-[#17263c]">
               Upload Annual Report / 10-K
             </h2>
 
 
-            {/* DESCRIPTION */}
+            {/* =============================================
+                DESCRIPTION
+            ============================================== */}
 
-            <p className="mt-[7px] text-[11px] text-slate-400">
+            <p className="mt-[5px] text-[10.5px] text-slate-500">
               Drag & drop your PDF here or click to browse
             </p>
 
 
-            {/* BUTTON */}
+            {/* =============================================
+                BUTTON
+            ============================================== */}
 
             <button
               type="button"
-              className="mt-[15px] flex h-[40px] min-w-[162px] items-center justify-center gap-2 rounded-[7px] border border-emerald-400 bg-transparent px-5 text-[13px] font-semibold text-slate-100 transition-all duration-200 hover:bg-emerald-500/10 hover:shadow-[0_0_18px_rgba(16,185,129,.2)]"
+              onClick={(event) => {
+                event.stopPropagation();
+                fileInputRef.current?.click();
+              }}
+              className="mt-[13px] flex h-[35px] min-w-[127px] items-center justify-center gap-2 rounded-[6px] bg-emerald-500 px-4 text-[11px] font-semibold text-white shadow-[0_4px_10px_rgba(16,185,129,0.18)] transition-all duration-200 hover:bg-emerald-600 hover:shadow-[0_5px_15px_rgba(16,185,129,0.25)]"
             >
 
               <svg
-                width="18"
-                height="18"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
               >
+
                 <path
-                  d="M12 16V4"
+                  d="M12 16V5"
                   stroke="currentColor"
                   strokeWidth="1.8"
                   strokeLinecap="round"
                 />
 
                 <path
-                  d="M7 9L12 4L17 9"
+                  d="M8 9L12 5L16 9"
                   stroke="currentColor"
                   strokeWidth="1.8"
                   strokeLinecap="round"
@@ -275,11 +331,12 @@ export default function IntelligencePage() {
                 />
 
                 <path
-                  d="M5 20H19"
+                  d="M6 19H18"
                   stroke="currentColor"
                   strokeWidth="1.8"
                   strokeLinecap="round"
                 />
+
               </svg>
 
               Choose File
@@ -287,9 +344,28 @@ export default function IntelligencePage() {
             </button>
 
 
-            {/* FOOTER */}
+            {/* Hidden input */}
 
-            <div className="mt-[14px] flex items-center justify-center gap-[7px] text-[9.5px] text-slate-400">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,application/pdf"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+
+                if (file) {
+                  handleFile(file);
+                }
+              }}
+            />
+
+
+            {/* =============================================
+                FILE INFO
+            ============================================== */}
+
+            <div className="mt-[13px] flex flex-wrap items-center justify-center gap-[6px] text-[8.5px] text-slate-400">
 
               <span>
                 Max file size: 50MB
@@ -320,6 +396,224 @@ export default function IntelligencePage() {
               </span>
 
             </div>
+
+          </div>
+
+        </div>
+
+
+        {/* =================================================
+            4 STEP PROCESS
+        ================================================== */}
+
+        <div className="mt-[20px] flex w-full max-w-[550px] items-start justify-center">
+
+          {/* STEP 1 */}
+
+          <div className="relative flex w-[125px] flex-col items-center text-center">
+
+            <div className="mb-[5px] flex h-[27px] w-[27px] items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                />
+                <path
+                  d="M14 2V8H20"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                />
+              </svg>
+
+            </div>
+
+            <div className="text-[9px] font-semibold text-slate-700">
+              1. Upload
+            </div>
+
+            <p className="mt-[3px] max-w-[105px] text-[7.5px] leading-[1.35] text-slate-400">
+              Upload your annual report or 10-K in PDF format.
+            </p>
+
+          </div>
+
+
+          {/* ARROW */}
+
+          <div className="mt-[7px] text-[18px] font-light text-slate-300">
+            ›
+          </div>
+
+
+          {/* STEP 2 */}
+
+          <div className="relative flex w-[125px] flex-col items-center text-center">
+
+            <div className="mb-[5px] flex h-[27px] w-[27px] items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M12 3V21"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M3 12H21"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M5 5L19 19"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M19 5L5 19"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              </svg>
+
+            </div>
+
+            <div className="text-[9px] font-semibold text-slate-700">
+              2. AI Extracts
+            </div>
+
+            <p className="mt-[3px] max-w-[105px] text-[7.5px] leading-[1.35] text-slate-400">
+              AI extracts financial data and key metrics instantly.
+            </p>
+
+          </div>
+
+
+          {/* ARROW */}
+
+          <div className="mt-[7px] text-[18px] font-light text-slate-300">
+            ›
+          </div>
+
+
+          {/* STEP 3 */}
+
+          <div className="relative flex w-[125px] flex-col items-center text-center">
+
+            <div className="mb-[5px] flex h-[27px] w-[27px] items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+
+                <rect
+                  x="4"
+                  y="12"
+                  width="4"
+                  height="8"
+                  rx="1"
+                  fill="currentColor"
+                />
+
+                <rect
+                  x="10"
+                  y="8"
+                  width="4"
+                  height="12"
+                  rx="1"
+                  fill="currentColor"
+                />
+
+                <rect
+                  x="16"
+                  y="4"
+                  width="4"
+                  height="16"
+                  rx="1"
+                  fill="currentColor"
+                />
+
+              </svg>
+
+            </div>
+
+            <div className="text-[9px] font-semibold text-slate-700">
+              3. Calculate
+            </div>
+
+            <p className="mt-[3px] max-w-[105px] text-[7.5px] leading-[1.35] text-slate-400">
+              We calculate FCFF, WACC, Terminal Value & more.
+            </p>
+
+          </div>
+
+
+          {/* ARROW */}
+
+          <div className="mt-[7px] text-[18px] font-light text-slate-300">
+            ›
+          </div>
+
+
+          {/* STEP 4 */}
+
+          <div className="relative flex w-[125px] flex-col items-center text-center">
+
+            <div className="mb-[5px] flex h-[27px] w-[27px] items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="8"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                />
+
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="2"
+                  fill="currentColor"
+                />
+
+                <path
+                  d="M12 4V2M20 12H22M12 20V22M4 12H2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+
+              </svg>
+
+            </div>
+
+            <div className="text-[9px] font-semibold text-slate-700">
+              4. Insights
+            </div>
+
+            <p className="mt-[3px] max-w-[105px] text-[7.5px] leading-[1.35] text-slate-400">
+              Get intrinsic value and actionable insights.
+            </p>
 
           </div>
 
