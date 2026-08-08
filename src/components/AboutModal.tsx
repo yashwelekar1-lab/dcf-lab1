@@ -1,12 +1,18 @@
-import React from "react";
-import { X, Sparkles, Target, Brain, BarChart3 } from "lucide-react";
+import React from 'react';
+import {
+  X,
+  Sparkles,
+  Target,
+  Brain,
+  BarChart3,
+} from 'lucide-react';
 
 interface AboutModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function AboutModal({
+export function AboutModal({
   isOpen,
   onClose,
 }: AboutModalProps) {
@@ -22,12 +28,13 @@ export default function AboutModal({
         onClick={(e) => e.stopPropagation()}
       >
 
-        {/* HEADER */}
+        {/* Header */}
         <div className="sticky top-0 z-10 border-b border-slate-700 bg-[#0b1325]/95 px-6 py-5 backdrop-blur">
 
           <button
             onClick={onClose}
             className="absolute right-5 top-5 rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            aria-label="Close About"
           >
             <X size={20} />
           </button>
@@ -36,14 +43,14 @@ export default function AboutModal({
 
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/15">
               <Sparkles
-                className="text-emerald-400"
                 size={22}
+                className="text-emerald-400"
               />
             </div>
 
             <div>
               <h2 className="text-xl font-semibold text-white">
-                About{" "}
+                About{' '}
                 <span className="text-emerald-400">
                   DCF Lab
                 </span>
@@ -57,10 +64,10 @@ export default function AboutModal({
           </div>
         </div>
 
-        {/* CONTENT */}
+        {/* Content */}
         <div className="max-h-[calc(88vh-100px)] overflow-y-auto px-6 py-7">
 
-          {/* INTRO */}
+          {/* Introduction */}
           <section>
 
             <h3 className="mb-3 text-lg font-semibold text-white">
@@ -74,7 +81,7 @@ export default function AboutModal({
             </p>
 
             <p className="mt-4 leading-7 text-slate-300">
-              Built around the principles of{" "}
+              Built around the principles of{' '}
               <span className="font-medium text-emerald-400">
                 financial modeling, valuation, and data-driven analysis
               </span>
@@ -84,8 +91,7 @@ export default function AboutModal({
 
           </section>
 
-
-          {/* WHAT WE DO */}
+          {/* What We Do */}
           <section className="mt-8">
 
             <div className="mb-4 flex items-center gap-3">
@@ -102,25 +108,24 @@ export default function AboutModal({
             </div>
 
             <p className="leading-7 text-slate-300">
-              DCF Lab simplifies the traditional{" "}
+              DCF Lab simplifies the traditional{' '}
               <span className="font-medium text-white">
                 Discounted Cash Flow (DCF)
-              </span>{" "}
+              </span>{' '}
               process by bringing essential valuation components into one
               platform.
             </p>
 
-
             <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
 
               {[
-                "FCFF Forecasting",
-                "WACC & Cost of Capital",
-                "Terminal Value",
-                "Enterprise & Equity Value",
-                "Intrinsic Value",
-                "Valuation Assumptions",
-                "Sensitivity Analysis",
+                'FCFF Forecasting',
+                'WACC & Cost of Capital',
+                'Terminal Value',
+                'Enterprise & Equity Value',
+                'Intrinsic Value',
+                'Valuation Assumptions',
+                'Sensitivity Analysis',
               ].map((item) => (
 
                 <div
@@ -138,27 +143,24 @@ export default function AboutModal({
 
             </div>
 
-
             <p className="mt-5 leading-7 text-slate-300">
               Our objective is to provide a clear and structured environment
-              where users can understand not just{" "}
+              where users can understand not just{' '}
               <span className="italic text-white">
                 what
-              </span>{" "}
-              a company may be worth, but also{" "}
+              </span>{' '}
+              a company may be worth, but also{' '}
               <span className="italic text-white">
                 why
-              </span>
-              .
+              </span>.
             </p>
 
           </section>
 
-
-          {/* DCF LAB INTELLIGENCE */}
+          {/* DCF Lab Intelligence */}
           <section className="mt-8 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
 
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
 
               <Brain
                 size={21}
@@ -175,15 +177,13 @@ export default function AboutModal({
 
             </div>
 
-
             <p className="leading-7 text-slate-300">
-              The next evolution of DCF Lab is{" "}
+              The next evolution of DCF Lab is{' '}
               <span className="font-semibold text-emerald-400">
                 DCF Lab Intelligence
               </span>
               —an AI-powered approach to financial research and valuation.
             </p>
-
 
             <p className="mt-4 leading-7 text-slate-300">
               The platform is being designed to transform lengthy financial
@@ -191,48 +191,38 @@ export default function AboutModal({
               insights.
             </p>
 
+            <div className="mt-5 rounded-lg border border-slate-700 bg-[#080f1f] p-4">
 
-            <div className="mt-5 rounded-lg border border-slate-700 bg-[#080f1f] p-4 text-center">
-
-              <p className="text-xs uppercase tracking-wider text-slate-500">
+              <p className="text-center text-xs uppercase tracking-wider text-slate-500">
                 Intelligent Valuation Workflow
               </p>
 
-              <p className="mt-3 text-sm font-medium leading-7 text-white">
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-center text-sm font-medium text-white">
 
-                Financial Data Extraction
+                <span>Financial Data Extraction</span>
 
-                <span className="mx-2 text-emerald-400">
-                  →
-                </span>
+                <span className="text-emerald-400">→</span>
 
-                Financial Analysis
+                <span>Financial Analysis</span>
 
-                <span className="mx-2 text-emerald-400">
-                  →
-                </span>
+                <span className="text-emerald-400">→</span>
 
-                Valuation Inputs
+                <span>Valuation Inputs</span>
 
-                <span className="mx-2 text-emerald-400">
-                  →
-                </span>
+                <span className="text-emerald-400">→</span>
 
-                DCF Modeling
+                <span>DCF Modeling</span>
 
-                <span className="mx-2 text-emerald-400">
-                  →
-                </span>
+                <span className="text-emerald-400">→</span>
 
-                Investment Insights
+                <span>Investment Insights</span>
 
-              </p>
+              </div>
 
             </div>
 
-
             <p className="mt-5 leading-7 text-slate-300">
-              Users will be able to upload an{" "}
+              Users will be able to upload an{' '}
               <span className="font-medium text-white">
                 annual report or financial filing
               </span>
@@ -240,7 +230,6 @@ export default function AboutModal({
               financial analysis, valuation inputs, DCF modeling, and
               investment insights.
             </p>
-
 
             <p className="mt-4 leading-7 text-slate-300">
               By combining artificial intelligence with established financial
@@ -251,8 +240,7 @@ export default function AboutModal({
 
           </section>
 
-
-          {/* VISION */}
+          {/* Vision */}
           <section className="mt-8">
 
             <div className="mb-4 flex items-center gap-3">
@@ -268,21 +256,18 @@ export default function AboutModal({
 
             </div>
 
-
             <p className="leading-7 text-slate-300">
               We believe high-quality financial analysis should not be limited
               by complicated tools or fragmented workflows.
             </p>
 
-
             <p className="mt-4 leading-7 text-slate-300">
-              Our vision is to build a platform where{" "}
+              Our vision is to build a platform where{' '}
               <span className="font-medium text-white">
                 financial data, valuation models, and intelligent analysis
-              </span>{" "}
+              </span>{' '}
               come together in one place.
             </p>
-
 
             <div className="mt-5 border-l-2 border-emerald-400 pl-5">
 
@@ -294,34 +279,28 @@ export default function AboutModal({
 
           </section>
 
-
-          {/* PHILOSOPHY */}
+          {/* Philosophy */}
           <section className="mt-8">
 
             <h3 className="mb-5 text-lg font-semibold text-white">
               Our Philosophy
             </h3>
 
-
-            <div className="space-y-4">
+            <div className="space-y-5">
 
               <div>
-
                 <h4 className="font-medium text-emerald-400">
                   Clarity Over Complexity
                 </h4>
 
                 <p className="mt-1 text-sm leading-6 text-slate-400">
-                  Financial models can be sophisticated without being
-                  difficult to understand. We focus on presenting complex
-                  financial concepts in a clear and structured way.
+                  Financial models can be sophisticated without being difficult
+                  to understand. We focus on presenting complex financial
+                  concepts in a clear and structured way.
                 </p>
-
               </div>
 
-
               <div>
-
                 <h4 className="font-medium text-emerald-400">
                   Data-Driven Analysis
                 </h4>
@@ -330,12 +309,9 @@ export default function AboutModal({
                   Sound valuation begins with reliable financial information
                   and disciplined assumptions.
                 </p>
-
               </div>
 
-
               <div>
-
                 <h4 className="font-medium text-emerald-400">
                   Technology With Financial Discipline
                 </h4>
@@ -344,12 +320,9 @@ export default function AboutModal({
                   AI can accelerate research and analysis, but financial
                   judgment, assumptions, and methodology remain fundamental.
                 </p>
-
               </div>
 
-
               <div>
-
                 <h4 className="font-medium text-emerald-400">
                   Built for Continuous Improvement
                 </h4>
@@ -359,15 +332,13 @@ export default function AboutModal({
                   calculator toward a broader platform for financial research,
                   valuation, and intelligent analysis.
                 </p>
-
               </div>
 
             </div>
 
           </section>
 
-
-          {/* FOOTER */}
+          {/* Footer */}
           <div className="mt-8 border-t border-slate-800 pt-5 text-center">
 
             <p className="text-xs text-slate-500">
@@ -381,7 +352,6 @@ export default function AboutModal({
           </div>
 
         </div>
-
       </div>
     </div>
   );
