@@ -23,7 +23,7 @@ export default function TopNavigation({
         >
 <Calculator
   size={18}
-  className="text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
+  className="text-neon green-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]"
 />
           DCF Calculator
         </button>
