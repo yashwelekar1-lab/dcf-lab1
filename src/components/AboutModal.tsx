@@ -338,19 +338,25 @@ export function AboutModal({
 
           </section>
 
-          {/* Footer */}
-          <div className="mt-8 border-t border-slate-800 pt-5 text-center">
+{/* Footer */}
+<div className="mt-10 border-t border-slate-700 pt-6 pb-2 text-center">
 
-            <p className="text-xs text-slate-500">
-              © 2026 DCF Lab. All Rights Reserved.
-            </p>
+  <p className="text-sm font-semibold text-slate-200">
+    © 2026{" "}
+    <span className="text-emerald-400">
+      DCF Lab
+    </span>
+    . All Rights Reserved.
+  </p>
 
-            <p className="mt-1 text-xs text-slate-600">
-              Designed & Developed by Yash Welekar.
-            </p>
+  <p className="mt-2 text-sm text-slate-300">
+    Designed & Developed by{" "}
+    <span className="font-semibold text-emerald-400">
+      Yash Welekar
+    </span>
+  </p>
 
-          </div>
-
+</div>
         </div>
       </div>
     </div>
