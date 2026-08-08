@@ -121,78 +121,127 @@ export const InputPanel: React.FC<InputPanelProps> = ({
     ? 'bg-slate-950 border-slate-800 text-slate-100 focus:border-emerald-500'
     : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-emerald-600';
 
-  return (
-    <div className={`rounded-2xl border ${cardBg} p-4 sm:p-5 shadow-xs transition-colors duration-200`}>
-      {/* Panel Title & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-slate-200 dark:border-slate-800 gap-2">
-        <div>
-          <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-emerald-500" />
-            Valuation Assumptions
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Configure free cash flows, discount rates, and balance sheet bridges.
-          </p>
+return (
+  <div
+    className={`rounded-2xl border ${
+      darkMode
+        ? 'bg-slate-900 border-slate-800'
+        : 'bg-white border-slate-200'
+    } p-5 sm:p-6 shadow-sm`}
+  >
+
+    {/* ================================
+        VALUATION ASSUMPTIONS HEADER
+    ================================= */}
+
+    <div className="pb-5 border-b border-slate-800">
+
+      {/* TITLE */}
+      <div>
+        <h2 className="text-lg font-bold tracking-tight text-slate-100">
+          Valuation Assumptions
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-400">
+          Configure free cash flows, discount rates, and balance sheet bridges.
+        </p>
+      </div>
+
+      {/* ================================
+          TAB NAVIGATION
+      ================================= */}
+
+      <div className="mt-7">
+        <div className="flex items-end gap-8 sm:gap-12">
+
+          {/* FCFF FORECAST */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('fcff')}
+            className={`group relative pb-3 text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'fcff'
+                ? 'text-emerald-400'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            FCFF Forecast
+
+            {activeTab === 'fcff' && (
+              <span
+                className="
+                  absolute
+                  left-0
+                  right-0
+                  bottom-0
+                  h-[2px]
+                  rounded-full
+                  bg-emerald-400
+                  shadow-[0_0_6px_rgba(52,211,153,0.9),0_0_14px_rgba(52,211,153,0.55)]
+                "
+              />
+            )}
+          </button>
+
+          {/* WACC & TERMINAL VALUE */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('wacc_tv')}
+            className={`group relative pb-3 text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'wacc_tv'
+                ? 'text-emerald-400'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            WACC & Terminal Value
+
+            {activeTab === 'wacc_tv' && (
+              <span
+                className="
+                  absolute
+                  left-0
+                  right-0
+                  bottom-0
+                  h-[2px]
+                  rounded-full
+                  bg-emerald-400
+                  shadow-[0_0_6px_rgba(52,211,153,0.9),0_0_14px_rgba(52,211,153,0.55)]
+                "
+              />
+            )}
+          </button>
+
+          {/* SHARES & DEBT */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('balance_sheet')}
+            className={`group relative pb-3 text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'balance_sheet'
+                ? 'text-emerald-400'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Shares & Debt
+
+            {activeTab === 'balance_sheet' && (
+              <span
+                className="
+                  absolute
+                  left-0
+                  right-0
+                  bottom-0
+                  h-[2px]
+                  rounded-full
+                  bg-emerald-400
+                  shadow-[0_0_6px_rgba(52,211,153,0.9),0_0_14px_rgba(52,211,153,0.55)]
+                "
+              />
+            )}
+          </button>
+
         </div>
+      </div>
 
-{/* Valuation Step Navigation */}
-<div className="mt-6 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/70 p-1">
-  <div className="grid grid-cols-3 gap-1">
-
-    <button
-      type="button"
-      onClick={() => setActiveTab('fcff')}
-      className={
-        activeTab === 'fcff'
-          ? 'relative min-h-[64px] rounded-lg px-3 py-3 text-center bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
-          : 'relative min-h-[64px] rounded-lg px-3 py-3 text-center text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
-      }
-    >
-      <div className="text-sm font-semibold">
-        1. FCFF
-      </div>
-      <div className="mt-1 text-xs">
-        {inputs.years.length} Year Forecast
-      </div>
-    </button>
-
-    <button
-      type="button"
-      onClick={() => setActiveTab('wacc_tv')}
-      className={
-        activeTab === 'wacc_tv'
-          ? 'relative min-h-[64px] rounded-lg px-3 py-3 text-center bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
-          : 'relative min-h-[64px] rounded-lg px-3 py-3 text-center text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
-      }
-    >
-      <div className="text-sm font-semibold">
-        2. WACC & TV
-      </div>
-      <div className="mt-1 text-xs">
-        Discount Rate
-      </div>
-    </button>
-
-    <button
-      type="button"
-      onClick={() => setActiveTab('balance_sheet')}
-      className={
-        activeTab === 'balance_sheet'
-          ? 'relative min-h-[64px] rounded-lg px-3 py-3 text-center bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
-          : 'relative min-h-[64px] rounded-lg px-3 py-3 text-center text-slate-600 dark:text-slate-400 hover:bg-white/70 dark:hover:bg-slate-700/60'
-      }
-    >
-      <div className="text-sm font-semibold">
-        3. Shares & Debt
-      </div>
-      <div className="mt-1 text-xs">
-        Capital Structure
-      </div>
-    </button>
-
-  </div>
-</div>
-      </div>
+    </div>
       
         {/* Warnings & Alerts Banner */}
       {warnings.length > 0 && (
