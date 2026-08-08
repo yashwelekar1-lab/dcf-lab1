@@ -60,13 +60,13 @@ export const Header: React.FC<HeaderProps> = ({
 </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold tracking-tight font-mono">
-                  DCF<span className="text-emerald-500">.Lab</span>
+                <h1 className="text-2x1 font-bold tracking-tight font-mono">
+                  DCF<span className="text-emerald-500">Lab</span>
                 </h1>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Discounted Cash Flow Valuation Engine
-              </p>
+             <p className="mt-1 text-xs text-slate-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.35)]">
+  Discounted Cash Flow Valuation Engine
+</p>
             </div>
           </div>
 
