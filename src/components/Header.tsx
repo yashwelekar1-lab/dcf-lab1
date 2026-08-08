@@ -60,8 +60,8 @@ export const Header: React.FC<HeaderProps> = ({
 </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="!text-4xl font-bold tracking-tight font-sans leading-none">
-  DCF<span className="text-emerald-500">.Lab</span>
+                <h1 className="!text-3xl font-bold tracking-tight font-sans leading-none">
+  DCF<span className="text-emerald-500"> Lab</span>
 </h1>
               </div>
              <p className="mt-1 text-xs text-slate-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.35)]">
