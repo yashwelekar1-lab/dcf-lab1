@@ -217,7 +217,7 @@ export default function IntelligenceStoryIntro() {
           className="
             absolute
             left-1/2
-            top-[29%]
+            top-[32%]
             z-20
           "
           style={{
