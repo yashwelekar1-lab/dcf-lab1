@@ -217,7 +217,7 @@ export default function IntelligenceStoryIntro() {
           className="
             absolute
             left-1/2
-            top-[43%]
+            top-[39%]
             z-20
           "
           style={{
@@ -238,8 +238,8 @@ export default function IntelligenceStoryIntro() {
           <div
             className="
               relative
-              h-[min(590px,72vw)]
-              w-[min(590px,72vw)]
+              h-[min(520px,72vw)]
+              w-[min(520px,72vw)]
             "
           >
 
@@ -513,61 +513,58 @@ export default function IntelligenceStoryIntro() {
         </div>
 
 
-        {/* ==========================================
-            SCROLL INDICATOR
+{/* ==========================================
+    SCROLL INDICATOR
+========================================== */}
 
-            KEPT ABOVE THE BOTTOM OF THE SCREEN
-            AND VISIBLE DURING THE INITIAL CIRCLE.
-        ========================================== */}
+<div
+  className="
+    pointer-events-none
+    absolute
+    left-1/2
+    top-[88%]
+    z-[100]
+    -translate-x-1/2
+    -translate-y-1/2
+    text-center
+  "
+  style={{
+    opacity: Math.max(
+      1 - progress * 3,
+      0
+    ),
+  }}
+>
 
-        <div
-          className="
-            absolute
-            bottom-8
-            left-1/2
-            z-40
-            -translate-x-1/2
-            text-center
-          "
-          style={{
-            opacity:
-              Math.max(
-                1 - progress * 3,
-                0
-              ),
-          }}
-        >
+  <div
+    className="
+      whitespace-nowrap
+      text-[12px]
+      font-medium
+      uppercase
+      tracking-[0.25em]
+    "
+    style={{
+      color: "rgba(255,255,255,0.85)",
+    }}
+  >
+    Scroll to explore
+  </div>
 
-          <div
-            className="
-              text-[11px]
-              uppercase
-              tracking-[0.25em]
-            "
-            style={{
-              color:
-                "rgba(255,255,255,0.70)",
-            }}
-          >
-            Scroll to explore
-          </div>
+  <div
+    className="
+      mx-auto
+      mt-3
+      h-8
+      w-[2px]
+    "
+    style={{
+      background:
+        "linear-gradient(to bottom, #00c98b, transparent)",
+    }}
+  />
 
-
-          <div
-            className="
-              mx-auto
-              mt-3
-              h-8
-              w-[1px]
-            "
-style={{
-  background:
-    "linear-gradient(to bottom, #00c98b, transparent)",
-}}
-          />
-
-        </div>
-
+</div>
       </div>
 
     </section>
