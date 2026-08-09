@@ -9,14 +9,20 @@ export default function TopNavigation({
   activeTab,
   setActiveTab,
 }: Props) {
-  return (
-    <div
-      className={`w-full ${
-        activeTab === "intelligence"
-          ? "bg-[#101a2b]"
-          : "bg-transparent"
-      }`}
-    >
+ return (
+ <div
+  className="
+    fixed
+    inset-x-0
+    top-0
+    z-[9999]
+    w-full
+    border-b
+    border-white/10
+    bg-[#101a2b]/95
+    backdrop-blur-md
+  "
+>
       <div className="mx-auto w-full max-w-[1200px] px-2 py-3 sm:px-0 sm:py-4">
         <div className="grid w-full grid-cols-3 items-stretch gap-1 rounded-xl border border-slate-700 bg-[#111827] p-1 sm:flex sm:items-center sm:gap-3 sm:p-2">
 
