@@ -1228,7 +1228,7 @@ setShowAnalysisModal(false);
           <span>15 Years</span>
         </div>
 
-        <p className="mt-2 text-[11px] text-slate-500">
+        <div className="mt-2 flex justify-between text-[11px] font-medium text-slate-300">
           Select how many years of FCFF you want to forecast.
         </p>
 
