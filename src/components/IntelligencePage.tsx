@@ -23,6 +23,10 @@ export default function IntelligencePage() {
 
   const [result, setResult] = useState<AnalysisResult | null>(null);
 
+  // Analysis setup
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [terminalGrowthRate, setTerminalGrowthRate] = useState("");
+  const [forecastYears, setForecastYears] = useState("");
   /* =========================================================
      FILE SELECTION
   ========================================================== */
@@ -65,97 +69,122 @@ export default function IntelligencePage() {
     }
   };
 
-  /* =========================================================
-     RUN ANALYSIS
-  ========================================================== */
+ const runAnalysis = async () => {
+  if (!selectedFile) {
+    setAnalysisError("Please upload an Annual Report or 10-K first.");
+    return;
+  }
 
-  const runAnalysis = async () => {
-    if (!selectedFile) {
-      setAnalysisError("Please upload an Annual Report or 10-K first.");
-      return;
+  if (terminalGrowthRate === "") {
+    setAnalysisError("Please enter the terminal growth rate.");
+    return;
+  }
+
+  if (forecastYears === "") {
+    setAnalysisError("Please enter the FCFF forecast period.");
+    return;
+  }
+
+  const terminalGrowth = Number(terminalGrowthRate);
+  const years = Number(forecastYears);
+
+  if (!Number.isFinite(terminalGrowth)) {
+    setAnalysisError("Please enter a valid terminal growth rate.");
+    return;
+  }
+
+  if (!Number.isInteger(years) || years <= 0) {
+    setAnalysisError("Please enter a valid number of forecast years.");
+    return;
+  }
+
+  setIsAnalyzing(true);
+  setAnalysisComplete(false);
+  setAnalysisError("");
+  setResult(null);
+
+  try {
+    /*
+     * REAL BACKEND CONNECTION
+     *
+     * The backend will receive:
+     * - Annual Report PDF
+     * - Terminal Growth Rate
+     * - FCFF Forecast Years
+     */
+
+    const formData = new FormData();
+
+    formData.append("file", selectedFile);
+    formData.append("terminal_growth_rate", String(terminalGrowth));
+    formData.append("forecast_years", String(years));
+
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Analysis failed.");
     }
 
-    setIsAnalyzing(true);
-    setAnalysisComplete(false);
-    setAnalysisError("");
-    setResult(null);
+    const data = await response.json();
 
-    try {
-      /*
-       * REAL BACKEND CONNECTION
-       *
-       * Replace this URL with your backend endpoint:
-       *
-       * https://your-api.com/api/analyze
-       */
+    setResult(data);
+    setAnalysisComplete(true);
+    setShowAnalysisModal(false);
 
-      const formData = new FormData();
+  } catch (error) {
+    console.error(error);
 
-      formData.append("file", selectedFile);
+    /*
+     * TEMPORARY DEMO RESULT
+     *
+     * Remove this section once your backend
+     * API is connected.
+     */
 
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        body: formData,
-      });
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1800)
+    );
 
-      if (!response.ok) {
-        throw new Error("Analysis failed.");
-      }
+    setResult({
+      companyName: "Company extracted from report",
+      revenue: "₹XX,XXX Cr",
+      operatingIncome: "₹X,XXX Cr",
+      netIncome: "₹X,XXX Cr",
+      freeCashFlow: "₹X,XXX Cr",
+      wacc: "9.2%",
+      terminalGrowth: `${terminalGrowth}%`,
+      terminalValue: "₹XX,XXX Cr",
+      intrinsicValue: "₹XXX / Share",
+    });
 
-      const data = await response.json();
+    setAnalysisComplete(true);
+    setShowAnalysisModal(false);
 
-      setResult(data);
-
-      setAnalysisComplete(true);
-
-    } catch (error) {
-      console.error(error);
-
-      /*
-       * TEMPORARY DEMO RESULT
-       *
-       * Remove this section once your backend
-       * API is connected.
-       */
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1800)
-      );
-
-      setResult({
-        companyName: "Company extracted from report",
-        revenue: "₹XX,XXX Cr",
-        operatingIncome: "₹X,XXX Cr",
-        netIncome: "₹X,XXX Cr",
-        freeCashFlow: "₹X,XXX Cr",
-        wacc: "9.2%",
-        terminalGrowth: "4.0%",
-        terminalValue: "₹XX,XXX Cr",
-        intrinsicValue: "₹XXX / Share",
-      });
-
-      setAnalysisComplete(true);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
   /* =========================================================
      RESET
   ========================================================== */
 
   const resetAnalysis = () => {
-    setSelectedFile(null);
-    setAnalysisComplete(false);
-    setIsAnalyzing(false);
-    setAnalysisError("");
-    setResult(null);
+  setSelectedFile(null);
+  setAnalysisComplete(false);
+  setIsAnalyzing(false);
+  setAnalysisError("");
+  setResult(null);
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
+  setTerminalGrowthRate("");
+  setForecastYears("");
 
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+};
   return (
     <main className="relative min-h-[calc(100vh-70px)] overflow-hidden bg-[#fbfcfd] text-[#14243a]">
 
@@ -292,11 +321,11 @@ export default function IntelligencePage() {
               setIsDragging(false);
             }}
             onDrop={handleDrop}
-            onClick={() => {
-              if (!selectedFile && !isAnalyzing) {
-                fileInputRef.current?.click();
-              }
-            }}
+           onClick={() => {
+  if (!selectedFile && !isAnalyzing) {
+    setShowAnalysisModal(true);
+  }
+}}
             className={`relative flex min-h-[310px] cursor-pointer flex-col items-center justify-center rounded-[15px] border border-dashed px-5 transition-all duration-200 ${
               isDragging
                 ? "border-emerald-400 bg-emerald-50"
@@ -369,16 +398,15 @@ export default function IntelligencePage() {
                   Upload Annual Report / 10-K
                 </h2>
 
-                <p className="mt-[8px] text-[14px] text-slate-500">
-                  Drag & drop your PDF here or click to browse
-                </p>
-
+               <p className="mt-[8px] text-[14px] text-slate-500">
+  Configure your analysis before uploading the report
+</p>
                 <button
                   type="button"
                   onClick={(event) => {
-                    event.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}
+  event.stopPropagation();
+  setShowAnalysisModal(true);
+}}
                   className="mt-[19px] flex h-[48px] min-w-[175px] items-center justify-center gap-2 rounded-[7px] bg-emerald-500 px-6 text-[14px] font-semibold text-white shadow-[0_5px_14px_rgba(16,185,129,0.20)] transition hover:bg-emerald-600"
                 >
 
@@ -413,27 +441,21 @@ export default function IntelligencePage() {
 
                   </svg>
 
-                  Choose File
+                  Begin Analysis
 
                 </button>
 
                 <div className="mt-[17px] flex flex-wrap items-center justify-center gap-[8px] text-[11px] text-slate-400">
+  <span>PDF only</span>
 
-                  <span>Max file size: 50MB</span>
+  <span className="text-emerald-400">•</span>
 
-                  <span className="text-emerald-400">•</span>
+  <span>Max file size: 50MB</span>
 
-                  <span>Supports PDF</span>
+  <span className="text-emerald-400">•</span>
 
-                  <span className="text-emerald-400">•</span>
-
-                  <span>10-K</span>
-
-                  <span className="text-emerald-400">•</span>
-
-                  <span>Annual Reports</span>
-
-                </div>
+  <span>Annual Reports / 10-K</span>
+</div>
               </>
 
             ) : (
@@ -546,13 +568,14 @@ export default function IntelligencePage() {
                 <button
                   type="button"
                   disabled={isAnalyzing}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    resetAnalysis();
-                  }}
+                 onClick={(event) => {
+  event.stopPropagation();
+  resetAnalysis();
+  setShowAnalysisModal(true);
+}}
                   className="mt-4 text-[12px] font-medium text-slate-400 underline underline-offset-2 hover:text-slate-600"
                 >
-                  Choose a different file
+                  Change Analysis Inputs
                 </button>
 
               </div>
@@ -959,10 +982,199 @@ export default function IntelligencePage() {
             </div>
 
           </div>
+               )}
+
+        {/* =====================================================
+            BEGIN ANALYSIS MODAL
+        ====================================================== */}
+
+        {showAnalysisModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+
+            <div className="relative w-full max-w-[520px] rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_25px_80px_rgba(15,23,42,0.20)]">
+
+              {/* Header */}
+
+              <div className="mb-6 flex items-start justify-between">
+
+                <div>
+                  <h2 className="text-[22px] font-bold text-[#14243a]">
+                    Begin Analysis
+                  </h2>
+
+                  <p className="mt-1 text-[13px] text-slate-500">
+                    Upload your report and enter the DCF assumptions.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAnalysisModal(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                >
+                  ×
+                </button>
+
+              </div>
+
+
+              {/* Upload File */}
+
+              <div className="mb-5">
+
+                <label className="mb-2 block text-[13px] font-semibold text-slate-700">
+                  Annual Report
+                </label>
+
+                <label className="flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-6 transition hover:border-emerald-400 hover:bg-emerald-50/30">
+
+                  <input
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    className="hidden"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+
+                      if (file) {
+                        handleFile(file);
+                      }
+                    }}
+                  />
+
+                  <div className="text-center">
+
+                    {selectedFile ? (
+                      <>
+                        <div className="text-[14px] font-semibold text-slate-800">
+                          {selectedFile.name}
+                        </div>
+
+                        <div className="mt-1 text-[11px] text-emerald-500">
+                          PDF selected
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-[14px] font-semibold text-slate-700">
+                          Upload Annual Report
+                        </div>
+
+                        <div className="mt-1 text-[11px] text-slate-400">
+                          PDF files only • Maximum 50MB
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+
+                </label>
+
+              </div>
+
+
+              {/* Terminal Growth Rate */}
+
+              <div className="mb-5">
+
+                <label
+                  htmlFor="terminal-growth-rate"
+                  className="mb-2 block text-[13px] font-semibold text-slate-700"
+                >
+                  Terminal Growth Rate
+                </label>
+
+                <div className="relative">
+
+                  <input
+                    id="terminal-growth-rate"
+                    type="number"
+                    step="0.1"
+                    value={terminalGrowthRate}
+                    onChange={(event) =>
+                      setTerminalGrowthRate(event.target.value)
+                    }
+                    placeholder="Enter terminal growth rate"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-10 text-[14px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                  />
+
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-slate-400">
+                    %
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              {/* FCFF Forecast Years */}
+
+              <div className="mb-7">
+
+                <label
+                  htmlFor="forecast-years"
+                  className="mb-2 block text-[13px] font-semibold text-slate-700"
+                >
+                  FCFF Forecast Period
+                </label>
+
+                <input
+                  id="forecast-years"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={forecastYears}
+                  onChange={(event) =>
+                    setForecastYears(event.target.value)
+                  }
+                  placeholder="Enter number of forecast years"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-[14px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                />
+
+                <p className="mt-1.5 text-[11px] text-slate-400">
+                  Enter how many years of FCFF you want to forecast.
+                </p>
+
+              </div>
+
+
+              {/* Run Analysis */}
+
+              <button
+                type="button"
+                disabled={
+                  !selectedFile ||
+                  terminalGrowthRate === "" ||
+                  forecastYears === "" ||
+                  isAnalyzing
+                }
+                onClick={() => {
+                  runAnalysis();
+                }}
+                className={`flex h-[50px] w-full items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-semibold transition ${
+                  selectedFile &&
+                  terminalGrowthRate !== "" &&
+                  forecastYears !== ""
+                    ? "bg-emerald-500 text-white shadow-[0_7px_20px_rgba(16,185,129,0.20)] hover:bg-emerald-600"
+                    : "cursor-not-allowed bg-slate-100 text-slate-400"
+                }`}
+              >
+
+                {isAnalyzing ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    Running Analysis...
+                  </>
+                ) : (
+                  "Run Analysis"
+                )}
+
+              </button>
+
+            </div>
+
+          </div>
         )}
-
       </section>
-
 
       {/* =====================================================
           DISCLAIMER
