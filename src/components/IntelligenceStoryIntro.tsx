@@ -217,7 +217,7 @@ export default function IntelligenceStoryIntro() {
           className="
             absolute
             left-1/2
-            top-[41%]
+            top-[42%]
             z-20
           "
           style={{
@@ -238,8 +238,8 @@ export default function IntelligenceStoryIntro() {
           <div
             className="
               relative
-              h-[min(570px,72vw)]
-              w-[min(570px,72vw)]
+              h-[min(565px,72vw)]
+              w-[min(565px,72vw)]
             "
           >
 
@@ -522,7 +522,7 @@ export default function IntelligenceStoryIntro() {
     pointer-events-none
     absolute
     left-1/2
-    top-[81%]
+    top-[79%]
     z-[100]
     -translate-x-1/2
     -translate-y-1/2
