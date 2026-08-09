@@ -33,7 +33,7 @@ export default function SavedAnalysesPage() {
 
           {/* Status */}
           <p className="mt-4 text-xs text-slate-500">
-            Saved Analyses is currently being prepared.
+            Feature under development
           </p>
 
         </div>
@@ -47,7 +47,7 @@ export default function SavedAnalysesPage() {
           </h1>
 
           <p className="mt-4 text-slate-400">
-            Your saved DCF valuation reports will appear here.
+            Saved analyses will be available here in a future update.
           </p>
         </div>
       </div>
