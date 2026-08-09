@@ -51,25 +51,26 @@ export default function IntelligenceStoryIntro() {
    * Circle + text fully visible
    *
    * 0.18 - 0.58
-   * Text fades + circle wipes clockwise
+   * Inner text fades out
+   * Outer circle wipes clockwise
    *
-   * 0.58 - 0.72
-   * Circle finishes disappearing
+   * 0.58 - 0.68
+   * Circle completely disappears
    *
-   * 0.72 - 0.82
+   * 0.68 - 0.80
    * AI message appears
    *
-   * 0.82 - 1.00
-   * Story fades into actual page
+   * 0.80 - 1.00
+   * Transition into actual page
    */
 
 
   /*
    * ============================================
-   * TEXT FADE
+   * INNER TEXT FADE
    *
-   * Text fades during the same period
-   * as the clockwise wipe.
+   * Same timing as circle wipe
+   * so both happen simultaneously.
    * ============================================
    */
 
@@ -84,7 +85,10 @@ export default function IntelligenceStoryIntro() {
 
   /*
    * ============================================
-   * CLOCKWISE CIRCLE WIPE
+   * CLOCKWISE OUTER CIRCLE WIPE
+   *
+   * Starts at 12 o'clock
+   * and moves clockwise.
    * ============================================
    */
 
@@ -107,7 +111,7 @@ export default function IntelligenceStoryIntro() {
 
   const textProgress = Math.min(
     Math.max(
-      (progress - 0.62) / 0.12,
+      (progress - 0.68) / 0.12,
       0
     ),
     1
@@ -204,7 +208,7 @@ export default function IntelligenceStoryIntro() {
 
 
         {/* ==========================================
-            CIRCLE STORY
+            LOGO + CENTER CONTENT
 
             MOVED HIGHER ON SCREEN
         ========================================== */}
@@ -213,7 +217,7 @@ export default function IntelligenceStoryIntro() {
           className="
             absolute
             left-1/2
-            top-[42%]
+            top-[43%]
             z-20
           "
           style={{
@@ -226,15 +230,9 @@ export default function IntelligenceStoryIntro() {
           }}
         >
 
+
           {/* ========================================
-              ENTIRE CIRCLE IS MASKED
-
-              IMPORTANT:
-              The inner dark circle + text are
-              INSIDE this mask.
-
-              Therefore everything wipes clockwise
-              together.
+              OUTER CIRCLE
           ======================================== */}
 
           <div
@@ -242,46 +240,61 @@ export default function IntelligenceStoryIntro() {
               relative
               h-[min(590px,72vw)]
               w-[min(590px,72vw)]
-              overflow-hidden
-              rounded-full
             "
-            style={{
-              WebkitMaskImage: `conic-gradient(
-                from 0deg,
-                transparent 0deg ${wipeAngle}deg,
-                black ${wipeAngle}deg 360deg
-              )`,
-
-              maskImage: `conic-gradient(
-                from 0deg,
-                transparent 0deg ${wipeAngle}deg,
-                black ${wipeAngle}deg 360deg
-              )`,
-            }}
           >
 
 
             {/* ======================================
-                REAL DCF LOGO
+                CLOCKWISE OUTER CIRCLE WIPE
+
+                This is ONLY applied to the
+                outside logo/circle.
+
+                It does NOT control the text.
             ====================================== */}
 
-            <img
-              src="/DCF Logo.png"
-              alt="DCF Lab Intelligence"
+            <div
               className="
                 absolute
                 inset-0
-                h-full
-                w-full
-                object-contain
+                overflow-hidden
+                rounded-full
               "
-            />
+              style={{
+                WebkitMaskImage: `conic-gradient(
+                  from 0deg,
+                  transparent 0deg ${wipeAngle}deg,
+                  black ${wipeAngle}deg 360deg
+                )`,
+
+                maskImage: `conic-gradient(
+                  from 0deg,
+                  transparent 0deg ${wipeAngle}deg,
+                  black ${wipeAngle}deg 360deg
+                )`,
+              }}
+            >
+
+              <img
+                src="/DCF Logo.png"
+                alt="DCF Lab Intelligence"
+                className="
+                  absolute
+                  inset-0
+                  h-full
+                  w-full
+                  object-contain
+                "
+              />
+
+            </div>
 
 
             {/* ======================================
                 INNER DARK CIRCLE
 
-                INSIDE CLOCKWISE MASK
+                This fades at the SAME TIME
+                as the outer circle wipes.
             ====================================== */}
 
             <div
@@ -302,19 +315,13 @@ export default function IntelligenceStoryIntro() {
                 text-center
               "
               style={{
-                /*
-                 * Text fades at the same time
-                 * as the clockwise wipe.
-                 */
                 opacity:
                   1 - centerTextProgress,
               }}
             >
 
 
-              {/* ==================================
-                  SPARKLE
-              ================================== */}
+              {/* SPARKLE */}
 
               <div
                 className="
@@ -328,9 +335,7 @@ export default function IntelligenceStoryIntro() {
               </div>
 
 
-              {/* ==================================
-                  TITLE
-              ================================== */}
+              {/* TITLE */}
 
               <div
                 className="
@@ -365,9 +370,7 @@ export default function IntelligenceStoryIntro() {
               </div>
 
 
-              {/* ==================================
-                  SUBTITLE
-              ================================== */}
+              {/* SUBTITLE */}
 
               <div
                 className="
@@ -425,9 +428,7 @@ export default function IntelligenceStoryIntro() {
           >
 
 
-            {/* ======================================
-                MAIN MESSAGE
-            ====================================== */}
+            {/* MAIN MESSAGE */}
 
             <h1
               className="
@@ -462,9 +463,7 @@ export default function IntelligenceStoryIntro() {
             </h1>
 
 
-            {/* ======================================
-                FIRST DESCRIPTION
-            ====================================== */}
+            {/* FIRST DESCRIPTION */}
 
             <p
               className="
@@ -487,9 +486,7 @@ export default function IntelligenceStoryIntro() {
             </p>
 
 
-            {/* ======================================
-                SECOND DESCRIPTION
-            ====================================== */}
+            {/* SECOND DESCRIPTION */}
 
             <p
               className="
@@ -518,21 +515,24 @@ export default function IntelligenceStoryIntro() {
 
         {/* ==========================================
             SCROLL INDICATOR
+
+            KEPT ABOVE THE BOTTOM OF THE SCREEN
+            AND VISIBLE DURING THE INITIAL CIRCLE.
         ========================================== */}
 
         <div
           className="
             absolute
-            bottom-10
+            bottom-8
             left-1/2
-            z-30
+            z-40
             -translate-x-1/2
             text-center
           "
           style={{
             opacity:
               Math.max(
-                1 - progress * 5,
+                1 - progress * 3,
                 0
               ),
           }}
@@ -546,7 +546,7 @@ export default function IntelligenceStoryIntro() {
             "
             style={{
               color:
-                "rgba(255,255,255,0.60)",
+                "rgba(255,255,255,0.70)",
             }}
           >
             Scroll to explore
@@ -562,7 +562,11 @@ export default function IntelligenceStoryIntro() {
             "
             style={{
               background:
-                "linear-gradient(to bottom, #00c98b, transparent)",
+                "linear-gradient(
+                  to bottom,
+                  #00c98b,
+                  transparent
+                )",
             }}
           />
 
