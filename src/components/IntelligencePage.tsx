@@ -985,195 +985,269 @@ export default function IntelligencePage() {
                )}
 
         {/* =====================================================
-            BEGIN ANALYSIS MODAL
-        ====================================================== */}
+    BEGIN ANALYSIS MODAL
+====================================================== */}
 
-        {showAnalysisModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+{showAnalysisModal && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 backdrop-blur-md">
 
-            <div className="relative w-full max-w-[520px] rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_25px_80px_rgba(15,23,42,0.20)]">
+    <div className="relative w-full max-w-[540px] rounded-2xl border border-slate-700 bg-[#0f172a] p-7 shadow-[0_25px_100px_rgba(0,0,0,0.55)]">
 
-              {/* Header */}
+      {/* Header */}
 
-              <div className="mb-6 flex items-start justify-between">
+      <div className="mb-7 flex items-start justify-between">
 
-                <div>
-                  <h2 className="text-[22px] font-bold text-[#14243a]">
-                    Begin Analysis
-                  </h2>
+        <div>
 
-                  <p className="mt-1 text-[13px] text-slate-500">
-                    Upload your report and enter the DCF assumptions.
-                  </p>
+          <h2 className="text-[23px] font-bold tracking-[-0.3px] text-white">
+            Begin Analysis
+          </h2>
+
+          <p className="mt-1.5 text-[13px] text-slate-400">
+            Upload your report and configure the DCF assumptions.
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowAnalysisModal(false)}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-800 hover:text-white"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      {/* =================================================
+          UPLOAD ANNUAL REPORT
+      ================================================== */}
+
+      <div className="mb-7">
+
+        <label className="mb-2.5 block text-[13px] font-semibold text-slate-200">
+          Annual Report
+        </label>
+
+        <label className="group flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-slate-600 bg-[#111c2f] px-5 py-6 transition hover:border-emerald-500/60 hover:bg-[#142238]">
+
+          <input
+            type="file"
+            accept=".pdf,application/pdf"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+
+              if (file) {
+                handleFile(file);
+              }
+            }}
+          />
+
+          <div className="text-center">
+
+            {selectedFile ? (
+              <>
+                <div className="text-[14px] font-semibold text-white">
+                  {selectedFile.name}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowAnalysisModal(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                >
-                  ×
-                </button>
-
-              </div>
-
-
-              {/* Upload File */}
-
-              <div className="mb-5">
-
-                <label className="mb-2 block text-[13px] font-semibold text-slate-700">
-                  Annual Report
-                </label>
-
-                <label className="flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-6 transition hover:border-emerald-400 hover:bg-emerald-50/30">
-
-                  <input
-                    type="file"
-                    accept=".pdf,application/pdf"
-                    className="hidden"
-                    onChange={(event) => {
-                      const file = event.target.files?.[0];
-
-                      if (file) {
-                        handleFile(file);
-                      }
-                    }}
-                  />
-
-                  <div className="text-center">
-
-                    {selectedFile ? (
-                      <>
-                        <div className="text-[14px] font-semibold text-slate-800">
-                          {selectedFile.name}
-                        </div>
-
-                        <div className="mt-1 text-[11px] text-emerald-500">
-                          PDF selected
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="text-[14px] font-semibold text-slate-700">
-                          Upload Annual Report
-                        </div>
-
-                        <div className="mt-1 text-[11px] text-slate-400">
-                          PDF files only • Maximum 50MB
-                        </div>
-                      </>
-                    )}
-
-                  </div>
-
-                </label>
-
-              </div>
-
-
-              {/* Terminal Growth Rate */}
-
-              <div className="mb-5">
-
-                <label
-                  htmlFor="terminal-growth-rate"
-                  className="mb-2 block text-[13px] font-semibold text-slate-700"
-                >
-                  Terminal Growth Rate
-                </label>
-
-                <div className="relative">
-
-                  <input
-                    id="terminal-growth-rate"
-                    type="number"
-                    step="0.1"
-                    value={terminalGrowthRate}
-                    onChange={(event) =>
-                      setTerminalGrowthRate(event.target.value)
-                    }
-                    placeholder="Enter terminal growth rate"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-10 text-[14px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-                  />
-
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-slate-400">
-                    %
-                  </span>
-
+                <div className="mt-1 text-[11px] text-emerald-400">
+                  PDF selected
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-[14px] font-semibold text-slate-200">
+                  Upload Annual Report
                 </div>
 
-              </div>
-
-
-              {/* FCFF Forecast Years */}
-
-              <div className="mb-7">
-
-                <label
-                  htmlFor="forecast-years"
-                  className="mb-2 block text-[13px] font-semibold text-slate-700"
-                >
-                  FCFF Forecast Period
-                </label>
-
-                <input
-                  id="forecast-years"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={forecastYears}
-                  onChange={(event) =>
-                    setForecastYears(event.target.value)
-                  }
-                  placeholder="Enter number of forecast years"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-[14px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
-                />
-
-                <p className="mt-1.5 text-[11px] text-slate-400">
-                  Enter how many years of FCFF you want to forecast.
-                </p>
-
-              </div>
-
-
-              {/* Run Analysis */}
-
-              <button
-                type="button"
-                disabled={
-                  !selectedFile ||
-                  terminalGrowthRate === "" ||
-                  forecastYears === "" ||
-                  isAnalyzing
-                }
-                onClick={() => {
-                  runAnalysis();
-                }}
-                className={`flex h-[50px] w-full items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-semibold transition ${
-                  selectedFile &&
-                  terminalGrowthRate !== "" &&
-                  forecastYears !== ""
-                    ? "bg-emerald-500 text-white shadow-[0_7px_20px_rgba(16,185,129,0.20)] hover:bg-emerald-600"
-                    : "cursor-not-allowed bg-slate-100 text-slate-400"
-                }`}
-              >
-
-                {isAnalyzing ? (
-                  <>
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Running Analysis...
-                  </>
-                ) : (
-                  "Run Analysis"
-                )}
-
-              </button>
-
-            </div>
+                <div className="mt-1 text-[11px] text-slate-500">
+                  PDF files only • Maximum 50MB
+                </div>
+              </>
+            )}
 
           </div>
+
+        </label>
+
+      </div>
+
+
+      {/* =================================================
+          TERMINAL GROWTH RATE SLIDER
+      ================================================== */}
+
+      <div className="mb-7">
+
+        <div className="mb-3 flex items-center justify-between">
+
+          <label
+            htmlFor="terminal-growth-rate"
+            className="text-[13px] font-semibold text-slate-200"
+          >
+            Terminal Growth Rate
+          </label>
+
+          <div
+            className={`rounded-md px-2.5 py-1 text-[12px] font-semibold ${
+              terminalGrowthRate === ""
+                ? "bg-slate-800 text-slate-500"
+                : "bg-emerald-500/10 text-emerald-400"
+            }`}
+          >
+            {terminalGrowthRate === ""
+              ? "Select"
+              : `${terminalGrowthRate}%`}
+          </div>
+
+        </div>
+
+        <input
+          id="terminal-growth-rate"
+          type="range"
+          min="0"
+          max="10"
+          step="0.1"
+          value={
+            terminalGrowthRate === ""
+              ? 0
+              : terminalGrowthRate
+          }
+          onChange={(event) =>
+            setTerminalGrowthRate(event.target.value)
+          }
+          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-emerald-500"
+        />
+
+        <div className="mt-2 flex justify-between text-[10px] text-slate-500">
+          <span>0%</span>
+          <span>2%</span>
+          <span>4%</span>
+          <span>6%</span>
+          <span>8%</span>
+          <span>10%</span>
+        </div>
+
+        <p className="mt-2 text-[11px] text-slate-500">
+          Select the terminal growth assumption used in the DCF.
+        </p>
+
+      </div>
+
+
+      {/* =================================================
+          FCFF FORECAST YEARS SLIDER
+      ================================================== */}
+
+      <div className="mb-8">
+
+        <div className="mb-3 flex items-center justify-between">
+
+          <label
+            htmlFor="forecast-years"
+            className="text-[13px] font-semibold text-slate-200"
+          >
+            FCFF Forecast Period
+          </label>
+
+          <div
+            className={`rounded-md px-2.5 py-1 text-[12px] font-semibold ${
+              forecastYears === ""
+                ? "bg-slate-800 text-slate-500"
+                : "bg-emerald-500/10 text-emerald-400"
+            }`}
+          >
+            {forecastYears === ""
+              ? "Select"
+              : `${forecastYears} ${
+                  Number(forecastYears) === 1
+                    ? "Year"
+                    : "Years"
+                }`}
+          </div>
+
+        </div>
+
+        <input
+          id="forecast-years"
+          type="range"
+          min="1"
+          max="15"
+          step="1"
+          value={
+            forecastYears === ""
+              ? 1
+              : forecastYears
+          }
+          onChange={(event) =>
+            setForecastYears(event.target.value)
+          }
+          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-emerald-500"
+        />
+
+        <div className="mt-2 flex justify-between text-[10px] text-slate-500">
+          <span>1 Year</span>
+          <span>5 Years</span>
+          <span>10 Years</span>
+          <span>15 Years</span>
+        </div>
+
+        <p className="mt-2 text-[11px] text-slate-500">
+          Select how many years of FCFF you want to forecast.
+        </p>
+
+      </div>
+
+
+      {/* =================================================
+          RUN ANALYSIS
+      ================================================== */}
+
+      <button
+        type="button"
+        disabled={
+          !selectedFile ||
+          terminalGrowthRate === "" ||
+          forecastYears === "" ||
+          isAnalyzing
+        }
+        onClick={() => {
+          runAnalysis();
+        }}
+        className={`flex h-[52px] w-full items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-semibold transition ${
+          selectedFile &&
+          terminalGrowthRate !== "" &&
+          forecastYears !== ""
+            ? "bg-emerald-500 text-white shadow-[0_8px_25px_rgba(16,185,129,0.20)] hover:bg-emerald-400"
+            : "cursor-not-allowed bg-slate-800 text-slate-600"
+        }`}
+      >
+
+        {isAnalyzing ? (
+          <>
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            Running Analysis...
+          </>
+        ) : (
+          "Run Analysis"
         )}
+
+      </button>
+
+
+      {/* Bottom note */}
+
+      <div className="mt-4 text-center text-[10px] text-slate-600">
+        All assumptions must be provided before analysis can begin.
+      </div>
+
+    </div>
+
+  </div>
+)}
       </section>
 
       {/* =====================================================
