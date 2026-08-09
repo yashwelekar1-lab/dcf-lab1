@@ -522,7 +522,7 @@ export default function IntelligenceStoryIntro() {
     pointer-events-none
     absolute
     left-1/2
-    top-[80%]
+    top-[78%]
     z-[100]
     -translate-x-1/2
     -translate-y-1/2
