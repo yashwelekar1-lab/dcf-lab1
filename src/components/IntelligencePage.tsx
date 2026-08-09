@@ -1171,69 +1171,67 @@ setShowAnalysisModal(false);
       </div>
 
 
-      {/* =================================================
-          FCFF FORECAST YEARS SLIDER
-      ================================================== */}
+{/* =================================================
+    FCFF FORECAST YEARS SLIDER
+================================================= */}
 
-      <div className="mb-8">
+<div className="mb-8">
 
-        <div className="mb-3 flex items-center justify-between">
+  <div className="mb-3 flex items-center justify-between">
 
-          <label
-  htmlFor="forecast-years"
-  className="text-[14px] font-semibold text-white"
->
-            FCFF Forecast Period
-          </label>
+    <label
+      htmlFor="forecast-years"
+      className="text-[14px] font-semibold text-white"
+    >
+      FCFF Forecast Period
+    </label>
 
-          <div
-            className={`rounded-md px-2.5 py-1 text-[12px] font-semibold ${
-              forecastYears === ""
-                ? "bg-slate-800 text-slate-500"
-                : "bg-emerald-500/15 text-emerald-300"
-            }`}
-          >
-            {forecastYears === ""
-              ? "Select"
-              : `${forecastYears} ${
-                  Number(forecastYears) === 1
-                    ? "Year"
-                    : "Years"
-                }`}
-          </div>
+    <div
+      className={`rounded-md px-3 py-1.5 text-[13px] font-bold ${
+        forecastYears === ""
+          ? "bg-slate-800 text-slate-400"
+          : "bg-emerald-500/15 text-emerald-300"
+      }`}
+    >
+      {forecastYears === ""
+        ? "Select"
+        : `${forecastYears} ${
+            Number(forecastYears) === 1
+              ? "Year"
+              : "Years"
+          }`}
+    </div>
 
-        </div>
+  </div>
 
-        <input
-          id="forecast-years"
-          type="range"
-          min="1"
-          max="15"
-          step="1"
-          value={
-            forecastYears === ""
-              ? 1
-              : forecastYears
-          }
-          onChange={(event) =>
-            setForecastYears(event.target.value)
-          }
-          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-emerald-500"
-        />
 
-        <<div className="mt-2 flex justify-between text-[12px] font-semibold text-white">
-  <span>1 Year</span>
-  <span>5 Years</span>
-  <span>10 Years</span>
-  <span>15 Years</span>
+  <input
+    id="forecast-years"
+    type="range"
+    min="1"
+    max="15"
+    step="1"
+    value={forecastYears === "" ? 1 : forecastYears}
+    onChange={(event) =>
+      setForecastYears(event.target.value)
+    }
+    className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-emerald-500"
+  />
+
+
+  <div className="mt-2 flex justify-between text-[12px] font-semibold text-white">
+    <span>1 Year</span>
+    <span>5 Years</span>
+    <span>10 Years</span>
+    <span>15 Years</span>
+  </div>
+
+
+  <p className="mt-2 text-[12px] font-medium text-slate-300">
+    Select how many years of FCFF you want to forecast.
+  </p>
+
 </div>
-
-        <p className="mt-2 text-[12px] font-medium text-slate-300">
-  Select how many years of FCFF you want to forecast.
-</p>
-
-      </div>
-
 
       {/* =================================================
           RUN ANALYSIS
