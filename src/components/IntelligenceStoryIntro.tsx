@@ -452,12 +452,8 @@ export default function IntelligenceStoryIntro() {
               w-[1px]
             "
             style={{
-              background:
-                "linear-gradient(
-                  to bottom,
-                  #00c98b,
-                  transparent
-                )",
+background:
+  "linear-gradient(to bottom, #00c98b, transparent)",
             }}
           />
 
