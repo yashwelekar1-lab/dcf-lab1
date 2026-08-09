@@ -47,30 +47,42 @@ export default function IntelligenceStoryIntro() {
    * STORY TIMELINE
    * ============================================
    *
-   * 0.00 - 0.18
-   * Logo fully visible
-   *
-   * 0.18 - 0.58
-   * Logo + text wipe clockwise
-   *
-   * 0.38 - 0.63
-   * AI message appears
-   *
-   * 0.82 - 1.00
-   * Story fades into the actual page
-   */
+ * 0.00 - 0.18
+ * Logo + text fully visible
+ *
+ * 0.18 - 0.32
+ * Center text fades out
+ *
+ * 0.32 - 0.72
+ * Circle wipes clockwise
+ *
+ * 0.72 - 0.82
+ * AI message appears
+ *
+ * 0.82 - 1.00
+ * Story fades into the actual page
+ */
 
   /*
    * CLOCKWISE LOGO WIPE
    */
-  const circleProgress = Math.min(
-    Math.max(
-      (progress - 0.18) / 0.40,
-      0
-    ),
-    1
-  );
+// CENTER TEXT FADE
+const centerTextProgress = Math.min(
+  Math.max(
+    (progress - 0.18) / 0.14,
+    0
+  ),
+  1
+);
 
+// CLOCKWISE CIRCLE WIPE
+const textProgress = Math.min(
+  Math.max(
+    (progress - 0.72) / 0.10,
+    0
+  ),
+  1
+);
   const wipeAngle = circleProgress * 360;
 
   /*
@@ -164,134 +176,157 @@ export default function IntelligenceStoryIntro() {
           }}
         >
 
-          {/* ========================================
-              CLOCKWISE MASK
+         
+{/* ========================================
+    LOGO + CENTER CONTENT
+======================================== */}
 
-              Starts at 12 o'clock
-              and wipes clockwise.
-          ======================================== */}
+<div
+  className="
+    relative
+    h-[min(590px,72vw)]
+    w-[min(590px,72vw)]
+  "
+>
 
-          <div
-            className="relative h-[min(590px,72vw)] w-[min(590px,72vw)] overflow-hidden rounded-full"
-            style={{
-              WebkitMaskImage: `conic-gradient(
-                from 0deg,
-                transparent 0deg ${wipeAngle}deg,
-                black ${wipeAngle}deg 360deg
-              )`,
+  {/* ========================================
+      CLOCKWISE CIRCLE WIPE
+  ======================================== */}
 
-              maskImage: `conic-gradient(
-                from 0deg,
-                transparent 0deg ${wipeAngle}deg,
-                black ${wipeAngle}deg 360deg
-              )`,
-            }}
-          >
+  <div
+    className="
+      absolute
+      inset-0
+      overflow-hidden
+      rounded-full
+    "
+    style={{
+      WebkitMaskImage: `conic-gradient(
+        from 0deg,
+        transparent 0deg ${wipeAngle}deg,
+        black ${wipeAngle}deg 360deg
+      )`,
 
-            {/* ======================================
-                YOUR REAL DCF LOGO
-            ====================================== */}
+      maskImage: `conic-gradient(
+        from 0deg,
+        transparent 0deg ${wipeAngle}deg,
+        black ${wipeAngle}deg 360deg
+      )`,
+    }}
+  >
 
-            <img
-              src="/DCF Logo.png"
-              alt="DCF Lab Intelligence"
-              className="absolute inset-0 h-full w-full object-contain"
-            />
+    {/* REAL DCF LOGO */}
 
+    <img
+      src="/DCF Logo.png"
+      alt="DCF Lab Intelligence"
+      className="
+        absolute
+        inset-0
+        h-full
+        w-full
+        object-contain
+      "
+    />
 
-            {/* ======================================
-                INNER DARK CIRCLE
-
-                This puts the text inside the
-                green gradient ring.
-            ====================================== */}
-
-            <div
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                flex
-                aspect-square
-                w-[48%]
-                -translate-x-1/2
-                -translate-y-1/2
-                flex-col
-                items-center
-                justify-center
-                rounded-full
-                bg-[#101a2b]
-                text-center
-              "
-            >
-
-              {/* SPARKLE */}
-
-              <div
-                className="
-                  mb-3
-                  text-[25px]
-                  leading-none
-                  text-emerald-400
-                "
-              >
-                ✦
-              </div>
+  </div>
 
 
-              {/* TITLE */}
+  {/* ========================================
+      INNER DARK CIRCLE + TEXT
 
-              <div
-                className="
-                  flex
-                  flex-col
-                  items-center
-                  leading-[1.02]
-                  tracking-[-0.04em]
-                "
-              >
+      NOT INSIDE THE WIPE MASK
+  ======================================== */}
 
-                <span
-                  className="
-                    text-[clamp(26px,3.4vw,43px)]
-                    font-bold
-                    text-white
-                  "
-                >
-                  DCF Lab
-                </span>
+  <div
+    className="
+      absolute
+      left-1/2
+      top-1/2
+      flex
+      aspect-square
+      w-[48%]
+      -translate-x-1/2
+      -translate-y-1/2
+      flex-col
+      items-center
+      justify-center
+      rounded-full
+      bg-[#101a2b]
+      text-center
+    "
+    style={{
+      opacity: 1 - centerTextProgress,
+    }}
+  >
 
-                <span
-                  className="
-                    text-[clamp(26px,3.4vw,43px)]
-                    font-bold
-                    text-emerald-400
-                  "
-                >
-                  Intelligence
-                </span>
+    {/* SPARKLE */}
 
-              </div>
+    <div
+      className="
+        mb-3
+        text-[25px]
+        leading-none
+        text-emerald-400
+      "
+    >
+      ✦
+    </div>
 
 
-              {/* SUBTITLE */}
+    {/* TITLE */}
 
-              <div
-                className="
-                  mt-3
-                  text-[clamp(9px,1vw,13px)]
-                  leading-[1.4]
-                  text-slate-300
-                "
-              >
-                AI-Powered Financial Research
-                <br />
-                &amp; Valuation Platform
-              </div>
+    <div
+      className="
+        flex
+        flex-col
+        items-center
+        leading-[1.02]
+        tracking-[-0.04em]
+      "
+    >
 
-            </div>
+      <span
+        className="
+          text-[clamp(26px,3.4vw,43px)]
+          font-bold
+          text-white
+        "
+      >
+        DCF Lab
+      </span>
 
-          </div>
+      <span
+        className="
+          text-[clamp(26px,3.4vw,43px)]
+          font-bold
+          text-emerald-400
+        "
+      >
+        Intelligence
+      </span>
+
+    </div>
+
+
+    {/* SUBTITLE */}
+
+    <div
+      className="
+        mt-3
+        text-[clamp(9px,1vw,13px)]
+        leading-[1.4]
+        text-slate-300
+      "
+    >
+      AI-Powered Financial Research
+      <br />
+      &amp; Valuation Platform
+    </div>
+
+  </div>
+
+</div>
 
         </div>
 
