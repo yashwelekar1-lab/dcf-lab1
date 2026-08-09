@@ -5,10 +5,10 @@ export default function SavedAnalysesPage() {
     <>
       {/* Non-cancellable "Getting things ready" popup */}
       <div
-        className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm"
-        role="dialog"
-        aria-modal="true"
-      >
+  className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/50"
+  role="dialog"
+  aria-modal="true"
+>
         <div className="w-[90%] max-w-md rounded-2xl border border-slate-700 bg-slate-900 px-8 py-9 text-center shadow-2xl">
 
           {/* Loading Icon */}
