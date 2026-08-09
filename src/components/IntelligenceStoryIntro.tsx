@@ -48,34 +48,39 @@ export default function IntelligenceStoryIntro() {
    * ============================================
    *
    * 0.00 - 0.18
-   * Logo + text fully visible
+   * Circle + text fully visible
    *
-   * 0.18 - 0.32
-   * Center text fades out
+   * 0.18 - 0.58
+   * Text fades + circle wipes clockwise
    *
-   * 0.32 - 0.72
-   * Circle wipes clockwise
+   * 0.58 - 0.72
+   * Circle finishes disappearing
    *
    * 0.72 - 0.82
    * AI message appears
    *
    * 0.82 - 1.00
-   * Story fades into the actual page
+   * Story fades into actual page
    */
+
 
   /*
    * ============================================
-   * CENTER TEXT FADE
+   * TEXT FADE
+   *
+   * Text fades during the same period
+   * as the clockwise wipe.
    * ============================================
    */
 
   const centerTextProgress = Math.min(
     Math.max(
-      (progress - 0.18) / 0.14,
+      (progress - 0.18) / 0.40,
       0
     ),
     1
   );
+
 
   /*
    * ============================================
@@ -85,7 +90,7 @@ export default function IntelligenceStoryIntro() {
 
   const circleProgress = Math.min(
     Math.max(
-      (progress - 0.32) / 0.40,
+      (progress - 0.18) / 0.40,
       0
     ),
     1
@@ -93,19 +98,21 @@ export default function IntelligenceStoryIntro() {
 
   const wipeAngle = circleProgress * 360;
 
+
   /*
    * ============================================
-   * AI MESSAGE FADE IN
+   * AI MESSAGE
    * ============================================
    */
 
   const textProgress = Math.min(
     Math.max(
-      (progress - 0.72) / 0.10,
+      (progress - 0.62) / 0.12,
       0
     ),
     1
   );
+
 
   /*
    * ============================================
@@ -120,6 +127,7 @@ export default function IntelligenceStoryIntro() {
     ),
     1
   );
+
 
   /*
    * ============================================
@@ -147,17 +155,26 @@ export default function IntelligenceStoryIntro() {
     )}
   )`;
 
+
   return (
     <section
       id="intelligence-story"
       className="relative h-[280vh]"
     >
+
       <div
-        className="sticky top-0 h-screen w-full overflow-hidden"
+        className="
+          sticky
+          top-0
+          h-screen
+          w-full
+          overflow-hidden
+        "
         style={{
           backgroundColor,
         }}
       >
+
 
         {/* ==========================================
             BACKGROUND GLOW
@@ -179,6 +196,7 @@ export default function IntelligenceStoryIntro() {
           style={{
             background:
               "radial-gradient(circle, rgba(0,210,160,0.16), transparent 68%)",
+
             opacity:
               1 - progress * 0.85,
           }}
@@ -186,14 +204,16 @@ export default function IntelligenceStoryIntro() {
 
 
         {/* ==========================================
-            LOGO + CENTER CONTENT
+            CIRCLE STORY
+
+            MOVED HIGHER ON SCREEN
         ========================================== */}
 
         <div
           className="
             absolute
             left-1/2
-            top-1/2
+            top-[42%]
             z-20
           "
           style={{
@@ -207,7 +227,14 @@ export default function IntelligenceStoryIntro() {
         >
 
           {/* ========================================
-              CIRCLE + LOGO
+              ENTIRE CIRCLE IS MASKED
+
+              IMPORTANT:
+              The inner dark circle + text are
+              INSIDE this mask.
+
+              Therefore everything wipes clockwise
+              together.
           ======================================== */}
 
           <div
@@ -215,58 +242,47 @@ export default function IntelligenceStoryIntro() {
               relative
               h-[min(590px,72vw)]
               w-[min(590px,72vw)]
+              overflow-hidden
+              rounded-full
             "
+            style={{
+              WebkitMaskImage: `conic-gradient(
+                from 0deg,
+                transparent 0deg ${wipeAngle}deg,
+                black ${wipeAngle}deg 360deg
+              )`,
+
+              maskImage: `conic-gradient(
+                from 0deg,
+                transparent 0deg ${wipeAngle}deg,
+                black ${wipeAngle}deg 360deg
+              )`,
+            }}
           >
 
-            {/* ========================================
-                CLOCKWISE CIRCLE WIPE
-            ======================================== */}
 
-            <div
+            {/* ======================================
+                REAL DCF LOGO
+            ====================================== */}
+
+            <img
+              src="/DCF Logo.png"
+              alt="DCF Lab Intelligence"
               className="
                 absolute
                 inset-0
-                overflow-hidden
-                rounded-full
+                h-full
+                w-full
+                object-contain
               "
-              style={{
-                WebkitMaskImage: `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
-                )`,
-
-                maskImage: `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
-                )`,
-              }}
-            >
-
-              {/* REAL DCF LOGO */}
-
-              <img
-                src="/DCF Logo.png"
-                alt="DCF Lab Intelligence"
-                className="
-                  absolute
-                  inset-0
-                  h-full
-                  w-full
-                  object-contain
-                "
-              />
-
-            </div>
+            />
 
 
-            {/* ========================================
-                INNER DARK CIRCLE + TEXT
+            {/* ======================================
+                INNER DARK CIRCLE
 
-                This is OUTSIDE the wipe mask.
-                Therefore the text can fade separately.
-            ======================================== */}
+                INSIDE CLOCKWISE MASK
+            ====================================== */}
 
             <div
               className="
@@ -286,11 +302,19 @@ export default function IntelligenceStoryIntro() {
                 text-center
               "
               style={{
-                opacity: 1 - centerTextProgress,
+                /*
+                 * Text fades at the same time
+                 * as the clockwise wipe.
+                 */
+                opacity:
+                  1 - centerTextProgress,
               }}
             >
 
-              {/* SPARKLE */}
+
+              {/* ==================================
+                  SPARKLE
+              ================================== */}
 
               <div
                 className="
@@ -304,7 +328,9 @@ export default function IntelligenceStoryIntro() {
               </div>
 
 
-              {/* TITLE */}
+              {/* ==================================
+                  TITLE
+              ================================== */}
 
               <div
                 className="
@@ -339,7 +365,9 @@ export default function IntelligenceStoryIntro() {
               </div>
 
 
-              {/* SUBTITLE */}
+              {/* ==================================
+                  SUBTITLE
+              ================================== */}
 
               <div
                 className="
@@ -396,7 +424,10 @@ export default function IntelligenceStoryIntro() {
             "
           >
 
-            {/* MAIN MESSAGE */}
+
+            {/* ======================================
+                MAIN MESSAGE
+            ====================================== */}
 
             <h1
               className="
@@ -431,7 +462,9 @@ export default function IntelligenceStoryIntro() {
             </h1>
 
 
-            {/* FIRST DESCRIPTION */}
+            {/* ======================================
+                FIRST DESCRIPTION
+            ====================================== */}
 
             <p
               className="
@@ -454,7 +487,9 @@ export default function IntelligenceStoryIntro() {
             </p>
 
 
-            {/* SECOND DESCRIPTION */}
+            {/* ======================================
+                SECOND DESCRIPTION
+            ====================================== */}
 
             <p
               className="
@@ -517,6 +552,7 @@ export default function IntelligenceStoryIntro() {
             Scroll to explore
           </div>
 
+
           <div
             className="
               mx-auto
@@ -533,6 +569,7 @@ export default function IntelligenceStoryIntro() {
         </div>
 
       </div>
+
     </section>
   );
 }
