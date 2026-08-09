@@ -5,7 +5,9 @@ export default function IntelligenceStoryIntro() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const section = document.getElementById("intelligence-story");
+      const section = document.getElementById(
+        "intelligence-story"
+      );
 
       if (!section) return;
 
@@ -33,211 +35,195 @@ export default function IntelligenceStoryIntro() {
     handleScroll();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
     };
   }, []);
 
   /*
+   * ============================================
    * STORY TIMELINE
+   * ============================================
    *
-   * 0.00 - 0.30
-   * Circle remains visible
+   * 0.00 - 0.20
+   * Logo fully visible
    *
-   * 0.30 - 0.70
-   * Circle wipes clockwise
+   * 0.20 - 0.58
+   * Logo wipes clockwise
    *
-   * 0.60 - 0.85
-   * Text appears
+   * 0.40 - 0.72
+   * Message appears
    *
-   * 0.85 - 1.00
-   * Text remains
+   * 0.72 - 1.00
+   * Message remains while story exits
    */
 
   const circleProgress = Math.min(
-    Math.max((progress - 0.25) / 0.45, 0),
+    Math.max(
+      (progress - 0.18) / 0.40,
+      0
+    ),
     1
   );
 
+  /*
+   * 0 = no wipe
+   * 360 = completely wiped
+   */
+  const wipeAngle =
+    circleProgress * 360;
+
+  /*
+   * Text fade in
+   */
   const textProgress = Math.min(
-    Math.max((progress - 0.60) / 0.20, 0),
+    Math.max(
+      (progress - 0.38) / 0.25,
+      0
+    ),
     1
   );
 
-  const circleOpacity =
-    progress >= 0.75
-      ? Math.max(1 - (progress - 0.75) * 8, 0)
-      : 1;
+  /*
+   * Final story fade
+   */
+  const exitProgress = Math.min(
+    Math.max(
+      (progress - 0.82) / 0.18,
+      0
+    ),
+    1
+  );
 
-  const textOpacity = textProgress;
-
-  const textTranslate =
-    35 - textProgress * 35;
-
+  /*
+   * Background transition:
+   * dark cinematic background →
+   * light background matching
+   * the actual DCF page.
+   */
   const backgroundProgress = Math.min(
-    Math.max((progress - 0.55) / 0.20, 0),
+    Math.max(
+      (progress - 0.70) / 0.30,
+      0
+    ),
     1
   );
 
-  const backgroundColor =
-    progress < 0.55
-      ? "#202a3b"
-      : `rgb(
-          ${Math.round(32 + 223 * backgroundProgress)},
-          ${Math.round(42 + 213 * backgroundProgress)},
-          ${Math.round(59 + 196 * backgroundProgress)}
-        )`;
+  const backgroundColor = `rgb(
+    ${Math.round(
+      16 + 235 * backgroundProgress
+    )},
+    ${Math.round(
+      26 + 232 * backgroundProgress
+    )},
+    ${Math.round(
+      43 + 212 * backgroundProgress
+    )}
+  )`;
 
   return (
     <section
       id="intelligence-story"
-      className="relative h-[260vh]"
+      className="relative h-[280vh]"
     >
       <div
-        className="sticky top-0 h-screen overflow-hidden"
+        className="sticky top-0 h-screen w-full overflow-hidden"
         style={{
           backgroundColor,
         }}
       >
 
-        {/* =========================
+        {/* ==========================================
             BACKGROUND GLOW
-        ========================== */}
+        ========================================== */}
 
         <div
-          className="absolute left-1/2 top-1/2
-                     h-[700px] w-[700px]
-                     -translate-x-1/2
-                     -translate-y-1/2
-                     rounded-full
-                     blur-[110px]"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[750px] w-[750px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
           style={{
             background:
-              "radial-gradient(circle, rgba(0,210,160,0.18), transparent 65%)",
-            opacity: 1 - progress * 0.7,
+              "radial-gradient(circle, rgba(0,210,160,0.16), transparent 68%)",
+            opacity:
+              1 - progress * 0.85,
           }}
         />
 
-        {/* =========================
-            CIRCLE LOGO
-        ========================== */}
+        {/* ==========================================
+            REAL DCF LOGO
+        ========================================== */}
 
         <div
-          className="absolute left-1/2 top-1/2"
+          className="absolute left-1/2 top-1/2 z-20"
           style={{
-            opacity: circleOpacity,
+            opacity:
+              1 - exitProgress,
+
             transform: `
               translate(-50%, -50%)
-              scale(${1 + progress * 0.08})
+              scale(${1 + progress * 0.05})
             `,
           }}
         >
 
-          <svg
-            width="620"
-            height="620"
-            viewBox="0 0 620 620"
-            className="block"
+          {/* 
+             The mask starts at 12 o'clock
+             and wipes clockwise.
+          */}
+
+          <div
+            className="relative h-[min(590px,72vw)] w-[min(590px,72vw)] overflow-hidden rounded-full"
+            style={{
+              WebkitMaskImage: `conic-gradient(
+                from 0deg,
+                transparent 0deg ${wipeAngle}deg,
+                black ${wipeAngle}deg 360deg
+              )`,
+
+              maskImage: `conic-gradient(
+                from 0deg,
+                transparent 0deg ${wipeAngle}deg,
+                black ${wipeAngle}deg 360deg
+              )`,
+            }}
           >
 
-            <defs>
-
-              <linearGradient
-                id="dcfIntelligenceGradient"
-                x1="0%"
-                y1="100%"
-                x2="100%"
-                y2="0%"
-              >
-
-                <stop
-                  offset="0%"
-                  stopColor="#a3ff63"
-                />
-
-                <stop
-                  offset="45%"
-                  stopColor="#00c98b"
-                />
-
-                <stop
-                  offset="100%"
-                  stopColor="#4dd9d5"
-                />
-
-              </linearGradient>
-
-            </defs>
-
-            {/* Dark center */}
-
-            <circle
-              cx="310"
-              cy="310"
-              r="160"
-              fill="#202a3b"
+            <img
+              src="/DCF Logo.png"
+              alt="DCF Lab Intelligence"
+              className="block h-full w-full object-contain"
             />
 
-            {/* Gradient ring */}
-
-            <circle
-              cx="310"
-              cy="310"
-              r="220"
-              fill="none"
-              stroke="url(#dcfIntelligenceGradient)"
-              strokeWidth="120"
-              strokeLinecap="butt"
-              strokeDasharray="1382"
-              strokeDashoffset={
-                1382 * circleProgress
-              }
-              transform="rotate(-90 310 310)"
-            />
-
-            {/* Logo text */}
-
-            <text
-              x="310"
-              y="330"
-              textAnchor="middle"
-              fill="#ffffff"
-              fontSize="58"
-              fontWeight="400"
-              fontFamily="Arial, sans-serif"
-            >
-              LOGO
-            </text>
-
-          </svg>
+          </div>
 
         </div>
 
-        {/* =========================
+        {/* ==========================================
             AI MESSAGE
-        ========================== */}
+        ========================================== */}
 
         <div
-          className="absolute inset-0
-                     flex items-center
-                     justify-center
-                     px-6"
+          className="absolute inset-0 z-10 flex items-center justify-center px-6"
           style={{
-            opacity: textOpacity,
-            transform: `translateY(${textTranslate}px)`,
+            opacity:
+              textProgress *
+              (1 - exitProgress * 0.2),
+
+            transform: `
+              translateY(
+                ${35 - textProgress * 35}px
+              )
+            `,
           }}
         >
 
-          <div className="max-w-[850px] text-center">
+          <div className="w-full max-w-[850px] text-center">
 
             <h1
-              className="text-[46px]
-                         leading-[1.05]
-                         tracking-[-0.04em]
-                         font-semibold
-                         md:text-[64px]"
+              className="font-semibold leading-[1.02] tracking-[-0.045em] text-[48px] md:text-[72px]"
               style={{
                 color:
-                  progress < 0.75
+                  progress < 0.72
                     ? "#ffffff"
                     : "#0b1b38",
               }}
@@ -260,29 +246,23 @@ export default function IntelligenceStoryIntro() {
             </h1>
 
             <p
-              className="mt-8
-                         text-[19px]
-                         leading-[1.7]
-                         md:text-[23px]"
+              className="mx-auto mt-8 max-w-[700px] text-[18px] leading-[1.7] md:text-[22px]"
               style={{
                 color:
-                  progress < 0.75
+                  progress < 0.72
                     ? "#cbd5e1"
                     : "#526581",
               }}
             >
-              DCF Lab Intelligence helps uncover the
-              information behind the numbers.
+              DCF Lab Intelligence helps uncover
+              the information behind the numbers.
             </p>
 
             <p
-              className="mt-2
-                         text-[19px]
-                         leading-[1.7]
-                         md:text-[23px]"
+              className="mx-auto mt-2 max-w-[700px] text-[18px] leading-[1.7] md:text-[22px]"
               style={{
                 color:
-                  progress < 0.75
+                  progress < 0.72
                     ? "#cbd5e1"
                     : "#526581",
               }}
@@ -295,39 +275,33 @@ export default function IntelligenceStoryIntro() {
 
         </div>
 
-        {/* =========================
+        {/* ==========================================
             SCROLL INDICATOR
-        ========================== */}
+        ========================================== */}
 
         <div
-          className="absolute bottom-10
-                     left-1/2
-                     -translate-x-1/2
-                     text-center"
+          className="absolute bottom-10 left-1/2 z-30 -translate-x-1/2 text-center"
           style={{
-            opacity: Math.max(
-              1 - progress * 5,
-              0
-            ),
+            opacity:
+              Math.max(
+                1 - progress * 5,
+                0
+              ),
           }}
         >
 
           <div
-            className="text-[11px]
-                       uppercase
-                       tracking-[0.25em]"
+            className="text-[11px] uppercase tracking-[0.25em]"
             style={{
-              color: "#94a3b8",
+              color:
+                "rgba(255,255,255,0.60)",
             }}
           >
             Scroll to explore
           </div>
 
           <div
-            className="mx-auto
-                       mt-3
-                       h-8
-                       w-[1px]"
+            className="mx-auto mt-3 h-8 w-[1px]"
             style={{
               background:
                 "linear-gradient(to bottom, #00c98b, transparent)",
