@@ -560,14 +560,10 @@ export default function IntelligenceStoryIntro() {
               h-8
               w-[1px]
             "
-            style={{
-              background:
-                "linear-gradient(
-                  to bottom,
-                  #00c98b,
-                  transparent
-                )",
-            }}
+style={{
+  background:
+    "linear-gradient(to bottom, #00c98b, transparent)",
+}}
           />
 
         </div>
