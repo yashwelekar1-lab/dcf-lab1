@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type AnalysisResult = {
   companyName?: string;
@@ -22,11 +22,40 @@ export default function IntelligencePage() {
   const [analysisError, setAnalysisError] = useState("");
 
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
 
   // Analysis setup
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [terminalGrowthRate, setTerminalGrowthRate] = useState("");
   const [forecastYears, setForecastYears] = useState("");
+  useEffect(() => {
+  if (!isAnalyzing) {
+    return;
+  }
+
+  setAnalysisProgress(5);
+
+  const interval = window.setInterval(() => {
+    setAnalysisProgress((current) => {
+      if (current >= 94) {
+        return current;
+      }
+
+      const increment =
+        current < 30
+          ? 4
+          : current < 60
+          ? 2
+          : 1;
+
+      return Math.min(current + increment, 94);
+    });
+  }, 700);
+
+  return () => {
+    window.clearInterval(interval);
+  };
+}, [isAnalyzing]);
   /* =========================================================
      FILE SELECTION
   ========================================================== */
@@ -52,6 +81,7 @@ export default function IntelligencePage() {
 
     setSelectedFile(file);
   };
+
 
   /* =========================================================
      DRAG & DROP
@@ -99,10 +129,11 @@ export default function IntelligencePage() {
   }
 
   setIsAnalyzing(true);
-  setAnalysisComplete(false);
-  setAnalysisError("");
-  setResult(null);
-
+setAnalysisProgress(5);
+setAnalysisComplete(false);
+setAnalysisError("");
+setResult(null);
+   
   try {
     /*
      * REAL BACKEND CONNECTION
@@ -130,10 +161,11 @@ export default function IntelligencePage() {
 
     const data = await response.json();
 
-    setResult(data);
-    setAnalysisComplete(true);
-    setShowAnalysisModal(false);
-
+    setAnalysisProgress(100);
+setResult(data);
+setAnalysisComplete(true);
+setShowAnalysisModal(false);
+    
   } catch (error) {
     console.error(error);
 
@@ -160,9 +192,10 @@ export default function IntelligencePage() {
       intrinsicValue: "₹XXX / Share",
     });
 
-    setAnalysisComplete(true);
-    setShowAnalysisModal(false);
-
+   setAnalysisProgress(100);
+setAnalysisComplete(true);
+setShowAnalysisModal(false);
+    
   } finally {
     setIsAnalyzing(false);
   }
@@ -178,6 +211,8 @@ export default function IntelligencePage() {
   setAnalysisError("");
   setResult(null);
 
+    setAnalysisProgress(0);
+    
   setTerminalGrowthRate("");
   setForecastYears("");
 
@@ -999,11 +1034,10 @@ export default function IntelligencePage() {
 
         <div>
 
-          <h2 className="text-[23px] font-bold tracking-[-0.3px] text-white">
-            Begin Analysis
-          </h2>
-
-          <p className="mt-1.5 text-[13px] text-slate-400">
+          <h2 className="text-[26px] font-bold tracking-[-0.4px] text-white">
+  Begin Analysis
+</h2>
+          <p className="mt-1.5 text-[14px] text-slate-300">
             Upload your report and configure the DCF assumptions.
           </p>
 
@@ -1026,7 +1060,7 @@ export default function IntelligencePage() {
 
       <div className="mb-7">
 
-        <label className="mb-2.5 block text-[13px] font-semibold text-slate-200">
+        <label className="mb-2.5 block text-[14px] font-semibold text-white">
           Annual Report
         </label>
 
@@ -1059,11 +1093,10 @@ export default function IntelligencePage() {
               </>
             ) : (
               <>
-                <div className="text-[14px] font-semibold text-slate-200">
-                  Upload Annual Report
-                </div>
-
-                <div className="mt-1 text-[11px] text-slate-500">
+                <div className="text-[15px] font-semibold text-white">
+  Upload Annual Report
+</div>
+                <div className="mt-1 text-[12px] text-slate-400">
                   PDF files only • Maximum 50MB
                 </div>
               </>
@@ -1085,9 +1118,9 @@ export default function IntelligencePage() {
         <div className="mb-3 flex items-center justify-between">
 
           <label
-            htmlFor="terminal-growth-rate"
-            className="text-[13px] font-semibold text-slate-200"
-          >
+  htmlFor="terminal-growth-rate"
+  className="text-[14px] font-semibold text-white"
+>
             Terminal Growth Rate
           </label>
 
@@ -1122,7 +1155,7 @@ export default function IntelligencePage() {
           className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-emerald-500"
         />
 
-        <div className="mt-2 flex justify-between text-[10px] text-slate-500">
+        <div className="mt-2 flex justify-between text-[11px] font-medium text-slate-300">
           <span>0%</span>
           <span>2%</span>
           <span>4%</span>
@@ -1131,7 +1164,7 @@ export default function IntelligencePage() {
           <span>10%</span>
         </div>
 
-        <p className="mt-2 text-[11px] text-slate-500">
+        <p className="mt-2 text-[12px] text-slate-300">
           Select the terminal growth assumption used in the DCF.
         </p>
 
@@ -1147,9 +1180,9 @@ export default function IntelligencePage() {
         <div className="mb-3 flex items-center justify-between">
 
           <label
-            htmlFor="forecast-years"
-            className="text-[13px] font-semibold text-slate-200"
-          >
+  htmlFor="forecast-years"
+  className="text-[14px] font-semibold text-white"
+>
             FCFF Forecast Period
           </label>
 
@@ -1157,7 +1190,7 @@ export default function IntelligencePage() {
             className={`rounded-md px-2.5 py-1 text-[12px] font-semibold ${
               forecastYears === ""
                 ? "bg-slate-800 text-slate-500"
-                : "bg-emerald-500/10 text-emerald-400"
+                : "bg-emerald-500/15 text-emerald-300"
             }`}
           >
             {forecastYears === ""
@@ -1206,37 +1239,79 @@ export default function IntelligencePage() {
           RUN ANALYSIS
       ================================================== */}
 
-      <button
-        type="button"
-        disabled={
-          !selectedFile ||
-          terminalGrowthRate === "" ||
-          forecastYears === "" ||
-          isAnalyzing
-        }
-        onClick={() => {
-          runAnalysis();
-        }}
-        className={`flex h-[52px] w-full items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-semibold transition ${
-          selectedFile &&
-          terminalGrowthRate !== "" &&
-          forecastYears !== ""
-            ? "bg-emerald-500 text-white shadow-[0_8px_25px_rgba(16,185,129,0.20)] hover:bg-emerald-400"
-            : "cursor-not-allowed bg-slate-800 text-slate-600"
-        }`}
-      >
+      <div>
 
-        {isAnalyzing ? (
-          <>
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            Running Analysis...
-          </>
-        ) : (
-          "Run Analysis"
-        )}
+  <button
+    type="button"
+    disabled={
+      !selectedFile ||
+      terminalGrowthRate === "" ||
+      forecastYears === "" ||
+      isAnalyzing
+    }
+    onClick={() => {
+      runAnalysis();
+    }}
+    className={`flex h-[52px] w-full items-center justify-center gap-2 rounded-xl px-5 text-[15px] font-semibold transition ${
+      selectedFile &&
+      terminalGrowthRate !== "" &&
+      forecastYears !== ""
+        ? "bg-emerald-500 text-white shadow-[0_8px_25px_rgba(16,185,129,0.20)] hover:bg-emerald-400"
+        : "cursor-not-allowed bg-slate-800 text-slate-600"
+    }`}
+  >
 
-      </button>
+    {isAnalyzing ? (
+      <>
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
 
+        Running Analysis...
+      </>
+    ) : (
+      "Run Analysis"
+    )}
+
+  </button>
+
+
+  {/* Analysis Progress */}
+
+  {isAnalyzing && (
+    <div className="mt-4">
+
+      <div className="mb-2 flex items-center justify-between">
+
+        <span className="text-[12px] font-medium text-slate-300">
+          Analysis Progress
+        </span>
+
+        <span className="text-[13px] font-bold text-emerald-400">
+          {analysisProgress}%
+        </span>
+
+      </div>
+
+
+      <div className="h-[8px] w-full overflow-hidden rounded-full bg-slate-800">
+
+        <div
+          className="h-full rounded-full bg-emerald-500 transition-all duration-500 ease-out"
+          style={{
+            width: `${analysisProgress}%`,
+          }}
+        />
+
+      </div>
+
+
+      <p className="mt-2 text-center text-[11px] text-slate-400">
+        Extracting financial data and calculating valuation...
+      </p>
+
+    </div>
+  )}
+
+</div>
 
       {/* Bottom note */}
 
