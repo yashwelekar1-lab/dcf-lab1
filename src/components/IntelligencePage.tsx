@@ -221,8 +221,8 @@ setShowAnalysisModal(false);
     fileInputRef.current.value = "";
   }
 };
-  return (
-  <>
+return (
+  <div className="bg-[#101a2b]">
     <IntelligenceStoryIntro />
 
     <main className="relative min-h-[calc(100vh-70px)] overflow-hidden bg-[#fbfcfd] text-[#14243a]">
@@ -1358,6 +1358,5 @@ setShowAnalysisModal(false);
       </footer>
 
     </main>
-  </>
-  );
-}
+  </div>
+);
