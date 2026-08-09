@@ -47,19 +47,22 @@ export default function IntelligenceStoryIntro() {
    * STORY TIMELINE
    * ============================================
    *
-   * 0.00 - 0.20
+   * 0.00 - 0.18
    * Logo fully visible
    *
-   * 0.20 - 0.58
-   * Logo wipes clockwise
+   * 0.18 - 0.58
+   * Logo + text wipe clockwise
    *
-   * 0.40 - 0.72
-   * Message appears
+   * 0.38 - 0.63
+   * AI message appears
    *
-   * 0.72 - 1.00
-   * Message remains while story exits
+   * 0.82 - 1.00
+   * Story fades into the actual page
    */
 
+  /*
+   * CLOCKWISE LOGO WIPE
+   */
   const circleProgress = Math.min(
     Math.max(
       (progress - 0.18) / 0.40,
@@ -68,15 +71,10 @@ export default function IntelligenceStoryIntro() {
     1
   );
 
-  /*
-   * 0 = no wipe
-   * 360 = completely wiped
-   */
-  const wipeAngle =
-    circleProgress * 360;
+  const wipeAngle = circleProgress * 360;
 
   /*
-   * Text fade in
+   * AI MESSAGE FADE IN
    */
   const textProgress = Math.min(
     Math.max(
@@ -87,7 +85,7 @@ export default function IntelligenceStoryIntro() {
   );
 
   /*
-   * Final story fade
+   * FINAL STORY FADE
    */
   const exitProgress = Math.min(
     Math.max(
@@ -98,10 +96,11 @@ export default function IntelligenceStoryIntro() {
   );
 
   /*
-   * Background transition:
-   * dark cinematic background →
-   * light background matching
-   * the actual DCF page.
+   * BACKGROUND TRANSITION
+   *
+   * Dark cinematic background
+   * →
+   * Light DCF page background
    */
   const backgroundProgress = Math.min(
     Math.max(
@@ -150,14 +149,13 @@ export default function IntelligenceStoryIntro() {
         />
 
         {/* ==========================================
-            REAL DCF LOGO
+            LOGO + CENTER TEXT
         ========================================== */}
 
         <div
           className="absolute left-1/2 top-1/2 z-20"
           style={{
-            opacity:
-              1 - exitProgress,
+            opacity: 1 - exitProgress,
 
             transform: `
               translate(-50%, -50%)
@@ -166,10 +164,12 @@ export default function IntelligenceStoryIntro() {
           }}
         >
 
-          {/* 
-             The mask starts at 12 o'clock
-             and wipes clockwise.
-          */}
+          {/* ========================================
+              CLOCKWISE MASK
+
+              Starts at 12 o'clock
+              and wipes clockwise.
+          ======================================== */}
 
           <div
             className="relative h-[min(590px,72vw)] w-[min(590px,72vw)] overflow-hidden rounded-full"
@@ -188,15 +188,113 @@ export default function IntelligenceStoryIntro() {
             }}
           >
 
+            {/* ======================================
+                YOUR REAL DCF LOGO
+            ====================================== */}
+
             <img
               src="/DCF Logo.png"
               alt="DCF Lab Intelligence"
-              className="block h-full w-full object-contain"
+              className="absolute inset-0 h-full w-full object-contain"
             />
+
+
+            {/* ======================================
+                INNER DARK CIRCLE
+
+                This puts the text inside the
+                green gradient ring.
+            ====================================== */}
+
+            <div
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                flex
+                aspect-square
+                w-[48%]
+                -translate-x-1/2
+                -translate-y-1/2
+                flex-col
+                items-center
+                justify-center
+                rounded-full
+                bg-[#101a2b]
+                text-center
+              "
+            >
+
+              {/* SPARKLE */}
+
+              <div
+                className="
+                  mb-3
+                  text-[25px]
+                  leading-none
+                  text-emerald-400
+                "
+              >
+                ✦
+              </div>
+
+
+              {/* TITLE */}
+
+              <div
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  leading-[1.02]
+                  tracking-[-0.04em]
+                "
+              >
+
+                <span
+                  className="
+                    text-[clamp(26px,3.4vw,43px)]
+                    font-bold
+                    text-white
+                  "
+                >
+                  DCF Lab
+                </span>
+
+                <span
+                  className="
+                    text-[clamp(26px,3.4vw,43px)]
+                    font-bold
+                    text-emerald-400
+                  "
+                >
+                  Intelligence
+                </span>
+
+              </div>
+
+
+              {/* SUBTITLE */}
+
+              <div
+                className="
+                  mt-3
+                  text-[clamp(9px,1vw,13px)]
+                  leading-[1.4]
+                  text-slate-300
+                "
+              >
+                AI-Powered Financial Research
+                <br />
+                &amp; Valuation Platform
+              </div>
+
+            </div>
 
           </div>
 
         </div>
+
 
         {/* ==========================================
             AI MESSAGE
@@ -217,10 +315,24 @@ export default function IntelligenceStoryIntro() {
           }}
         >
 
-          <div className="w-full max-w-[850px] text-center">
+          <div
+            className="
+              w-full
+              max-w-[850px]
+              text-center
+            "
+          >
+
+            {/* MAIN MESSAGE */}
 
             <h1
-              className="font-semibold leading-[1.02] tracking-[-0.045em] text-[48px] md:text-[72px]"
+              className="
+                font-semibold
+                leading-[1.02]
+                tracking-[-0.045em]
+                text-[48px]
+                md:text-[72px]
+              "
               style={{
                 color:
                   progress < 0.72
@@ -245,8 +357,18 @@ export default function IntelligenceStoryIntro() {
 
             </h1>
 
+
+            {/* FIRST DESCRIPTION */}
+
             <p
-              className="mx-auto mt-8 max-w-[700px] text-[18px] leading-[1.7] md:text-[22px]"
+              className="
+                mx-auto
+                mt-8
+                max-w-[700px]
+                text-[18px]
+                leading-[1.7]
+                md:text-[22px]
+              "
               style={{
                 color:
                   progress < 0.72
@@ -258,8 +380,18 @@ export default function IntelligenceStoryIntro() {
               the information behind the numbers.
             </p>
 
+
+            {/* SECOND DESCRIPTION */}
+
             <p
-              className="mx-auto mt-2 max-w-[700px] text-[18px] leading-[1.7] md:text-[22px]"
+              className="
+                mx-auto
+                mt-2
+                max-w-[700px]
+                text-[18px]
+                leading-[1.7]
+                md:text-[22px]
+              "
               style={{
                 color:
                   progress < 0.72
@@ -275,12 +407,20 @@ export default function IntelligenceStoryIntro() {
 
         </div>
 
+
         {/* ==========================================
             SCROLL INDICATOR
         ========================================== */}
 
         <div
-          className="absolute bottom-10 left-1/2 z-30 -translate-x-1/2 text-center"
+          className="
+            absolute
+            bottom-10
+            left-1/2
+            z-30
+            -translate-x-1/2
+            text-center
+          "
           style={{
             opacity:
               Math.max(
@@ -291,7 +431,11 @@ export default function IntelligenceStoryIntro() {
         >
 
           <div
-            className="text-[11px] uppercase tracking-[0.25em]"
+            className="
+              text-[11px]
+              uppercase
+              tracking-[0.25em]
+            "
             style={{
               color:
                 "rgba(255,255,255,0.60)",
@@ -301,10 +445,19 @@ export default function IntelligenceStoryIntro() {
           </div>
 
           <div
-            className="mx-auto mt-3 h-8 w-[1px]"
+            className="
+              mx-auto
+              mt-3
+              h-8
+              w-[1px]
+            "
             style={{
               background:
-                "linear-gradient(to bottom, #00c98b, transparent)",
+                "linear-gradient(
+                  to bottom,
+                  #00c98b,
+                  transparent
+                )",
             }}
           />
 
