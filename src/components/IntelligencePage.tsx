@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import IntelligenceStoryIntro from "./IntelligenceStoryIntro";
 
 type AnalysisResult = {
   companyName?: string;
@@ -221,8 +222,11 @@ setShowAnalysisModal(false);
   }
 };
   return (
-    <main className="relative min-h-[calc(100vh-70px)] overflow-hidden bg-[#fbfcfd] text-[#14243a]">
+  <>
+    <IntelligenceStoryIntro />
 
+    <main className="relative min-h-[calc(100vh-70px)] overflow-hidden bg-[#fbfcfd] text-[#14243a]">
+      
       {/* =====================================================
           BACKGROUND
       ====================================================== */}
@@ -1354,5 +1358,6 @@ setShowAnalysisModal(false);
       </footer>
 
     </main>
+  </>
   );
 }
