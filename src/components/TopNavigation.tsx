@@ -1,4 +1,8 @@
-import { Sparkles, Calculator, FolderOpen } from "lucide-react";
+import {
+  Calculator,
+  Sparkles,
+  FolderOpen,
+} from "lucide-react";
 
 interface Props {
   activeTab: string;
@@ -10,80 +14,209 @@ export default function TopNavigation({
   setActiveTab,
 }: Props) {
   return (
-    <div
-      className={`fixed top-[90px] left-0 right-0 z-[99] h-[52px] w-full ${
-        activeTab === "intelligence"
-          ? "bg-[#101a2b]"
-          : "bg-[#0b1220]"
-      }`}
-    >
-      <div className="mx-auto h-full w-full max-w-[1200px] px-2 sm:px-0">
-        <div className="grid h-full w-full grid-cols-3 items-center gap-1 rounded-lg border border-slate-700 bg-[#111827] px-1 sm:gap-2 sm:px-1.5">
+    /*
+      ============================================================
+      TOP NAVIGATION
 
-          {/* DCF CALCULATOR */}
+      This is intentionally NOT given its own sticky position.
+
+      Header.tsx makes the entire Header + TopNavigation block
+      sticky together.
+
+      This prevents the gap/jump that happens when both elements
+      have independent sticky positioning.
+      ============================================================
+    */
+
+    <div
+      className="
+        relative
+        z-[90]
+        w-full
+        m-0
+        p-0
+        bg-[#0d1729]
+      "
+    >
+      {/* ========================================================
+          NAVIGATION CONTAINER
+          ======================================================== */}
+
+      <div
+        className="
+          mx-auto
+          w-[calc(100%-40px)]
+          max-w-[1470px]
+          h-[64px]
+          m-0
+          mt-0
+          mb-0
+          p-0
+          rounded-b-xl
+          border-l
+          border-r
+          border-b
+          border-[#30415b]
+          bg-[#101a2b]
+        "
+      >
+        <div
+          className="
+            flex
+            h-full
+            w-full
+            items-center
+          "
+        >
+          {/* ====================================================
+              DCF CALCULATOR
+              ==================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("calculator")}
-            className={`flex h-[40px] items-center justify-center gap-1.5 rounded-md px-2 transition-all sm:gap-2 sm:px-4 ${
-              activeTab === "calculator"
-                ? "bg-slate-700 text-white"
-                : "text-slate-300 hover:bg-slate-800"
-            }`}
+            className={`
+              flex
+              h-full
+              flex-1
+              items-center
+              justify-center
+              gap-3
+              rounded-l-xl
+              border
+              border-transparent
+              px-5
+              text-[16px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                activeTab === "calculator"
+                  ? "text-white"
+                  : "text-[#c5d0df] hover:text-white"
+              }
+            `}
           >
             <Calculator
-              size={16}
-              className="shrink-0 text-emerald-400"
+              className={`
+                h-[19px]
+                w-[19px]
+                ${
+                  activeTab === "calculator"
+                    ? "text-[#00d4a8]"
+                    : "text-[#00cfa4]"
+                }
+              `}
             />
 
-            <span className="text-[11px] sm:text-sm">
-              DCF Calculator
-            </span>
+            <span>DCF Calculator</span>
           </button>
 
-          {/* DCF LAB INTELLIGENCE */}
+          {/* ====================================================
+              INTELLIGENCE
+              ==================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("intelligence")}
-            className={`flex h-[40px] items-center justify-center gap-1.5 rounded-md px-2 transition-all sm:gap-2 sm:px-4 ${
-              activeTab === "intelligence"
-                ? "border border-emerald-400 bg-slate-800 text-white"
-                : "text-slate-300 hover:bg-slate-800"
-            }`}
+            className={`
+              relative
+              flex
+              h-[48px]
+              flex-1
+              items-center
+              justify-center
+              gap-3
+              rounded-lg
+              border
+              px-5
+              text-[16px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                activeTab === "intelligence"
+                  ? "border-[#00d4a8] bg-[#17263d] text-white"
+                  : "border-transparent text-[#c5d0df] hover:border-[#00b990] hover:bg-[#17263d] hover:text-white"
+              }
+            `}
           >
+            {/* ICON */}
+
             <Sparkles
-              size={16}
-              className="shrink-0 text-emerald-400"
+              className="
+                h-[19px]
+                w-[19px]
+                text-[#00d4a8]
+              "
             />
 
-            <span className="text-[11px] sm:text-sm">
+            {/* TITLE */}
+
+            <span>
               DCF Lab Intelligence
             </span>
 
-            <span className="whitespace-nowrap rounded-full border border-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 text-[6px] font-bold tracking-wide text-emerald-400 sm:px-2 sm:text-[8px]">
-              COMING SOON
+            {/* COMING SOON */}
+
+            <span
+              className="
+                rounded-full
+                border
+                border-[#00d4a8]
+                bg-[#08382f]
+                px-2.5
+                py-0.5
+                text-[10px]
+                font-bold
+                uppercase
+                tracking-wide
+                text-[#00e0aa]
+              "
+            >
+              Coming Soon
             </span>
           </button>
 
-          {/* SAVED ANALYSES */}
+          {/* ====================================================
+              SAVED ANALYSES
+              ==================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("saved")}
-            className={`flex h-[40px] items-center justify-center gap-1.5 rounded-md px-2 transition-all sm:gap-2 sm:px-4 ${
-              activeTab === "saved"
-                ? "bg-slate-700 text-white"
-                : "text-slate-300 hover:bg-slate-800"
-            }`}
+            className={`
+              flex
+              h-full
+              flex-1
+              items-center
+              justify-center
+              gap-3
+              rounded-r-xl
+              border
+              border-transparent
+              px-5
+              text-[16px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                activeTab === "saved"
+                  ? "text-white"
+                  : "text-[#c5d0df] hover:text-white"
+              }
+            `}
           >
             <FolderOpen
-              size={16}
-              className="shrink-0 text-emerald-400"
+              className="
+                h-[19px]
+                w-[19px]
+                text-[#00d4a8]
+              "
             />
 
-            <span className="text-[11px] sm:text-sm">
-              Saved Analyses
-            </span>
+            <span>Saved Analyses</span>
           </button>
-
         </div>
       </div>
     </div>
