@@ -4,53 +4,57 @@ import {
   FolderOpen,
 } from "lucide-react";
 
-interface Props {
+interface TopNavigationProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }
 
-export default function TopNavigation({
+export function TopNavigation({
   activeTab,
   setActiveTab,
-}: Props) {
+}: TopNavigationProps) {
   return (
-    <div className="relative z-[90] w-full m-0 p-0 bg-[#0d1729]">
-
-      {/* =====================================================
-          NAVIGATION BAR
-
-          IMPORTANT:
-          mt-0
-          mb-0
-          p-0
-
-          This removes the gap.
-          ===================================================== */}
-
+    <nav
+      className="
+        sticky
+        top-[72px]
+        z-[90]
+        m-0
+        w-full
+        h-[58px]
+        shrink-0
+        bg-[#0d1628]
+        p-0
+      "
+    >
       <div
         className="
           mx-auto
-          w-[calc(100%-40px)]
-          max-w-[1470px]
-          h-[64px]
-          m-0
-          mt-0
-          mb-0
-          p-0
-          border-l
-          border-r
-          border-b
-          border-[#30415b]
-          rounded-b-xl
-          bg-[#101a2b]
+          flex
+          h-full
+          w-full
+          max-w-[1450px]
+          items-center
+          px-4
         "
       >
-        <div className="flex h-full w-full items-center">
-
-          {/* =================================================
+        <div
+          className="
+            flex
+            h-[58px]
+            w-full
+            items-center
+            overflow-hidden
+            rounded-[9px]
+            border
+            border-slate-700/80
+            bg-[#101a2b]
+            p-1
+          "
+        >
+          {/* =====================================================
               DCF CALCULATOR
-              ================================================= */}
-
+          ====================================================== */}
           <button
             type="button"
             onClick={() => setActiveTab("calculator")}
@@ -60,96 +64,97 @@ export default function TopNavigation({
               flex-1
               items-center
               justify-center
-              gap-3
-              rounded-bl-xl
-              px-5
-              text-[16px]
+              gap-2
+              rounded-[7px]
+              px-3
+              text-[15px]
               font-medium
               transition-all
               duration-200
               ${
                 activeTab === "calculator"
-                  ? "text-white"
-                  : "text-[#c5d0df] hover:text-white"
+                  ? "bg-[#18263c] text-white"
+                  : "text-slate-300 hover:bg-[#152238] hover:text-white"
               }
             `}
           >
             <Calculator
               className="
-                h-[19px]
-                w-[19px]
-                text-[#00d4a8]
+                h-[18px]
+                w-[18px]
+                shrink-0
+                text-emerald-400
               "
             />
 
-            <span>DCF Calculator</span>
+            <span>
+              DCF Calculator
+            </span>
           </button>
 
-          {/* =================================================
+          {/* =====================================================
               DCF LAB INTELLIGENCE
-              ================================================= */}
-
+          ====================================================== */}
           <button
             type="button"
             onClick={() => setActiveTab("intelligence")}
             className={`
               flex
-              h-[48px]
+              h-full
               flex-1
               items-center
               justify-center
-              gap-3
-              rounded-lg
+              gap-2
+              rounded-[7px]
               border
-              px-5
-              text-[16px]
+              px-3
+              text-[15px]
               font-medium
               transition-all
               duration-200
               ${
                 activeTab === "intelligence"
-                  ? "border-[#00d4a8] bg-[#17263d] text-white"
-                  : "border-transparent text-[#c5d0df] hover:border-[#00b990] hover:bg-[#17263d] hover:text-white"
+                  ? "border-emerald-400 bg-[#1a2940] text-white"
+                  : "border-transparent text-slate-300 hover:bg-[#152238] hover:text-white"
               }
             `}
           >
             <Sparkles
               className="
-                h-[19px]
-                w-[19px]
+                h-[18px]
+                w-[18px]
                 shrink-0
-                text-[#00d4a8]
+                text-emerald-400
               "
             />
 
-            <span className="whitespace-nowrap">
+            <span>
               DCF Lab Intelligence
             </span>
 
             <span
               className="
-                whitespace-nowrap
+                ml-1
+                shrink-0
                 rounded-full
                 border
-                border-[#00d4a8]
-                bg-[#08382f]
-                px-2.5
-                py-0.5
-                text-[10px]
+                border-emerald-400
+                px-2
+                py-[2px]
+                text-[9px]
                 font-bold
                 uppercase
-                tracking-wide
-                text-[#00e0aa]
+                tracking-[0.5px]
+                text-emerald-400
               "
             >
               Coming Soon
             </span>
           </button>
 
-          {/* =================================================
+          {/* =====================================================
               SAVED ANALYSES
-              ================================================= */}
-
+          ====================================================== */}
           <button
             type="button"
             onClick={() => setActiveTab("saved")}
@@ -159,33 +164,35 @@ export default function TopNavigation({
               flex-1
               items-center
               justify-center
-              gap-3
-              rounded-br-xl
-              px-5
-              text-[16px]
+              gap-2
+              rounded-[7px]
+              px-3
+              text-[15px]
               font-medium
               transition-all
               duration-200
               ${
                 activeTab === "saved"
-                  ? "text-white"
-                  : "text-[#c5d0df] hover:text-white"
+                  ? "bg-[#18263c] text-white"
+                  : "text-slate-300 hover:bg-[#152238] hover:text-white"
               }
             `}
           >
             <FolderOpen
               className="
-                h-[19px]
-                w-[19px]
-                text-[#00d4a8]
+                h-[18px]
+                w-[18px]
+                shrink-0
+                text-emerald-400
               "
             />
 
-            <span>Saved Analyses</span>
+            <span>
+              Saved Analyses
+            </span>
           </button>
-
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
