@@ -17,7 +17,7 @@ export default function TopNavigation({
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto w-full max-w-[1200px] px-2 py-3 sm:px-0 sm:py-4">
+      <div className="mx-auto w-full max-w-[1200px] px-2 py-1 sm:px-0 sm:py-2">
         <div className="grid w-full grid-cols-3 items-stretch gap-1 rounded-xl border border-slate-700 bg-[#111827] p-1 sm:flex sm:items-center sm:gap-3 sm:p-2">
 
           {/* =====================================================
