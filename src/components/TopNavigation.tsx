@@ -14,8 +14,13 @@ export default function TopNavigation({
       {/* =====================================================
           SPACE RESERVED FOR FIXED TOP NAVIGATION
       ====================================================== */}
-      <div className="h-[88px] w-full" />
-
+     <div
+  className={`fixed left-0 right-0 top-[90px] z-[90] w-full ${
+    activeTab === "intelligence"
+      ? "bg-[#101a2b]"
+      : "bg-[#0b1220]/95"
+  } backdrop-blur-md`}
+>
       {/* =====================================================
           FIXED TOP NAVIGATION
       ====================================================== */}
