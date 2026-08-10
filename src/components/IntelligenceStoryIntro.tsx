@@ -217,7 +217,7 @@ export default function IntelligenceStoryIntro() {
           className="
             absolute
             left-1/2
-            top-[42%]
+            top-[40%]
             z-20
           "
           style={{
@@ -522,7 +522,7 @@ export default function IntelligenceStoryIntro() {
     pointer-events-none
     absolute
     left-1/2
-    top-[79%]
+    top-[82%]
     z-[100]
     -translate-x-1/2
     -translate-y-1/2
