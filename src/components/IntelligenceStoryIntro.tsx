@@ -493,7 +493,7 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             opacity: Math.max(
-              1 - progress * 3,
+              1 - progress * 7,
               0
             ),
           }}
