@@ -1,85 +1,201 @@
 import {
-  Sparkles,
   Calculator,
+  Sparkles,
   FolderOpen,
 } from "lucide-react";
 
-interface Props {
+interface TopNavigationProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }
 
-export default function TopNavigation({
+const TopNavigation = ({
   activeTab,
   setActiveTab,
-}: Props) {
-  const tabs = [
-    {
-      id: "calculator",
-      label: "DCF Calculator",
-      icon: Calculator,
-    },
-    {
-      id: "intelligence",
-      label: "DCF Lab Intelligence",
-      icon: Sparkles,
-    },
-    {
-      id: "saved",
-      label: "Saved Analysis",
-      icon: FolderOpen,
-    },
-  ];
-
+}: TopNavigationProps) => {
   return (
     <nav
-      className={
-        activeTab === "intelligence"
-          ? "sticky top-0 z-[100] w-full border-b border-white/10 bg-[#101a2b] backdrop-blur-xl"
-          : "sticky top-0 z-[100] w-full border-b border-slate-200/10 bg-white/95 backdrop-blur-xl"
-      }
+      className="
+        sticky
+        top-[72px]
+        z-[90]
+        w-full
+        h-[58px]
+        m-0
+        p-0
+        shrink-0
+        bg-[#0d1628]
+      "
     >
-      <div className="mx-auto flex h-[58px] w-full items-center justify-center px-4">
-        <div className="flex h-full items-center gap-1">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
+      <div
+        className="
+          w-full
+          h-full
+          max-w-[1450px]
+          mx-auto
+          px-4
+          flex
+          items-center
+        "
+      >
+        <div
+          className="
+            w-full
+            h-[58px]
+            flex
+            items-center
+            rounded-[9px]
+            border
+            border-slate-700/80
+            bg-[#101a2b]
+            p-1
+            overflow-hidden
+          "
+        >
 
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={
-                  activeTab === "intelligence"
-                    ? isActive
-                      ? "relative flex h-full items-center gap-2 px-5 text-sm font-medium text-white transition-all duration-200"
-                      : "relative flex h-full items-center gap-2 px-5 text-sm font-medium text-slate-400 transition-all duration-200 hover:text-white"
-                    : isActive
-                      ? "relative flex h-full items-center gap-2 px-5 text-sm font-medium text-slate-900 transition-all duration-200"
-                      : "relative flex h-full items-center gap-2 px-5 text-sm font-medium text-slate-500 transition-all duration-200 hover:text-slate-900"
-                }
-              >
-                <Icon
-                  className={
-                    isActive
-                      ? "h-[17px] w-[17px] text-emerald-500"
-                      : activeTab === "intelligence"
-                        ? "h-[17px] w-[17px] text-slate-500"
-                        : "h-[17px] w-[17px] text-slate-400"
-                  }
-                />
+          {/* =====================================================
+              DCF CALCULATOR
+          ====================================================== */}
 
-                <span>{tab.label}</span>
+          <button
+            type="button"
+            onClick={() => setActiveTab("calculator")}
+            className={`
+              h-full
+              flex-1
+              flex
+              items-center
+              justify-center
+              gap-2
+              rounded-[7px]
+              px-3
+              text-[15px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                activeTab === "calculator"
+                  ? "bg-[#18263c] text-white"
+                  : "text-slate-300 hover:bg-[#152238] hover:text-white"
+              }
+            `}
+          >
+            <Calculator
+              className="
+                w-[18px]
+                h-[18px]
+                shrink-0
+                text-emerald-400
+              "
+            />
 
-                {isActive && (
-                  <span className="absolute bottom-0 left-1/2 h-[2px] w-10 -translate-x-1/2 rounded-full bg-emerald-500" />
-                )}
-              </button>
-            );
-          })}
+            <span>DCF Calculator</span>
+          </button>
+
+
+          {/* =====================================================
+              DCF LAB INTELLIGENCE
+          ====================================================== */}
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("intelligence")}
+            className={`
+              h-full
+              flex-1
+              flex
+              items-center
+              justify-center
+              gap-2
+              rounded-[7px]
+              border
+              px-3
+              text-[15px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                activeTab === "intelligence"
+                  ? "border-emerald-400 bg-[#1a2940] text-white"
+                  : "border-transparent text-slate-300 hover:bg-[#152238] hover:text-white"
+              }
+            `}
+          >
+            <Sparkles
+              className="
+                w-[18px]
+                h-[18px]
+                shrink-0
+                text-emerald-400
+              "
+            />
+
+            <span>DCF Lab Intelligence</span>
+
+            <span
+              className="
+                ml-1
+                shrink-0
+                rounded-full
+                border
+                border-emerald-400
+                px-2
+                py-[2px]
+                text-[9px]
+                font-bold
+                uppercase
+                tracking-[0.5px]
+                text-emerald-400
+              "
+            >
+              Coming Soon
+            </span>
+          </button>
+
+
+          {/* =====================================================
+              SAVED ANALYSES
+          ====================================================== */}
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("saved")}
+            className={`
+              h-full
+              flex-1
+              flex
+              items-center
+              justify-center
+              gap-2
+              rounded-[7px]
+              px-3
+              text-[15px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                activeTab === "saved"
+                  ? "bg-[#18263c] text-white"
+                  : "text-slate-300 hover:bg-[#152238] hover:text-white"
+              }
+            `}
+          >
+            <FolderOpen
+              className="
+                w-[18px]
+                h-[18px]
+                shrink-0
+                text-emerald-400
+              "
+            />
+
+            <span>Saved Analyses</span>
+          </button>
+
         </div>
       </div>
     </nav>
   );
-}
+};
+
+export default TopNavigation;
