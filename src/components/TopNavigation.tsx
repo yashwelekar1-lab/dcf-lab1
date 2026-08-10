@@ -14,33 +14,18 @@ export default function TopNavigation({
   setActiveTab,
 }: Props) {
   return (
-    /*
-      ============================================================
-      TOP NAVIGATION
+    <div className="relative z-[90] w-full m-0 p-0 bg-[#0d1729]">
 
-      This is intentionally NOT given its own sticky position.
+      {/* =====================================================
+          NAVIGATION BAR
 
-      Header.tsx makes the entire Header + TopNavigation block
-      sticky together.
+          IMPORTANT:
+          mt-0
+          mb-0
+          p-0
 
-      This prevents the gap/jump that happens when both elements
-      have independent sticky positioning.
-      ============================================================
-    */
-
-    <div
-      className="
-        relative
-        z-[90]
-        w-full
-        m-0
-        p-0
-        bg-[#0d1729]
-      "
-    >
-      {/* ========================================================
-          NAVIGATION CONTAINER
-          ======================================================== */}
+          This removes the gap.
+          ===================================================== */}
 
       <div
         className="
@@ -52,25 +37,19 @@ export default function TopNavigation({
           mt-0
           mb-0
           p-0
-          rounded-b-xl
           border-l
           border-r
           border-b
           border-[#30415b]
+          rounded-b-xl
           bg-[#101a2b]
         "
       >
-        <div
-          className="
-            flex
-            h-full
-            w-full
-            items-center
-          "
-        >
-          {/* ====================================================
+        <div className="flex h-full w-full items-center">
+
+          {/* =================================================
               DCF CALCULATOR
-              ==================================================== */}
+              ================================================= */}
 
           <button
             type="button"
@@ -82,9 +61,7 @@ export default function TopNavigation({
               items-center
               justify-center
               gap-3
-              rounded-l-xl
-              border
-              border-transparent
+              rounded-bl-xl
               px-5
               text-[16px]
               font-medium
@@ -98,29 +75,24 @@ export default function TopNavigation({
             `}
           >
             <Calculator
-              className={`
+              className="
                 h-[19px]
                 w-[19px]
-                ${
-                  activeTab === "calculator"
-                    ? "text-[#00d4a8]"
-                    : "text-[#00cfa4]"
-                }
-              `}
+                text-[#00d4a8]
+              "
             />
 
             <span>DCF Calculator</span>
           </button>
 
-          {/* ====================================================
-              INTELLIGENCE
-              ==================================================== */}
+          {/* =================================================
+              DCF LAB INTELLIGENCE
+              ================================================= */}
 
           <button
             type="button"
             onClick={() => setActiveTab("intelligence")}
             className={`
-              relative
               flex
               h-[48px]
               flex-1
@@ -141,26 +113,22 @@ export default function TopNavigation({
               }
             `}
           >
-            {/* ICON */}
-
             <Sparkles
               className="
                 h-[19px]
                 w-[19px]
+                shrink-0
                 text-[#00d4a8]
               "
             />
 
-            {/* TITLE */}
-
-            <span>
+            <span className="whitespace-nowrap">
               DCF Lab Intelligence
             </span>
 
-            {/* COMING SOON */}
-
             <span
               className="
+                whitespace-nowrap
                 rounded-full
                 border
                 border-[#00d4a8]
@@ -178,9 +146,9 @@ export default function TopNavigation({
             </span>
           </button>
 
-          {/* ====================================================
+          {/* =================================================
               SAVED ANALYSES
-              ==================================================== */}
+              ================================================= */}
 
           <button
             type="button"
@@ -192,9 +160,7 @@ export default function TopNavigation({
               items-center
               justify-center
               gap-3
-              rounded-r-xl
-              border
-              border-transparent
+              rounded-br-xl
               px-5
               text-[16px]
               font-medium
@@ -217,6 +183,7 @@ export default function TopNavigation({
 
             <span>Saved Analyses</span>
           </button>
+
         </div>
       </div>
     </div>
