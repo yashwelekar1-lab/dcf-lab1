@@ -17,14 +17,18 @@ export default function TopNavigation({
           : "bg-[#0b1220]"
       }`}
     >
-      <div className="mx-auto w-full max-w-[1200px] px-2 py-1 sm:px-0">
-        <div className="grid w-full grid-cols-3 items-center gap-1 rounded-xl border border-slate-700 bg-[#111827] p-1 sm:gap-2">
+      {/* Navigation Container */}
+      <div className="mx-auto w-full max-w-[1200px] px-2 py-0 sm:px-0">
+        <div className="grid w-full grid-cols-3 items-center gap-1 rounded-xl border border-slate-700 bg-[#111827] px-1 py-0.5 sm:gap-2 sm:px-2 sm:py-1">
 
-          {/* DCF CALCULATOR */}
+          {/* =====================================================
+              DCF CALCULATOR
+          ====================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("calculator")}
-            className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-center transition-all sm:gap-2 sm:px-5 sm:py-2 ${
+            className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-1 text-center transition-all sm:gap-2 sm:px-5 sm:py-1.5 ${
               activeTab === "calculator"
                 ? "bg-slate-700 text-white"
                 : "text-slate-300 hover:bg-slate-800"
@@ -40,11 +44,14 @@ export default function TopNavigation({
             </span>
           </button>
 
-          {/* DCF LAB INTELLIGENCE */}
+          {/* =====================================================
+              DCF LAB INTELLIGENCE
+          ====================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("intelligence")}
-            className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-center transition-all sm:gap-2 sm:px-5 sm:py-2 ${
+            className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-1 text-center transition-all sm:gap-2 sm:px-5 sm:py-1.5 ${
               activeTab === "intelligence"
                 ? "border border-emerald-400 bg-slate-800 text-white"
                 : "text-slate-300 hover:bg-slate-800"
@@ -60,17 +67,20 @@ export default function TopNavigation({
                 DCF Lab Intelligence
               </span>
 
-              <span className="whitespace-nowrap rounded-full border border-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 text-[6px] font-bold tracking-wide text-emerald-400 sm:px-2 sm:py-0.5 sm:text-[8px]">
+              <span className="whitespace-nowrap rounded-full border border-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 text-[6px] font-bold tracking-wide text-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.45),0_0_14px_rgba(16,185,129,0.2)] sm:px-2 sm:py-0.5 sm:text-[8px]">
                 COMING SOON
               </span>
             </div>
           </button>
 
-          {/* SAVED ANALYSES */}
+          {/* =====================================================
+              SAVED ANALYSES
+          ====================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("saved")}
-            className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-center transition-all sm:gap-2 sm:px-5 sm:py-2 ${
+            className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-1 text-center transition-all sm:gap-2 sm:px-5 sm:py-1.5 ${
               activeTab === "saved"
                 ? "bg-slate-700 text-white"
                 : "text-slate-300 hover:bg-slate-800"
