@@ -11,7 +11,8 @@ export default function TopNavigation({
 }: Props) {
   return (
     <div
-      className={`w-full ${
+      <div
+  className={`sticky top-[90px] z-[90] w-full ${
         activeTab === "intelligence"
           ? "bg-[#101a2b]"
           : "bg-transparent"
