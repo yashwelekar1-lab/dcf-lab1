@@ -238,8 +238,8 @@ export default function IntelligenceStoryIntro() {
           <div
             className="
               relative
-              h-[min(565px,72vw)]
-              w-[min(565px,72vw)]
+              h-[min(550px,72vw)]
+              w-[min(550px,72vw)]
             "
           >
 
