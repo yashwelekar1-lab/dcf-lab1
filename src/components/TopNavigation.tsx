@@ -7,8 +7,8 @@ export default function IntelligenceStoryIntro() {
    * ============================================================
    * SCROLL PROGRESS
    *
-   * The page is allowed to scroll.
-   * The visual storytelling stage itself stays FIXED.
+   * The section provides the scroll distance.
+   * The visual storytelling stage stays sticky.
    * ============================================================
    */
 
@@ -44,7 +44,10 @@ export default function IntelligenceStoryIntro() {
     handleScroll();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
     };
   }, []);
 
@@ -53,20 +56,20 @@ export default function IntelligenceStoryIntro() {
    * STORY TIMELINE
    *
    * 0.00 - 0.18
-   * Circle + center text visible
+   * Initial circle + text
    *
    * 0.18 - 0.58
-   * Circle wipes IN PLACE
+   * Circle wipes away
    * Center text fades
    *
    * 0.58 - 0.68
-   * Circle completely disappears
+   * Circle completely gone
    *
    * 0.68 - 0.80
-   * AI message appears IN PLACE
+   * AI message appears
    *
    * 0.80 - 1.00
-   * Transition to actual page
+   * Story exits
    * ============================================================
    */
 
@@ -89,9 +92,9 @@ export default function IntelligenceStoryIntro() {
    * CIRCLE WIPE
    *
    * IMPORTANT:
-   * The circle NEVER changes position.
+   * This is the ONLY thing changing the circle.
    *
-   * Only the mask changes.
+   * The circle itself does not move.
    * ============================================================
    */
 
@@ -107,7 +110,7 @@ export default function IntelligenceStoryIntro() {
 
   /*
    * ============================================================
-   * AI MESSAGE APPEARANCE
+   * AI MESSAGE
    * ============================================================
    */
 
@@ -121,7 +124,7 @@ export default function IntelligenceStoryIntro() {
 
   /*
    * ============================================================
-   * FINAL STORY FADE
+   * FINAL EXIT
    * ============================================================
    */
 
@@ -162,13 +165,12 @@ export default function IntelligenceStoryIntro() {
   return (
     /*
      * ==========================================================
-     * STORY TIMELINE
+     * STORY SECTION
      *
-     * 280vh gives the user enough scroll distance.
+     * This creates the scrolling timeline.
      *
      * IMPORTANT:
-     * Nothing visual is positioned relative to this scrolling
-     * height.
+     * Nothing here is fixed to the entire website.
      * ==========================================================
      */
 
@@ -181,37 +183,22 @@ export default function IntelligenceStoryIntro() {
     >
 
       {/* ========================================================
-          INVISIBLE SCROLL AREA
+          STICKY STORY VIEWPORT
 
-          This controls the timeline only.
+          124px leaves room for your existing top navigation.
+
+          If your navigation is slightly taller/shorter, this
+          is the ONLY number you need to adjust.
       ======================================================== */}
 
       <div
         className="
-          relative
-          h-screen
+          sticky
+          top-[124px]
+          h-[calc(100vh-124px)]
           w-full
+          overflow-hidden
         "
-      />
-
-      {/* ========================================================
-          FIXED STORYTELLING STAGE
-
-          THIS IS THE MAIN CHANGE.
-
-          The circle is now fixed to the viewport.
-
-          It cannot move upward when the page scrolls.
-      ======================================================== */}
-
-      <div
-  className="
-    pointer-events-none
-    fixed
-    inset-0
-    z-0
-    overflow-hidden
-  "
         style={{
           backgroundColor,
         }}
@@ -220,8 +207,8 @@ export default function IntelligenceStoryIntro() {
         {/* ======================================================
             BACKGROUND GLOW
 
-            Fixed to the viewport.
-            Only opacity changes.
+            Fixed inside the sticky storytelling area.
+            It does not move independently.
         ====================================================== */}
 
         <div
@@ -247,13 +234,19 @@ export default function IntelligenceStoryIntro() {
         />
 
         {/* ======================================================
-            FIXED CIRCLE CONTAINER
+            FIXED-IN-STORY CIRCLE
 
-            No top animation.
-            No translateY animation.
-            No scale animation.
+            IMPORTANT:
 
-            It stays exactly in the center.
+            This uses:
+              top-1/2
+              left-1/2
+
+            and NEVER changes position based on progress.
+
+            No scale.
+            No translateY.
+            No scroll-based top.
         ====================================================== */}
 
         <div
@@ -286,9 +279,9 @@ export default function IntelligenceStoryIntro() {
             {/* ==================================================
                 CIRCLE WIPE
 
-                ONLY THIS CHANGES WITH SCROLL.
+                The circle remains physically still.
 
-                The physical position of the circle does not.
+                Only the mask changes.
             ================================================== */}
 
             <div
@@ -330,7 +323,7 @@ export default function IntelligenceStoryIntro() {
             {/* ==================================================
                 INNER DARK CIRCLE
 
-                Position NEVER changes.
+                This also stays in exactly the same position.
                 Only opacity changes.
             ================================================== */}
 
@@ -357,9 +350,9 @@ export default function IntelligenceStoryIntro() {
               }}
             >
 
-              {/* ================================================
+              {/* ==================================================
                   SPARKLE
-              ================================================= */}
+              ================================================== */}
 
               <div
                 className="
@@ -372,9 +365,9 @@ export default function IntelligenceStoryIntro() {
                 ✦
               </div>
 
-              {/* ================================================
+              {/* ==================================================
                   TITLE
-              ================================================= */}
+              ================================================== */}
 
               <div
                 className="
@@ -408,9 +401,9 @@ export default function IntelligenceStoryIntro() {
 
               </div>
 
-              {/* ================================================
+              {/* ==================================================
                   SUBTITLE
-              ================================================= */}
+              ================================================== */}
 
               <div
                 className="
@@ -434,10 +427,10 @@ export default function IntelligenceStoryIntro() {
         {/* ======================================================
             AI MESSAGE
 
-            FIXED IN THE SAME VIEWPORT.
+            It appears at the SAME POSITION.
 
-            No translateY animation.
-            It simply fades in.
+            No translateY.
+            No movement.
         ====================================================== */}
 
         <div
@@ -502,7 +495,7 @@ export default function IntelligenceStoryIntro() {
             </h1>
 
             {/* ==================================================
-                FIRST DESCRIPTION
+                DESCRIPTION 1
             ================================================== */}
 
             <p
@@ -526,7 +519,7 @@ export default function IntelligenceStoryIntro() {
             </p>
 
             {/* ==================================================
-                SECOND DESCRIPTION
+                DESCRIPTION 2
             ================================================== */}
 
             <p
@@ -555,9 +548,6 @@ export default function IntelligenceStoryIntro() {
 
         {/* ======================================================
             SCROLL INDICATOR
-
-            FIXED.
-            Only opacity changes.
         ====================================================== */}
 
         <div
@@ -603,16 +593,15 @@ export default function IntelligenceStoryIntro() {
               h-8
               w-[2px]
             "
-          style={{
-  background:
-    "linear-gradient(to bottom, #00c98b, transparent)",
-}}
+            style={{
+              background:
+                "linear-gradient(to bottom, #00c98b, transparent)",
+            }}
           />
 
         </div>
 
       </div>
-
     </section>
   );
 }
