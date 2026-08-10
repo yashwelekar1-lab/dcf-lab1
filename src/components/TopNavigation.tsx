@@ -9,59 +9,61 @@ interface TopNavigationProps {
   setActiveTab: (tab: string) => void;
 }
 
-export function TopNavigation({
+const TopNavigation = ({
   activeTab,
   setActiveTab,
-}: TopNavigationProps) {
+}: TopNavigationProps) => {
   return (
     <nav
       className="
         sticky
         top-[72px]
         z-[90]
-        m-0
         w-full
         h-[58px]
+        m-0
+        p-0
         shrink-0
         bg-[#0d1628]
-        p-0
       "
     >
       <div
         className="
-          mx-auto
-          flex
-          h-full
           w-full
+          h-full
           max-w-[1450px]
-          items-center
+          mx-auto
           px-4
+          flex
+          items-center
         "
       >
         <div
           className="
-            flex
-            h-[58px]
             w-full
+            h-[58px]
+            flex
             items-center
-            overflow-hidden
             rounded-[9px]
             border
             border-slate-700/80
             bg-[#101a2b]
             p-1
+            overflow-hidden
           "
         >
+
           {/* =====================================================
               DCF CALCULATOR
           ====================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("calculator")}
             className={`
-              flex
               h-full
               flex-1
+              flex
               items-center
               justify-center
               gap-2
@@ -80,28 +82,28 @@ export function TopNavigation({
           >
             <Calculator
               className="
-                h-[18px]
                 w-[18px]
+                h-[18px]
                 shrink-0
                 text-emerald-400
               "
             />
 
-            <span>
-              DCF Calculator
-            </span>
+            <span>DCF Calculator</span>
           </button>
+
 
           {/* =====================================================
               DCF LAB INTELLIGENCE
           ====================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("intelligence")}
             className={`
-              flex
               h-full
               flex-1
+              flex
               items-center
               justify-center
               gap-2
@@ -121,16 +123,14 @@ export function TopNavigation({
           >
             <Sparkles
               className="
-                h-[18px]
                 w-[18px]
+                h-[18px]
                 shrink-0
                 text-emerald-400
               "
             />
 
-            <span>
-              DCF Lab Intelligence
-            </span>
+            <span>DCF Lab Intelligence</span>
 
             <span
               className="
@@ -152,16 +152,18 @@ export function TopNavigation({
             </span>
           </button>
 
+
           {/* =====================================================
               SAVED ANALYSES
           ====================================================== */}
+
           <button
             type="button"
             onClick={() => setActiveTab("saved")}
             className={`
-              flex
               h-full
               flex-1
+              flex
               items-center
               justify-center
               gap-2
@@ -180,19 +182,20 @@ export function TopNavigation({
           >
             <FolderOpen
               className="
-                h-[18px]
                 w-[18px]
+                h-[18px]
                 shrink-0
                 text-emerald-400
               "
             />
 
-            <span>
-              Saved Analyses
-            </span>
+            <span>Saved Analyses</span>
           </button>
+
         </div>
       </div>
     </nav>
   );
-}
+};
+
+export default TopNavigation;
