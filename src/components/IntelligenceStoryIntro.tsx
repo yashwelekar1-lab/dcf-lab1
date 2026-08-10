@@ -4,8 +4,10 @@ export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const section = document.getElementById("intelligence-story");
+    const updateProgress = () => {
+      const section = document.getElementById(
+        "intelligence-story"
+      );
 
       if (!section) return;
 
@@ -14,87 +16,66 @@ export default function IntelligenceStoryIntro() {
       const totalScroll =
         section.offsetHeight - window.innerHeight;
 
-      if (totalScroll <= 0) return;
+      if (totalScroll <= 0) {
+        setProgress(0);
+        return;
+      }
 
       const currentScroll = -rect.top;
 
-      const value = Math.min(
+      const nextProgress = Math.min(
         Math.max(currentScroll / totalScroll, 0),
         1
       );
 
-      setProgress(value);
+      setProgress(nextProgress);
     };
 
-    window.addEventListener("scroll", handleScroll, {
+    window.addEventListener("scroll", updateProgress, {
       passive: true,
     });
 
-    handleScroll();
+    updateProgress();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", updateProgress);
     };
   }, []);
 
-  /*
-  ============================================================
-  STORY TIMELINE
+  /* ============================================================
+     STORY PROGRESS
+     ============================================================ */
 
-  0.00 - 0.18
-  Circle + text fully visible
-
-  0.18 - 0.58
-  Inner text fades
-  Circle wipes clockwise
-
-  0.58 - 0.68
-  Circle completely disappears
-
-  0.68 - 0.80
-  AI message appears
-
-  0.80 - 1.00
-  Transition into actual page
-  ============================================================
-  */
-
-  // Inner text fade
-  const centerTextProgress = Math.min(
-    Math.max((progress - 0.18) / 0.4, 0),
+  const centerFade = Math.min(
+    Math.max((progress - 0.18) / 0.40, 0),
     1
   );
 
-  // Outer circle wipe
-  const circleProgress = Math.min(
-    Math.max((progress - 0.18) / 0.4, 0),
+  const wipeProgress = Math.min(
+    Math.max((progress - 0.18) / 0.40, 0),
     1
   );
 
-  const wipeAngle = circleProgress * 360;
+  const wipeAngle = wipeProgress * 360;
 
-  // AI message
-  const textProgress = Math.min(
+  const messageProgress = Math.min(
     Math.max((progress - 0.68) / 0.12, 0),
     1
   );
 
-  // Final fade
   const exitProgress = Math.min(
     Math.max((progress - 0.82) / 0.18, 0),
     1
   );
 
-  // Background transition
+  /* ============================================================
+     BACKGROUND
+     ============================================================ */
+
   const backgroundProgress = Math.min(
-    Math.max((progress - 0.7) / 0.3, 0),
+    Math.max((progress - 0.70) / 0.30, 0),
     1
   );
-
-  /*
-  IMPORTANT:
-  The previous code was missing backticks around rgb(...).
-  */
 
   const backgroundColor = `rgb(
     ${Math.round(16 + 235 * backgroundProgress)},
@@ -105,11 +86,16 @@ export default function IntelligenceStoryIntro() {
   return (
     <section
       id="intelligence-story"
-      className="relative h-[280vh]"
+      className="relative w-full h-[280vh]"
     >
-      {/* =====================================================
-          STICKY STORY VIEWPORT
-      ===================================================== */}
+      {/* ========================================================
+          STORY VIEWPORT
+
+          IMPORTANT:
+          - sticky, NOT fixed
+          - stays inside this section
+          - cannot cover Calculator/Saved Analysis
+          ======================================================== */}
 
       <div
         className="
@@ -123,9 +109,9 @@ export default function IntelligenceStoryIntro() {
           backgroundColor,
         }}
       >
-        {/* =====================================================
+        {/* ======================================================
             BACKGROUND GLOW
-        ===================================================== */}
+            ====================================================== */}
 
         <div
           className="
@@ -147,34 +133,29 @@ export default function IntelligenceStoryIntro() {
           }}
         />
 
-        {/* =====================================================
-            LOGO + CENTER CONTENT
+        {/* ======================================================
+            STATIC CIRCLE
 
             IMPORTANT:
-            This stays in the SAME POSITION while scrolling.
-            Only the circle mask and inner text opacity change.
-        ===================================================== */}
+            The circle has NO:
+            - scale animation
+            - translateY animation
+            - scroll-based top
+            ====================================================== */}
 
         <div
           className="
             absolute
             left-1/2
-            top-[38%]
-            z-20
+            top-1/2
+            z-10
+            -translate-x-1/2
+            -translate-y-1/2
           "
           style={{
             opacity: 1 - exitProgress,
-
-            transform: `
-              translate(-50%, -50%)
-              scale(${1 + progress * 0.05})
-            `,
           }}
         >
-          {/* ==================================================
-              OUTER CIRCLE
-          ================================================== */}
-
           <div
             className="
               relative
@@ -183,12 +164,10 @@ export default function IntelligenceStoryIntro() {
             "
           >
             {/* ==================================================
-                CLOCKWISE OUTER CIRCLE WIPE
+                CIRCLE WIPE
 
-                The circle itself DOES NOT MOVE.
-
-                Only the mask changes.
-            ================================================== */}
+                ONLY THE MASK CHANGES WITH SCROLL
+                ================================================== */}
 
             <div
               className="
@@ -203,7 +182,6 @@ export default function IntelligenceStoryIntro() {
                   transparent 0deg ${wipeAngle}deg,
                   black ${wipeAngle}deg 360deg
                 )`,
-
                 maskImage: `conic-gradient(
                   from 0deg,
                   transparent 0deg ${wipeAngle}deg,
@@ -226,10 +204,7 @@ export default function IntelligenceStoryIntro() {
 
             {/* ==================================================
                 INNER DARK CIRCLE
-
-                Fades at exactly the same time as
-                the outer circle wipe.
-            ================================================== */}
+                ================================================== */}
 
             <div
               className="
@@ -249,7 +224,7 @@ export default function IntelligenceStoryIntro() {
                 text-center
               "
               style={{
-                opacity: 1 - centerTextProgress,
+                opacity: 1 - centerFade,
               }}
             >
               {/* SPARKLE */}
@@ -315,15 +290,18 @@ export default function IntelligenceStoryIntro() {
           </div>
         </div>
 
-        {/* =====================================================
+        {/* ======================================================
             AI MESSAGE
-        ===================================================== */}
+
+            Appears in place.
+            NO translateY.
+            ====================================================== */}
 
         <div
           className="
             absolute
             inset-0
-            z-10
+            z-20
             flex
             items-center
             justify-center
@@ -331,14 +309,8 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             opacity:
-              textProgress *
+              messageProgress *
               (1 - exitProgress * 0.2),
-
-            transform: `
-              translateY(
-                ${35 - textProgress * 35}px
-              )
-            `,
           }}
         >
           <div
@@ -348,8 +320,6 @@ export default function IntelligenceStoryIntro() {
               text-center
             "
           >
-            {/* MAIN MESSAGE */}
-
             <h1
               className="
                 font-semibold
@@ -365,22 +335,11 @@ export default function IntelligenceStoryIntro() {
                     : "#0b1b38",
               }}
             >
-              <span>
-                AI reads.
-              </span>
-
-              {" "}
-
-              <span
-                style={{
-                  color: "#00bd87",
-                }}
-              >
+              <span>AI reads.</span>{" "}
+              <span className="text-[#00bd87]">
                 You decide.
               </span>
             </h1>
-
-            {/* FIRST DESCRIPTION */}
 
             <p
               className="
@@ -401,8 +360,6 @@ export default function IntelligenceStoryIntro() {
               DCF Lab Intelligence helps uncover
               the information behind the numbers.
             </p>
-
-            {/* SECOND DESCRIPTION */}
 
             <p
               className="
@@ -426,9 +383,9 @@ export default function IntelligenceStoryIntro() {
           </div>
         </div>
 
-        {/* =====================================================
+        {/* ======================================================
             SCROLL INDICATOR
-        ===================================================== */}
+            ====================================================== */}
 
         <div
           className="
@@ -436,7 +393,7 @@ export default function IntelligenceStoryIntro() {
             absolute
             left-1/2
             top-[82%]
-            z-[100]
+            z-30
             -translate-x-1/2
             -translate-y-1/2
             text-center
@@ -457,7 +414,8 @@ export default function IntelligenceStoryIntro() {
               tracking-[0.25em]
             "
             style={{
-              color: "rgba(255,255,255,0.85)",
+              color:
+                "rgba(255,255,255,0.85)",
             }}
           >
             Scroll to explore
