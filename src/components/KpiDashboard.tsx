@@ -61,9 +61,9 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-full min-w-0 space-y-4">
       {/* Primary Hero Intrinsic Value Banner */}
-      <div className={`p-5 rounded-2xl border ${cardBg} shadow-xs relative overflow-hidden transition-colors duration-200`}>
+      <div className={`w-full min-w-0 p-5 rounded-2xl border ${cardBg} shadow-xs relative overflow-hidden transition-colors duration-200`}>
         <div className="absolute -right-8 -bottom-8 opacity-5 dark:opacity-10 pointer-events-none">
           <TrendingUp className="w-48 h-48 text-emerald-500" />
         </div>
@@ -164,7 +164,7 @@ export const KpiDashboard: React.FC<KpiDashboardProps> = ({
       </div>
 
       {/* Grid of Secondary Key Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid w-full min-w-0 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Enterprise Value */}
         <div className={`p-3.5 rounded-xl border ${cardBg} shadow-2xs space-y-1 transition-all hover:border-emerald-500/30`}>
           <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
