@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header
       className={`border-b ${
         darkMode ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-800'
-      } sticky top-0 z-30 shadow-xs transition-colors duration-200`}
+      } sticky top-0 z-[100] shadow-xs transition-colors duration-200`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between py-3 gap-3">
