@@ -1,50 +1,339 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const animationRef = useRef<number | null>(null);
+
+  const isAutoScrolling = useRef(false);
+  const hasPlayed = useRef(false);
+  const userInteracting = useRef(false);
+
   /*
    * ============================================================
-   * SCROLL PROGRESS
+   * SETTINGS
+   * ============================================================
+   */
+
+  // Total automatic storytelling duration.
+  // Increase for slower storytelling.
+  const STORY_DURATION = 12000;
+
+  /*
+   * ============================================================
+   * CALCULATE STORY PROGRESS
+   * ============================================================
+   */
+
+  const updateProgress = () => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    const rect = section.getBoundingClientRect();
+
+    const totalScroll =
+      section.offsetHeight - window.innerHeight;
+
+    if (totalScroll <= 0) {
+      setProgress(0);
+      return;
+    }
+
+    const currentScroll = -rect.top;
+
+    const nextProgress = Math.min(
+      Math.max(currentScroll / totalScroll, 0),
+      1
+    );
+
+    setProgress(nextProgress);
+  };
+
+  /*
+   * ============================================================
+   * NORMAL SCROLL LISTENER
    * ============================================================
    */
 
   useEffect(() => {
     const handleScroll = () => {
-      const section = document.getElementById(
-        "intelligence-story"
-      );
-
-      if (!section) return;
-
-      const rect = section.getBoundingClientRect();
-
-      const totalScroll =
-        section.offsetHeight - window.innerHeight;
-
-      if (totalScroll <= 0) {
-        setProgress(0);
-        return;
-      }
-
-      const currentScroll = -rect.top;
-
-      const nextProgress = Math.min(
-        Math.max(currentScroll / totalScroll, 0),
-        1
-      );
-
-      setProgress(nextProgress);
+      updateProgress();
     };
 
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
 
-    handleScroll();
+    updateProgress();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+    };
+  }, []);
+
+  /*
+   * ============================================================
+   * AUTOMATIC STORY SCROLL
+   *
+   * When the Intelligence section enters the viewport,
+   * automatically scroll through the complete story.
+   * ============================================================
+   */
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (!entry.isIntersecting) return;
+
+        if (hasPlayed.current) return;
+
+        /*
+         * Require a meaningful amount of the story section
+         * to be visible before starting.
+         */
+
+        if (entry.intersectionRatio < 0.35) {
+          return;
+        }
+
+        hasPlayed.current = true;
+
+        startAutomaticStory();
+      },
+      {
+        threshold: [0.35, 0.5, 0.75],
+      }
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+
+      if (animationRef.current !== null) {
+        cancelAnimationFrame(
+          animationRef.current
+        );
+      }
+    };
+  }, []);
+
+  /*
+   * ============================================================
+   * START AUTOMATIC STORY
+   * ============================================================
+   */
+
+  const startAutomaticStory = () => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    if (isAutoScrolling.current) return;
+
+    /*
+     * Don't automatically control the page while the user
+     * is interacting.
+     */
+
+    if (userInteracting.current) return;
+
+    const sectionTop =
+      window.scrollY +
+      section.getBoundingClientRect().top;
+
+    const maxScroll =
+      section.offsetHeight -
+      window.innerHeight;
+
+    const startScroll = sectionTop;
+
+    const endScroll =
+      sectionTop + Math.max(maxScroll, 0);
+
+    const initialScroll =
+      window.scrollY;
+
+    /*
+     * If the user is already near the end,
+     * don't replay the story.
+     */
+
+    if (
+      initialScroll >=
+      endScroll - 30
+    ) {
+      return;
+    }
+
+    isAutoScrolling.current = true;
+
+    const startTime =
+      performance.now();
+
+    const animate = (
+      currentTime: number
+    ) => {
+      if (
+        userInteracting.current
+      ) {
+        isAutoScrolling.current =
+          false;
+
+        return;
+      }
+
+      const elapsed =
+        currentTime - startTime;
+
+      const rawProgress =
+        Math.min(
+          elapsed / STORY_DURATION,
+          1
+        );
+
+      /*
+       * Smooth cinematic easing.
+       */
+
+      const easedProgress =
+        rawProgress < 0.5
+          ? 2 *
+            rawProgress *
+            rawProgress
+          : 1 -
+            Math.pow(
+              -2 * rawProgress + 2,
+              2
+            ) /
+              2;
+
+      const targetScroll =
+        startScroll +
+        (endScroll - startScroll) *
+          easedProgress;
+
+      window.scrollTo(
+        0,
+        targetScroll
+      );
+
+      updateProgress();
+
+      if (rawProgress < 1) {
+        animationRef.current =
+          requestAnimationFrame(
+            animate
+          );
+      } else {
+        window.scrollTo(
+          0,
+          endScroll
+        );
+
+        updateProgress();
+
+        isAutoScrolling.current =
+          false;
+
+        animationRef.current =
+          null;
+      }
+    };
+
+    animationRef.current =
+      requestAnimationFrame(
+        animate
+      );
+  };
+
+  /*
+   * ============================================================
+   * USER INTERACTION
+   *
+   * If the user touches/wheels during the automatic story,
+   * stop automatic scrolling and give control back to them.
+   * ============================================================
+   */
+
+  useEffect(() => {
+    const stopAutoScroll = () => {
+      if (!isAutoScrolling.current) {
+        return;
+      }
+
+      userInteracting.current = true;
+
+      isAutoScrolling.current =
+        false;
+
+      if (
+        animationRef.current !== null
+      ) {
+        cancelAnimationFrame(
+          animationRef.current
+        );
+
+        animationRef.current = null;
+      }
+    };
+
+    const handlePointerDown = () => {
+      stopAutoScroll();
+    };
+
+    const handleWheel = () => {
+      stopAutoScroll();
+    };
+
+    const handleTouchStart = () => {
+      stopAutoScroll();
+    };
+
+    window.addEventListener(
+      "pointerdown",
+      handlePointerDown,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "wheel",
+      handleWheel,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "touchstart",
+      handleTouchStart,
+      { passive: true }
+    );
+
+    return () => {
+      window.removeEventListener(
+        "pointerdown",
+        handlePointerDown
+      );
+
+      window.removeEventListener(
+        "wheel",
+        handleWheel
+      );
+
+      window.removeEventListener(
+        "touchstart",
+        handleTouchStart
+      );
     };
   }, []);
 
@@ -54,67 +343,121 @@ export default function IntelligenceStoryIntro() {
    * ============================================================
    */
 
-  const centerTextProgress = Math.min(
-    Math.max((progress - 0.18) / 0.4, 0),
-    1
-  );
+  /*
+   * 0 → 18%
+   * Center text visible
+   */
 
-  const circleProgress = Math.min(
-    Math.max((progress - 0.18) / 0.4, 0),
-    1
-  );
-
-  const wipeAngle = circleProgress * 360;
-
-  const textProgress = Math.min(
-    Math.max((progress - 0.68) / 0.12, 0),
-    1
-  );
-
-  const exitProgress = Math.min(
-    Math.max((progress - 0.82) / 0.18, 0),
-    1
-  );
-
-  const backgroundProgress = Math.min(
-    Math.max((progress - 0.7) / 0.3, 0),
-    1
-  );
+  const centerTextProgress =
+    Math.min(
+      Math.max(
+        (progress - 0.18) / 0.4,
+        0
+      ),
+      1
+    );
 
   /*
-   * ============================================================
-   * BACKGROUND
-   * ============================================================
+   * 18 → 58%
+   * Circle wipes clockwise
    */
+
+  const circleProgress =
+    Math.min(
+      Math.max(
+        (progress - 0.18) / 0.4,
+        0
+      ),
+      1
+    );
+
+  const wipeAngle =
+    circleProgress * 360;
+
+  /*
+   * 68 → 80%
+   * AI message appears
+   */
+
+  const textProgress =
+    Math.min(
+      Math.max(
+        (progress - 0.68) / 0.12,
+        0
+      ),
+      1
+    );
+
+  /*
+   * 82 → 100%
+   * Story exits
+   */
+
+  const exitProgress =
+    Math.min(
+      Math.max(
+        (progress - 0.82) / 0.18,
+        0
+      ),
+      1
+    );
+
+  /*
+   * Background transition
+   */
+
+  const backgroundProgress =
+    Math.min(
+      Math.max(
+        (progress - 0.7) / 0.3,
+        0
+      ),
+      1
+    );
 
   const backgroundColor =
     "rgb(" +
-    Math.round(16 + 235 * backgroundProgress) +
+    Math.round(
+      16 +
+        235 *
+          backgroundProgress
+    ) +
     ", " +
-    Math.round(26 + 232 * backgroundProgress) +
+    Math.round(
+      26 +
+        232 *
+          backgroundProgress
+    ) +
     ", " +
-    Math.round(43 + 212 * backgroundProgress) +
+    Math.round(
+      43 +
+        212 *
+          backgroundProgress
+    ) +
     ")";
 
   /*
-   * ============================================================
-   * AI MESSAGE TRANSFORM
-   *
-   * Using string concatenation instead of a template literal
-   * to avoid the Vite parser error.
-   * ============================================================
+   * AI message movement
    */
 
   const messageY =
-    35 - textProgress * 35;
+    35 -
+    textProgress * 35;
 
   const messageTransform =
     "translateY(" +
     messageY +
     "px)";
 
+  /*
+   * ============================================================
+   * RENDER
+   * ============================================================
+   */
+
   return (
     <section
+      ref={sectionRef}
       id="intelligence-story"
       className="
         relative
@@ -140,7 +483,7 @@ export default function IntelligenceStoryIntro() {
           overflow-hidden
         "
         style={{
-          backgroundColor: backgroundColor,
+          backgroundColor,
         }}
       >
         {/* ======================================================
@@ -154,8 +497,8 @@ export default function IntelligenceStoryIntro() {
             left-1/2
             top-1/2
             z-0
-            h-[450px]
-            w-[450px]
+            h-[420px]
+            w-[420px]
             -translate-x-1/2
             -translate-y-1/2
             rounded-full
@@ -166,42 +509,45 @@ export default function IntelligenceStoryIntro() {
 
             sm:h-[650px]
             sm:w-[650px]
-            sm:blur-[90px]
 
             lg:h-[750px]
             lg:w-[750px]
-            lg:blur-[100px]
           "
           style={{
             background:
               "radial-gradient(circle, rgba(0,210,160,0.16), transparent 68%)",
-            opacity: 1 - progress * 0.85,
+            opacity:
+              1 -
+              progress * 0.85,
           }}
         />
 
         {/* ======================================================
             INTELLIGENCE CIRCLE
-
-            FIXED = preserves scroll-driven storytelling
         ======================================================= */}
 
         <div
           className="
             pointer-events-none
-            fixed
+            absolute
             left-1/2
-            top-[435px]
+
+            top-[25px]
+
             z-[20]
             -translate-x-1/2
 
-            min-[390px]:top-[440px]
+            min-[390px]:top-[35px]
 
-            sm:top-[155px]
-            md:top-[165px]
-            lg:top-[150px]
+            sm:top-[45px]
+
+            md:top-[55px]
+
+            lg:top-[65px]
           "
           style={{
-            opacity: 1 - exitProgress,
+            opacity:
+              1 - exitProgress,
           }}
         >
           {/* ====================================================
@@ -211,8 +557,9 @@ export default function IntelligenceStoryIntro() {
           <div
             className="
               relative
-              h-[290px]
-              w-[290px]
+
+              h-[285px]
+              w-[285px]
 
               min-[390px]:h-[310px]
               min-[390px]:w-[310px]
@@ -228,7 +575,7 @@ export default function IntelligenceStoryIntro() {
             "
           >
             {/* ==================================================
-                CLOCKWISE CIRCLE WIPE
+                CLOCKWISE WIPE
             =================================================== */}
 
             <div
@@ -268,7 +615,7 @@ export default function IntelligenceStoryIntro() {
             </div>
 
             {/* ==================================================
-                INNER DARK CIRCLE
+                INNER CIRCLE
             =================================================== */}
 
             <div
@@ -290,7 +637,9 @@ export default function IntelligenceStoryIntro() {
                 text-center
               "
               style={{
-                opacity: 1 - centerTextProgress,
+                opacity:
+                  1 -
+                  centerTextProgress,
               }}
             >
               {/* SPARKLE */}
@@ -407,9 +756,12 @@ export default function IntelligenceStoryIntro() {
           style={{
             opacity:
               textProgress *
-              (1 - exitProgress * 0.2),
+              (1 -
+                exitProgress *
+                  0.2),
 
-            transform: messageTransform,
+            transform:
+              messageTransform,
           }}
         >
           <div
@@ -419,8 +771,6 @@ export default function IntelligenceStoryIntro() {
               text-center
             "
           >
-            {/* MAIN MESSAGE */}
-
             <h1
               className="
                 text-[34px]
@@ -441,7 +791,9 @@ export default function IntelligenceStoryIntro() {
                     : "#0b1b38",
               }}
             >
-              <span>AI reads.</span>{" "}
+              <span>
+                AI reads.
+              </span>{" "}
               <span
                 style={{
                   color: "#00bd87",
@@ -450,8 +802,6 @@ export default function IntelligenceStoryIntro() {
                 You decide.
               </span>
             </h1>
-
-            {/* FIRST DESCRIPTION */}
 
             <p
               className="
@@ -478,8 +828,6 @@ export default function IntelligenceStoryIntro() {
               DCF Lab Intelligence helps uncover
               the information behind the numbers.
             </p>
-
-            {/* SECOND DESCRIPTION */}
 
             <p
               className="
@@ -526,10 +874,11 @@ export default function IntelligenceStoryIntro() {
             sm:bottom-auto
           "
           style={{
-            opacity: Math.max(
-              1 - progress,
-              0
-            ),
+            opacity:
+              Math.max(
+                1 - progress,
+                0
+              ),
           }}
         >
           <div
@@ -564,6 +913,39 @@ export default function IntelligenceStoryIntro() {
             style={{
               background:
                 "linear-gradient(to bottom, #00c98b, transparent)",
+            }}
+          />
+        </div>
+
+        {/* ======================================================
+            STORY PROGRESS
+            Small indicator at bottom.
+        ======================================================= */}
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            bottom-3
+            left-1/2
+            z-[100]
+            h-[2px]
+            w-[120px]
+            -translate-x-1/2
+            overflow-hidden
+            rounded-full
+            bg-white/10
+          "
+        >
+          <div
+            className="
+              h-full
+              rounded-full
+              bg-emerald-400
+            "
+            style={{
+              width:
+                progress * 100 + "%",
             }}
           />
         </div>
