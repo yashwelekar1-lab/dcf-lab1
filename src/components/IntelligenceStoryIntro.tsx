@@ -515,11 +515,11 @@ if (progress < 0.52) {
      White → dark navy as background becomes white.
      ============================================================ */
 
-  const textTransition =
-    phase(
-      0.72,
-      0.90
-    );
+const textTransition =
+  phase(
+    0.78,
+    0.94
+  );
 
 
   const headingColor =
@@ -570,11 +570,10 @@ if (progress < 0.52) {
      ============================================================ */
 
   const whiteOpacity =
-    phase(
-      0.78,
-      0.88
-    );
-
+  phase(
+    0.78,
+    0.94
+  );
 
   /* ============================================================
      REAL ANALYSIS PAGE
@@ -587,11 +586,10 @@ if (progress < 0.52) {
      ============================================================ */
 
   const analysisProgress =
-    phase(
-      0.92,
-      0.96
-    );
-
+  phase(
+    0.96,
+    1.00
+  );
 
   const analysisOpacity =
     analysisProgress;
@@ -957,7 +955,7 @@ if (progress < 0.52) {
             pointer-events-none
             absolute
             inset-0
-            z-[60]
+            z-[100]
             flex
             items-center
             justify-center
