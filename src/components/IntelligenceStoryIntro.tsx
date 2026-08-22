@@ -775,7 +775,7 @@ export default function IntelligenceStoryIntro() {
 <div
   className="
     pointer-events-none
-    absolute
+    fixed
     left-1/2
     top-[44%]
     z-30
