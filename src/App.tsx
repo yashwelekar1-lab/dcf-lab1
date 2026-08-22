@@ -1,575 +1,602 @@
-import { useEffect, useRef, useState } from "react";
-import "./App.css";
+import React, { useState, useMemo, useEffect } from 'react';
 
-type Story = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  metric: string;
-  metricLabel: string;
-};
+import {
+  DCFInputs,
+  CurrencySymbol,
+  DisplayUnit,
+  Scenario,
+} from './types';
 
-const stories: Story[] = [
-  {
-    eyebrow: "01 — DISCOVER",
-    title: "Turn Reports Into Intelligence",
-    description:
-      "Upload an annual report and let the platform transform hundreds of pages of financial information into structured, investment-ready intelligence.",
-    metric: "100+",
-    metricLabel: "Financial data points",
-  },
-  {
-    eyebrow: "02 — ANALYZE",
-    title: "Understand The Business",
-    description:
-      "Move beyond numbers. Analyze management commentary, revenue drivers, margins, capital allocation, risks and the quality of earnings.",
-    metric: "360°",
-    metricLabel: "Business analysis",
-  },
-  {
-    eyebrow: "03 — VALUE",
-    title: "Build The Valuation",
-    description:
-      "Create a disciplined valuation framework using DCF, multiples, growth assumptions, WACC and scenario analysis.",
-    metric: "DCF",
-    metricLabel: "Valuation engine",
-  },
-  {
-    eyebrow: "04 — DECIDE",
-    title: "From Data To Conviction",
-    description:
-      "Bring fundamentals, valuation and business quality together into one clear research view designed to support better investment decisions.",
-    metric: "1",
-    metricLabel: "Investment thesis",
-  },
-];
+import {
+  calculateDCF,
+  validateInputs,
+  generateSensitivityMatrix,
+  PRESET_COMPANIES,
+  formatCurrency,
+} from './utils/dcfCalculator';
+
+// Layout & Component Imports
+import { Header } from './components/Header';
+import { AboutModal } from './components/AboutModal';
+import { InputPanel } from './components/InputPanel';
+import { KpiDashboard } from './components/KpiDashboard';
+import { ValuationTable } from './components/ValuationTable';
+import { SensitivityHeatmap } from './components/SensitivityHeatmap';
+import { ScenarioComparison } from './components/ScenarioComparison';
+import { FinancialGlossaryModal } from './components/FinancialGlossaryModal';
+import TopNavigation from './components/TopNavigation';
+import IntelligencePage from './components/IntelligencePage';
+import SavedAnalysesPage from './components/SavedAnalysesPage';
+
+// Charts
+import { FcffForecastChart } from './components/charts/FcffForecastChart';
+import { DcfComparisonChart } from './components/charts/DcfComparisonChart';
+import { EvCompositionChart } from './components/charts/EvCompositionChart';
+import { EquityBridgeChart } from './components/charts/EquityBridgeChart';
+import { IntrinsicVsMarketChart } from './components/charts/IntrinsicVsMarketChart';
+import { DiscountFactorChart } from './components/charts/DiscountFactorChart';
+import { TvContributionChart } from './components/charts/TvContributionChart';
 
 export default function App() {
-  const storyRef = useRef<HTMLElement | null>(null);
+  const [showAbout, setShowAbout] = useState(true);
 
-  const [progress, setProgress] = useState(0);
-  const [activeStory, setActiveStory] = useState(0);
+  // Theme & Unit State
+  const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [currency, setCurrency] = useState<CurrencySymbol>('$');
+  const [unit, setUnit] = useState<DisplayUnit>('millions');
 
-  useEffect(() => {
-    let frame = 0;
+  const [activeTab, setActiveTab] = useState("calculator");
 
-    const updateStory = () => {
-      cancelAnimationFrame(frame);
+  const [selectedPresetId, setSelectedPresetId] =
+    useState<string>('apple_tech');
 
-      frame = requestAnimationFrame(() => {
-        const section = storyRef.current;
+  const [isGlossaryOpen, setIsGlossaryOpen] =
+    useState<boolean>(false);
 
-        if (!section) return;
+  // Initial Inputs state from Tech Titan preset
+  const defaultInputs = PRESET_COMPANIES[0].inputs;
 
-        const rect = section.getBoundingClientRect();
-        const scrollableDistance = section.offsetHeight - window.innerHeight;
+  const [inputs, setInputs] = useState<DCFInputs>({
+    ...defaultInputs,
+    currency,
+    unit,
+  });
 
-        if (scrollableDistance <= 0) return;
+  // Sync inputs when currency or unit is selected globally
+  const handleCurrencyChange = (newCurr: CurrencySymbol) => {
+    setCurrency(newCurr);
 
-        const rawProgress = -rect.top / scrollableDistance;
+    setInputs((prev) => ({
+      ...prev,
+      currency: newCurr,
+    }));
+  };
 
-        const nextProgress = Math.min(
-          1,
-          Math.max(0, rawProgress)
-        );
+  const handleUnitChange = (newUnit: DisplayUnit) => {
+    setUnit(newUnit);
 
-        setProgress(nextProgress);
+    setInputs((prev) => ({
+      ...prev,
+      unit: newUnit,
+    }));
+  };
 
-        const nextStory = Math.min(
-          stories.length - 1,
-          Math.floor(nextProgress * stories.length)
-        );
+  // Load Preset
+  const handleSelectPreset = (presetId: string) => {
+    setSelectedPresetId(presetId);
 
-        setActiveStory(nextStory);
+    const found = PRESET_COMPANIES.find(
+      (p) => p.id === presetId
+    );
+
+    if (found) {
+      setInputs({
+        ...found.inputs,
+        currency,
+        unit,
       });
-    };
+    }
+  };
 
-    window.addEventListener("scroll", updateStory, {
-      passive: true,
+  // Reset Model
+  const handleReset = () => {
+    setSelectedPresetId('apple_tech');
+
+    setInputs({
+      ...PRESET_COMPANIES[0].inputs,
+      currency: '$',
+      unit: 'millions',
     });
+  };
 
-    window.addEventListener("resize", updateStory);
+  // Perform DCF Calculations
+  const calculations = useMemo(
+    () => calculateDCF(inputs),
+    [inputs]
+  );
 
-    updateStory();
+  // Perform Validation
+  const warnings = useMemo(
+    () => validateInputs(inputs),
+    [inputs]
+  );
 
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", updateStory);
-      window.removeEventListener("resize", updateStory);
-    };
-  }, []);
+  // Perform Sensitivity Analysis Matrix
+  const sensitivityMatrix = useMemo(
+    () => generateSensitivityMatrix(inputs),
+    [inputs]
+  );
+
+  // Apply Sensitivity Matrix Cell
+  const handleApplySensitivityCell = (
+    wacc: number,
+    tvParam: number
+  ) => {
+    if (inputs.terminalMethod === 'perpetual') {
+      setInputs((prev) => ({
+        ...prev,
+        wacc,
+        terminalGrowthRate: tvParam,
+      }));
+    } else {
+      setInputs((prev) => ({
+        ...prev,
+        wacc,
+        exitMultiple: tvParam,
+      }));
+    }
+  };
+
+  // Export CSV
+  const handleExportCSV = () => {
+    const csvRows = [
+      ['DCF Lab Valuation Summary Report'],
+      [`Company/Model:`, selectedPresetId],
+      [`Currency:`, inputs.currency],
+      [`Units:`, inputs.unit],
+      [''],
+      ['Key Metrics', 'Value'],
+      [
+        'Intrinsic Value Per Share',
+        calculations.intrinsicValuePerShare.toFixed(2),
+      ],
+      [
+        'Enterprise Value',
+        calculations.enterpriseValue.toFixed(2),
+      ],
+      [
+        'Equity Value',
+        calculations.equityValue.toFixed(2),
+      ],
+      [
+        'PV Forecast Cash Flows',
+        calculations.pvOfForecastCashFlows.toFixed(2),
+      ],
+      [
+        'PV Terminal Value',
+        calculations.pvOfTerminalValue.toFixed(2),
+      ],
+      [
+        'Terminal Value % of EV',
+        `${calculations.tvContributionPercent.toFixed(1)}%`,
+      ],
+      ['WACC', `${inputs.wacc}%`],
+      ['Terminal Method', inputs.terminalMethod],
+      [
+        'Terminal Growth Rate',
+        `${inputs.terminalGrowthRate}%`,
+      ],
+      [''],
+      ['Forecast Cash Flows Schedule'],
+      ['Year', 'FCFF', 'Discount Factor', 'PV FCFF'],
+
+      ...calculations.discountedCashFlows.map((d) => [
+        `Year ${d.year}`,
+        d.fcff.toFixed(2),
+        d.discountFactor.toFixed(4),
+        d.pvFcff.toFixed(2),
+      ]),
+    ];
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      csvRows.map((e) => e.join(',')).join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+
+    const link = document.createElement('a');
+
+    link.setAttribute('href', encodedUri);
+
+    link.setAttribute(
+      'download',
+      `DCF_Lab_Valuation_${Date.now()}.csv`
+    );
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  };
+
+  // Export PDF / Print
+  const handleExportPDF = () => {
+    window.print();
+  };
 
   /*
-   * Ring animation.
-   *
-   * The ring never determines the page layout.
-   * It only transforms visually.
+   * ============================================================
+   * INTELLIGENCE PAGE
+   * ============================================================
    */
-  const rotation = progress * 270;
 
-  const ringScale =
-    0.82 +
-    Math.sin(progress * Math.PI) * 0.08;
+  if (activeTab === "intelligence") {
+    return (
+      <>
+        <Header
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          currency={currency}
+          setCurrency={handleCurrencyChange}
+          unit={unit}
+          setUnit={handleUnitChange}
+          onSelectPreset={handleSelectPreset}
+          onReset={handleReset}
+          onExportPDF={handleExportPDF}
+          onExportCSV={handleExportCSV}
+          onOpenGlossary={() =>
+            setIsGlossaryOpen(true)
+          }
+          onOpenAbout={() =>
+            setShowAbout(true)
+          }
+          selectedPresetId={selectedPresetId}
+        />
 
-  const ringOpacity =
-    0.72 +
-    Math.sin(progress * Math.PI) * 0.28;
+        <TopNavigation
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
 
-  const innerRotation = -progress * 180;
+        <IntelligencePage />
+
+        <AboutModal
+          isOpen={showAbout}
+          onClose={() => setShowAbout(false)}
+        />
+      </>
+    );
+  }
+
+  /*
+   * ============================================================
+   * SAVED ANALYSES
+   * ============================================================
+   */
+
+  if (activeTab === "saved") {
+    return (
+      <>
+        <Header
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          currency={currency}
+          setCurrency={handleCurrencyChange}
+          unit={unit}
+          setUnit={handleUnitChange}
+          onSelectPreset={handleSelectPreset}
+          onReset={handleReset}
+          onExportPDF={handleExportPDF}
+          onExportCSV={handleExportCSV}
+          onOpenGlossary={() =>
+            setIsGlossaryOpen(true)
+          }
+          onOpenAbout={() =>
+            setShowAbout(true)
+          }
+          selectedPresetId={selectedPresetId}
+        />
+
+        <TopNavigation
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+
+        <SavedAnalysesPage />
+
+        <AboutModal
+          isOpen={showAbout}
+          onClose={() => setShowAbout(false)}
+        />
+      </>
+    );
+  }
+
+  /*
+   * ============================================================
+   * DCF CALCULATOR
+   * ============================================================
+   */
 
   return (
-    <main className="site">
+    <div
+      className={`min-h-screen font-sans ${
+        darkMode
+          ? 'bg-slate-950 text-slate-100'
+          : 'bg-slate-50 text-slate-900'
+      } transition-colors duration-200 pb-12`}
+    >
 
-      {/* =========================================================
-          TOP NAV
-      ========================================================= */}
+      {/* Navigation Header */}
 
-      <header className="navbar">
-        <div className="nav-logo">
-          <span className="logo-dot" />
-          DCF LAB
-        </div>
+      <Header
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        currency={currency}
+        setCurrency={handleCurrencyChange}
+        unit={unit}
+        setUnit={handleUnitChange}
+        onSelectPreset={handleSelectPreset}
+        onReset={handleReset}
+        onExportPDF={handleExportPDF}
+        onExportCSV={handleExportCSV}
+        onOpenGlossary={() =>
+          setIsGlossaryOpen(true)
+        }
+        onOpenAbout={() =>
+          setShowAbout(true)
+        }
+        selectedPresetId={selectedPresetId}
+      />
 
-        <nav className="nav-links">
-          <a href="#story">Intelligence</a>
-          <a href="#platform">Platform</a>
-          <a href="#research">Research</a>
-        </nav>
+      <TopNavigation
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
 
-        <button className="nav-button">
-          Explore Platform
-        </button>
-      </header>
+      {/* Main Workspace Layout */}
 
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
 
-      {/* =========================================================
-          HERO
-      ========================================================= */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      <section className="hero">
+          {/* Left Column: Valuation Input Panel */}
 
-        <div className="hero-content">
+          <section className="lg:col-span-4 space-y-6 print:hidden">
 
-          <div className="hero-badge">
-            AI-POWERED FINANCIAL RESEARCH
-          </div>
+            <InputPanel
+              inputs={inputs}
+              onChange={setInputs}
+              warnings={warnings}
+              darkMode={darkMode}
+            />
 
-          <h1>
-            Financial intelligence,
-            <br />
-            <span>without the noise.</span>
-          </h1>
+          </section>
 
-          <p>
-            Transform annual reports, financial statements and
-            valuation models into clear investment intelligence.
-          </p>
+          {/* Right Column: Dashboard & Interactive Visualizations */}
 
-          <div className="hero-actions">
-            <button className="primary-button">
-              Start Research
-              <span>→</span>
-            </button>
+          <section className="lg:col-span-8 space-y-6">
 
-            <button className="secondary-button">
-              See how it works
-            </button>
-          </div>
+            {/* Top Summary KPI Cards */}
 
-        </div>
+            <KpiDashboard
+              inputs={inputs}
+              calculations={calculations}
+              darkMode={darkMode}
+            />
 
-        <div className="hero-orb">
+            {/* Interactive Charts Grid */}
 
-          <div className="hero-ring">
-            <div className="hero-ring-inner" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            <div className="hero-ring-center">
-              <span>DCF</span>
-              <small>INTELLIGENCE</small>
-            </div>
-          </div>
+              {/* Chart 1: FCFF Forecast */}
 
-        </div>
-
-      </section>
-
-
-      {/* =========================================================
-          STORYTELLING
-      ========================================================= */}
-
-      <section
-        ref={storyRef}
-        id="story"
-        className="story-section"
-      >
-
-        <div className="story-sticky">
-
-          {/* LEFT STORY CONTENT */}
-
-          <div className="story-copy">
-
-            <div className="story-heading">
-
-              <span className="section-label">
-                THE INTELLIGENCE ENGINE
-              </span>
-
-              <h2>
-                From information
-                <br />
-                to <span>conviction.</span>
-              </h2>
-
-            </div>
-
-
-            <div className="story-progress">
-
-              <div className="progress-line">
-                <div
-                  className="progress-fill"
-                  style={{
-                    height: `${progress * 100}%`,
-                  }}
+              <div
+                className={`p-4 rounded-2xl border ${
+                  darkMode
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-slate-200'
+                } shadow-xs min-h-[280px]`}
+              >
+                <FcffForecastChart
+                  inputs={inputs}
+                  calculations={calculations}
+                  darkMode={darkMode}
                 />
               </div>
 
-              <div className="story-numbers">
-
-                {stories.map((_, index) => (
-                  <button
-                    key={index}
-                    className={
-                      index === activeStory
-                        ? "story-number active"
-                        : "story-number"
-                    }
-                    onClick={() => {
-                      if (!storyRef.current) return;
-
-                      const section =
-                        storyRef.current;
-
-                      const maxScroll =
-                        section.offsetHeight -
-                        window.innerHeight;
-
-                      const targetProgress =
-                        (index + 0.5) /
-                        stories.length;
-
-                      const target =
-                        section.offsetTop +
-                        maxScroll * targetProgress;
-
-                      window.scrollTo({
-                        top: target,
-                        behavior: "smooth",
-                      });
-                    }}
-                  >
-                    0{index + 1}
-                  </button>
-                ))}
-
-              </div>
-
-            </div>
-
-
-            <div className="story-text">
-
-              {stories.map((story, index) => {
-
-                const distance =
-                  Math.abs(activeStory - index);
-
-                return (
-                  <article
-                    key={story.eyebrow}
-                    className={
-                      index === activeStory
-                        ? "story-card active"
-                        : "story-card"
-                    }
-                    style={{
-                      opacity:
-                        index === activeStory
-                          ? 1
-                          : 0,
-                      transform:
-                        index === activeStory
-                          ? "translateY(0)"
-                          : index < activeStory
-                            ? "translateY(-35px)"
-                            : "translateY(35px)",
-                      pointerEvents:
-                        index === activeStory
-                          ? "auto"
-                          : "none",
-                    }}
-                  >
-
-                    <div className="story-eyebrow">
-                      {story.eyebrow}
-                    </div>
-
-                    <h3>
-                      {story.title}
-                    </h3>
-
-                    <p>
-                      {story.description}
-                    </p>
-
-                    <div className="story-metric">
-
-                      <strong>
-                        {story.metric}
-                      </strong>
-
-                      <span>
-                        {story.metricLabel}
-                      </span>
-
-                    </div>
-
-                  </article>
-                );
-              })}
-
-            </div>
-
-          </div>
-
-
-          {/* RIGHT VISUAL */}
-
-          <div className="story-visual">
-
-            <div className="visual-grid" />
-
-            <div
-              className="story-ring"
-              style={{
-                transform: `
-                  rotate(${rotation}deg)
-                  scale(${ringScale})
-                `,
-                opacity: ringOpacity,
-              }}
-            >
-
-              <div className="ring-gradient" />
-
-              <div className="ring-hole" />
+              {/* Chart 2: DCF Comparison */}
 
               <div
-                className="ring-marker"
-                style={{
-                  transform: `
-                    rotate(${innerRotation}deg)
-                  `,
-                }}
+                className={`p-4 rounded-2xl border ${
+                  darkMode
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-slate-200'
+                } shadow-xs min-h-[280px]`}
               >
-                <span />
+                <DcfComparisonChart
+                  inputs={inputs}
+                  calculations={calculations}
+                  darkMode={darkMode}
+                />
+              </div>
+
+              {/* Chart 3: EV Composition */}
+
+              <div
+                className={`p-4 rounded-2xl border ${
+                  darkMode
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-slate-200'
+                } shadow-xs min-h-[280px]`}
+              >
+                <EvCompositionChart
+                  inputs={inputs}
+                  calculations={calculations}
+                  darkMode={darkMode}
+                />
+              </div>
+
+              {/* Chart 4: Equity Value Bridge */}
+
+              <div
+                className={`p-4 rounded-2xl border ${
+                  darkMode
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-slate-200'
+                } shadow-xs min-h-[280px]`}
+              >
+                <EquityBridgeChart
+                  inputs={inputs}
+                  calculations={calculations}
+                  darkMode={darkMode}
+                />
+              </div>
+
+              {/* Chart 5: Intrinsic Value vs Market */}
+
+              <div
+                className={`p-4 rounded-2xl border ${
+                  darkMode
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-slate-200'
+                } shadow-xs min-h-[280px]`}
+              >
+                <IntrinsicVsMarketChart
+                  inputs={inputs}
+                  calculations={calculations}
+                  darkMode={darkMode}
+                />
+              </div>
+
+              {/* Chart 7: Terminal Value Stack */}
+
+              <div
+                className={`p-4 rounded-2xl border ${
+                  darkMode
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-slate-200'
+                } shadow-xs min-h-[280px]`}
+              >
+                <TvContributionChart
+                  inputs={inputs}
+                  calculations={calculations}
+                  darkMode={darkMode}
+                />
+              </div>
+
+              {/* Chart 8: Discount Factor Curve */}
+
+              <div
+                className={`p-4 rounded-2xl border ${
+                  darkMode
+                    ? 'bg-slate-900 border-slate-800'
+                    : 'bg-white border-slate-200'
+                } shadow-xs min-h-[280px] md:col-span-2`}
+              >
+                <DiscountFactorChart
+                  inputs={inputs}
+                  calculations={calculations}
+                  darkMode={darkMode}
+                />
               </div>
 
             </div>
 
+            {/* Sensitivity Heatmap Matrix */}
 
-            {/* CENTER INFORMATION */}
+            <SensitivityHeatmap
+              matrix={sensitivityMatrix}
+              inputs={inputs}
+              onApplyCell={handleApplySensitivityCell}
+              darkMode={darkMode}
+            />
 
-            <div className="visual-center">
+            {/* Scenario Analysis */}
 
-              <div className="center-star">
-                ✦
-              </div>
+            <ScenarioComparison
+              baseInputs={inputs}
+              onApplyInputs={setInputs}
+              darkMode={darkMode}
+            />
 
-              <div className="center-title">
-                DCF Lab
-              </div>
+            {/* Detailed Valuation Table */}
 
-              <div className="center-subtitle">
-                Intelligence
-              </div>
+            <ValuationTable
+              inputs={inputs}
+              calculations={calculations}
+              darkMode={darkMode}
+            />
 
-              <div className="center-description">
-                AI-powered financial
-                <br />
-                research & valuation
-              </div>
+            {/* Footer Disclaimer & Copyright */}
 
-            </div>
+            <footer
+              className={`mt-12 pt-8 pb-12 border-t ${
+                darkMode
+                  ? 'border-slate-800/80 text-slate-400'
+                  : 'border-slate-200 text-slate-600'
+              } text-xs leading-relaxed space-y-4 text-center max-w-4xl mx-auto px-4`}
+            >
 
+              <p>
+                <strong
+                  className={
+                    darkMode
+                      ? 'text-slate-300'
+                      : 'text-slate-700'
+                  }
+                >
+                  Disclaimer:
+                </strong>{' '}
 
-            {/* DATA ORBITS */}
+                The valuations generated by DCF Lab are
+                estimates based on user-provided assumptions
+                and inputs. They are intended for informational
+                and educational purposes only and should not be
+                considered investment advice. Please conduct
+                your own research and consult a qualified
+                financial advisor before making investment
+                decisions.
+              </p>
 
-            <div className="orbit orbit-one">
-              <span>Revenue</span>
-            </div>
+              <p
+                className={`font-medium ${
+                  darkMode
+                    ? 'text-slate-300'
+                    : 'text-slate-700'
+                }`}
+              >
+                © 2026 DCF Lab. Designed &amp; Developed by
+                Yash Welekar. All Rights Reserved.
+              </p>
 
-            <div className="orbit orbit-two">
-              <span>EBITDA</span>
-            </div>
+            </footer>
 
-            <div className="orbit orbit-three">
-              <span>DCF</span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* =========================================================
-          PLATFORM SECTION
-      ========================================================= */}
-
-      <section
-        id="platform"
-        className="platform-section"
-      >
-
-        <div className="platform-header">
-
-          <span className="section-label">
-            ONE RESEARCH WORKFLOW
-          </span>
-
-          <h2>
-            Everything you need
-            <br />
-            to <span>think deeper.</span>
-          </h2>
-
-        </div>
-
-
-        <div className="feature-grid">
-
-          <Feature
-            number="01"
-            title="Annual Report Intelligence"
-            text="Extract financial statements, KPIs, management commentary and business drivers automatically."
-          />
-
-          <Feature
-            number="02"
-            title="Financial Analysis"
-            text="Analyze profitability, growth, leverage, cash flows and operating performance."
-          />
-
-          <Feature
-            number="03"
-            title="Valuation"
-            text="Build DCF and relative valuation frameworks with transparent assumptions."
-          />
-
-          <Feature
-            number="04"
-            title="Research Output"
-            text="Convert your analysis into an investment-ready research thesis."
-          />
+          </section>
 
         </div>
 
-      </section>
+      </main>
 
+      {/* Financial Glossary & Formula Guide Modal */}
 
-      {/* =========================================================
-          RESEARCH SECTION
-      ========================================================= */}
+      <FinancialGlossaryModal
+        isOpen={isGlossaryOpen}
+        onClose={() =>
+          setIsGlossaryOpen(false)
+        }
+        darkMode={darkMode}
+      />
 
-      <section
-        id="research"
-        className="research-section"
-      >
+      {/* About DCF Lab Modal */}
 
-        <div>
-
-          <span className="section-label">
-            RESEARCH WITH CONTEXT
-          </span>
-
-          <h2>
-            Numbers tell you
-            <br />
-            <span>what happened.</span>
-          </h2>
-
-          <p>
-            Intelligence helps you understand why.
-          </p>
-
-        </div>
-
-        <button className="primary-button">
-          Enter DCF Lab →
-        </button>
-
-      </section>
-
-
-      {/* =========================================================
-          FOOTER
-      ========================================================= */}
-
-      <footer className="footer">
-
-        <div>
-          <strong>DCF LAB</strong>
-          <span>
-            AI-powered financial research
-          </span>
-        </div>
-
-        <div>
-          © 2026 DCF Lab Intelligence
-        </div>
-
-      </footer>
-
-    </main>
-  );
-}
-
-
-/* =============================================================
-   FEATURE COMPONENT
-============================================================= */
-
-function Feature({
-  number,
-  title,
-  text,
-}: {
-  number: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="feature-card">
-
-      <div className="feature-number">
-        {number}
-      </div>
-
-      <h3>
-        {title}
-      </h3>
-
-      <p>
-        {text}
-      </p>
-
-      <span className="feature-arrow">
-        ↗
-      </span>
+      <AboutModal
+        isOpen={showAbout}
+        onClose={() =>
+          setShowAbout(false)
+        }
+      />
 
     </div>
   );
