@@ -17,12 +17,10 @@ export default function IntelligenceStoryIntro() {
 
       if (!section) return;
 
-      const rect =
-        section.getBoundingClientRect();
+      const rect = section.getBoundingClientRect();
 
       const scrollableDistance =
-        section.offsetHeight -
-        window.innerHeight;
+        section.offsetHeight - window.innerHeight;
 
       if (scrollableDistance <= 0) {
         setProgress(0);
@@ -109,11 +107,10 @@ export default function IntelligenceStoryIntro() {
   };
 
   /* ============================================================
-     STORY PHASES
-     ============================================================
+     STORY TIMELINE
 
      0.00 - 0.30
-       Circle holds
+       Circle completely visible
 
      0.30 - 0.60
        Circle wipes
@@ -121,11 +118,11 @@ export default function IntelligenceStoryIntro() {
      0.60 - 0.68
        Pause
 
-     0.68 - 0.74
-       AI appears
+     0.68 - 0.72
+       AI fades in
 
-     0.74 - 0.98
-       AI stays FULLY VISIBLE
+     0.72 - 0.98
+       AI fully visible
 
      0.98 - 1.00
        AI disappears
@@ -133,7 +130,7 @@ export default function IntelligenceStoryIntro() {
      ============================================================ */
 
   /* ============================================================
-     CIRCLE
+     CIRCLE WIPE
      ============================================================ */
 
   const circleProgress = smooth(
@@ -161,17 +158,6 @@ export default function IntelligenceStoryIntro() {
 
   /* ============================================================
      AI MESSAGE
-     ============================================================
-
-     IMPORTANT:
-
-     This intentionally does NOT use a complicated
-     fade-out timeline.
-
-     Once progress reaches 0.68, the message is visible.
-
-     It stays visible until 0.98.
-
      ============================================================ */
 
   let aiOpacity = 0;
@@ -179,25 +165,14 @@ export default function IntelligenceStoryIntro() {
   if (progress < 0.68) {
     aiOpacity = 0;
   } else if (progress < 0.72) {
-    /*
-     * Slow fade in.
-     */
     aiOpacity =
       smooth(
         (progress - 0.68) /
           0.04
       );
   } else if (progress < 0.98) {
-    /*
-     * FULL VISIBILITY.
-     *
-     * This is deliberately hard-set to 1.
-     */
     aiOpacity = 1;
   } else {
-    /*
-     * Only now does it disappear.
-     */
     aiOpacity =
       1 -
       smooth(
@@ -207,7 +182,7 @@ export default function IntelligenceStoryIntro() {
   }
 
   /* ============================================================
-     BACKGROUND COLOR
+     BACKGROUND COLORS
      ============================================================ */
 
   type ColorStop = {
@@ -218,79 +193,48 @@ export default function IntelligenceStoryIntro() {
   };
 
   const colors: ColorStop[] = [
-    /*
-     * START
-     */
     {
       position: 0.00,
       r: 14,
       g: 24,
       b: 40,
     },
-
-    /*
-     * DARK BLUE
-     */
     {
       position: 0.20,
       r: 12,
       g: 31,
       b: 48,
     },
-
-    /*
-     * DEEP TEAL
-     */
     {
       position: 0.40,
       r: 9,
       g: 48,
       b: 57,
     },
-
-    /*
-     * EMERALD / TEAL
-     */
     {
       position: 0.60,
       r: 7,
       g: 67,
       b: 66,
     },
-
-    /*
-     * TEAL
-     */
     {
       position: 0.72,
       r: 12,
       g: 79,
       b: 76,
     },
-
-    /*
-     * LIGHT TEAL
-     */
     {
       position: 0.84,
       r: 48,
       g: 103,
       b: 108,
     },
-
-    /*
-     * VERY LIGHT
-     */
     {
       position: 0.94,
       r: 145,
       g: 173,
       b: 178,
     },
-
-    /*
-     * WHITE
-     */
     {
       position: 1.00,
       r: 247,
@@ -383,9 +327,6 @@ export default function IntelligenceStoryIntro() {
 
   /* ============================================================
      AI TEXT COLOR
-     ============================================================
-
-     Keep it WHITE until the background is almost white.
      ============================================================ */
 
   const textTransition =
@@ -435,7 +376,7 @@ export default function IntelligenceStoryIntro() {
     )`;
 
   /* ============================================================
-     CIRCLE FINAL EXIT
+     CIRCLE EXIT
      ============================================================ */
 
   const circleExit =
@@ -477,7 +418,7 @@ export default function IntelligenceStoryIntro() {
     >
 
       {/* ======================================================
-          PINNED VIEWPORT
+          STICKY VIEWPORT
          ====================================================== */}
 
       <div
@@ -507,7 +448,6 @@ export default function IntelligenceStoryIntro() {
           style={{
             background:
               "radial-gradient(circle at 50% 48%, rgba(0,210,160,0.11), transparent 46%)",
-
             opacity:
               glowOpacity,
           }}
@@ -533,162 +473,169 @@ export default function IntelligenceStoryIntro() {
           style={{
             background:
               "radial-gradient(circle, rgba(0,210,160,0.20), transparent 68%)",
-
             opacity:
               glowOpacity,
           }}
         />
 
         {/* ====================================================
-            CIRCLE STORY
+            FIXED CIRCLE LAYER
+
+            IMPORTANT:
+            This is deliberately fixed to the viewport.
+
+            The circle itself NEVER changes position.
+
+            Only:
+              - mask
+              - opacity
+
+            change with scroll.
            ==================================================== */}
 
         <div
           className="
-            absolute
-            inset-0
+            pointer-events-none
+            fixed
+            left-1/2
+            top-1/2
             z-20
-            flex
-            items-center
-            justify-center
           "
           style={{
+            width:
+              "min(560px, 76vw)",
+            height:
+              "min(560px, 76vw)",
+
+            transform:
+              "translate(-50%, -50%)",
+
             opacity:
               1 - circleExit,
           }}
         >
 
+          {/* ==================================================
+              CIRCLE WIPE
+             ================================================== */}
+
           <div
             className="
-              relative
-              h-[min(560px,76vw)]
-              w-[min(560px,76vw)]
+              absolute
+              inset-0
+              overflow-hidden
+              rounded-full
             "
+            style={{
+              WebkitMaskImage:
+                `conic-gradient(
+                  from 0deg,
+                  transparent 0deg ${wipeAngle}deg,
+                  black ${wipeAngle}deg 360deg
+                )`,
+
+              maskImage:
+                `conic-gradient(
+                  from 0deg,
+                  transparent 0deg ${wipeAngle}deg,
+                  black ${wipeAngle}deg 360deg
+                )`,
+            }}
           >
 
-            {/* ==================================================
-                CIRCLE WIPE
-               ================================================== */}
+            <img
+              src="/DCF Logo.png"
+              alt="DCF Lab Intelligence"
+              className="
+                h-full
+                w-full
+                object-contain
+              "
+            />
+
+          </div>
+
+          {/* ==================================================
+              INNER CIRCLE
+             ================================================== */}
+
+          <div
+            className="
+              absolute
+              left-1/2
+              top-1/2
+              flex
+              aspect-square
+              w-[48%]
+              -translate-x-1/2
+              -translate-y-1/2
+              flex-col
+              items-center
+              justify-center
+              rounded-full
+              bg-[#101a2b]
+              text-center
+            "
+            style={{
+              opacity:
+                centerOpacity,
+            }}
+          >
 
             <div
               className="
-                absolute
-                inset-0
-                overflow-hidden
-                rounded-full
+                mb-3
+                text-[26px]
+                leading-none
+                text-emerald-400
               "
-              style={{
-                WebkitMaskImage:
-                  `conic-gradient(
-                    from 0deg,
-                    transparent 0deg ${wipeAngle}deg,
-                    black ${wipeAngle}deg 360deg
-                  )`,
-
-                maskImage:
-                  `conic-gradient(
-                    from 0deg,
-                    transparent 0deg ${wipeAngle}deg,
-                    black ${wipeAngle}deg 360deg
-                  )`,
-              }}
             >
-
-              <img
-                src="/DCF Logo.png"
-                alt="DCF Lab Intelligence"
-                className="
-                  h-full
-                  w-full
-                  object-contain
-                "
-              />
-
+              ✦
             </div>
 
-            {/* ==================================================
-                INNER CIRCLE
-               ================================================== */}
-
             <div
               className="
-                absolute
-                left-1/2
-                top-1/2
                 flex
-                aspect-square
-                w-[48%]
-                -translate-x-1/2
-                -translate-y-1/2
                 flex-col
                 items-center
-                justify-center
-                rounded-full
-                bg-[#101a2b]
-                text-center
+                leading-none
+                tracking-[-0.045em]
               "
-              style={{
-                opacity:
-                  centerOpacity,
-              }}
             >
 
-              <div
+              <span
                 className="
-                  mb-3
-                  text-[26px]
-                  leading-none
+                  text-[clamp(28px,4vw,48px)]
+                  font-bold
+                  text-white
+                "
+              >
+                DCF Lab
+              </span>
+
+              <span
+                className="
+                  text-[clamp(28px,4vw,48px)]
+                  font-bold
                   text-emerald-400
                 "
               >
-                ✦
-              </div>
+                Intelligence
+              </span>
 
-              <div
-                className="
-                  flex
-                  flex-col
-                  items-center
-                  leading-none
-                  tracking-[-0.045em]
-                "
-              >
+            </div>
 
-                <span
-                  className="
-                    text-[clamp(28px,4vw,48px)]
-                    font-bold
-                    text-white
-                  "
-                >
-                  DCF Lab
-                </span>
-
-                <span
-                  className="
-                    text-[clamp(28px,4vw,48px)]
-                    font-bold
-                    text-emerald-400
-                  "
-                >
-                  Intelligence
-                </span>
-
-              </div>
-
-              <div
-                className="
-                  mt-4
-                  text-[clamp(9px,1vw,14px)]
-                  leading-[1.4]
-                  text-slate-300
-                "
-              >
-                AI-Powered Financial Research
-                <br />
-                &amp; Valuation Platform
-              </div>
-
+            <div
+              className="
+                mt-4
+                text-[clamp(9px,1vw,14px)]
+                leading-[1.4]
+                text-slate-300
+              "
+            >
+              AI-Powered Financial Research
+              <br />
+              &amp; Valuation Platform
             </div>
 
           </div>
@@ -697,6 +644,8 @@ export default function IntelligenceStoryIntro() {
 
         {/* ====================================================
             AI MESSAGE
+
+            Also viewport locked.
            ==================================================== */}
 
         <div
@@ -721,7 +670,8 @@ export default function IntelligenceStoryIntro() {
               w-full
               max-w-[1050px]
               text-center
-          ">
+            "
+          >
 
             <h1
               className="
@@ -735,7 +685,6 @@ export default function IntelligenceStoryIntro() {
                   headingColor,
               }}
             >
-
               AI reads.{" "}
 
               <span
@@ -745,7 +694,6 @@ export default function IntelligenceStoryIntro() {
               >
                 You decide.
               </span>
-
             </h1>
 
             <p
@@ -854,6 +802,7 @@ export default function IntelligenceStoryIntro() {
         />
 
       </div>
+
     </section>
   );
 }
