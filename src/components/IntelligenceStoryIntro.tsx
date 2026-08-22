@@ -681,200 +681,187 @@ export default function IntelligenceStoryIntro() {
 
 
         {/* ====================================================
-            CIRCLE
+    CIRCLE + CENTER TEXT
 
-            FIXED POSITION.
-            NEVER MOVES UP OR DOWN.
-           ==================================================== */}
+    IMPORTANT:
+    Circle and text are separate layers.
+    The circle wipes independently.
+    The text stays perfectly centered.
+   ==================================================== */}
 
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-[54%]
-            z-20
-          "
-          style={{
-            width:
-              "clamp(340px, min(58vw, 58vh), 520px)",
+<div
+  className="
+    pointer-events-none
+    absolute
+    left-1/2
+    top-[54%]
+    z-20
+  "
+  style={{
+    width:
+      "clamp(340px, min(58vw, 58vh), 520px)",
 
-            height:
-              "clamp(340px, min(58vw, 58vh), 520px)",
+    height:
+      "clamp(340px, min(58vw, 58vh), 520px)",
 
-            transform:
-              "translate(-50%, -50%)",
+    transform:
+      "translate(-50%, -50%)",
 
-            filter:
-              circleGlow,
+    opacity:
+      circleOpacity,
 
-            opacity:
-              circleOpacity,
-          }}
-        >
+    filter:
+      circleGlow,
+  }}
+>
 
-          {/* ==================================================
-              CIRCLE WIPE
-             ================================================== */}
+  {/* ==================================================
+      CIRCLE WIPE ONLY
+     ================================================== */}
 
-          <div
-            className="
-              absolute
-              inset-0
-              overflow-hidden
-              rounded-full
-            "
-            style={{
-              WebkitMaskImage:
-                `
-                conic-gradient(
-                  from -90deg,
-                  black
-                  0deg
-                  ${visibleAngle}deg,
-                  transparent
-                  ${visibleAngle}deg
-                  360deg
-                )
-                `,
+  <div
+    className="
+      absolute
+      inset-0
+      overflow-hidden
+      rounded-full
+    "
+    style={{
+      WebkitMaskImage:
+        `
+        conic-gradient(
+          from -90deg,
+          black 0deg,
+          ${visibleAngle}deg,
+          transparent ${visibleAngle}deg,
+          360deg
+        )
+        `,
 
-              maskImage:
-                `
-                conic-gradient(
-                  from -90deg,
-                  black
-                  0deg
-                  ${visibleAngle}deg,
-                  transparent
-                  ${visibleAngle}deg
-                  360deg
-                )
-                `,
-            }}
-          >
+      maskImage:
+        `
+        conic-gradient(
+          from -90deg,
+          black 0deg,
+          ${visibleAngle}deg,
+          transparent ${visibleAngle}deg,
+          360deg
+        )
+        `,
+    }}
+  >
+    <img
+      src="/DCF Logo.png"
+      alt="DCF Lab Intelligence"
+      className="
+        block
+        h-full
+        w-full
+        object-contain
+      "
+    />
+  </div>
 
-            <img
-              src="/DCF Logo.png"
-              alt="DCF Lab Intelligence"
-              className="
-                block
-                h-full
-                w-full
-                object-contain
-              "
-            />
-
-          </div>
+</div>
 
 
-          {/* ==================================================
-              INNER CIRCLE
-             ================================================== */}
+{/* ====================================================
+    CENTER CONTENT
 
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              flex
-              aspect-square
-              w-[48%]
-              -translate-x-1/2
-              -translate-y-1/2
-              flex-col
-              items-center
-              justify-center
-              rounded-full
-              bg-[#101a2b]
-              px-4
-              text-center
-            "
-            style={{
-              opacity:
-                circleTextOpacity,
+    THIS IS COMPLETELY INDEPENDENT FROM THE WIPE.
+    It remains exactly centered.
+   ==================================================== */}
 
-              boxShadow:
-                `
-                0 0 25px
-                rgba(
-                  0,
-                  220,
-                  170,
-                  0.20
-                ),
+<div
+  className="
+    pointer-events-none
+    absolute
+    left-1/2
+    top-[54%]
+    z-30
+    flex
+    flex-col
+    items-center
+    justify-center
+    text-center
+  "
+  style={{
+    width:
+      "clamp(280px, min(42vw, 42vh), 390px)",
 
-                0 0 65px
-                rgba(
-                  0,
-                  220,
-                  170,
-                  0.12
-                )
-                `,
-            }}
-          >
+    transform:
+      "translate(-50%, -50%)",
 
-            <div
-              className="
-                mb-3
-                text-[26px]
-                leading-none
-                text-emerald-400
-              "
-            >
-              ✦
-            </div>
+    opacity:
+      circleTextOpacity,
+  }}
+>
+
+  {/* Star */}
+
+  <div
+    className="
+      mb-3
+      text-[26px]
+      leading-none
+      text-emerald-400
+    "
+  >
+    ✦
+  </div>
 
 
-            <div
-              className="
-                flex
-                flex-col
-                items-center
-                leading-none
-                tracking-[-0.045em]
-              "
-            >
+  {/* Title */}
 
-              <span
-                className="
-                  text-[clamp(25px,3.8vw,48px)]
-                  font-bold
-                  text-white
-                "
-              >
-                DCF Lab
-              </span>
+  <div
+    className="
+      flex
+      flex-col
+      items-center
+      leading-none
+      tracking-[-0.045em]
+    "
+  >
 
-              <span
-                className="
-                  text-[clamp(25px,3.8vw,48px)]
-                  font-bold
-                  text-emerald-400
-                "
-              >
-                Intelligence
-              </span>
+    <span
+      className="
+        text-[clamp(25px,3.8vw,48px)]
+        font-bold
+        text-white
+      "
+    >
+      DCF Lab
+    </span>
 
-            </div>
+    <span
+      className="
+        text-[clamp(25px,3.8vw,48px)]
+        font-bold
+        text-emerald-400
+      "
+    >
+      Intelligence
+    </span>
+
+  </div>
 
 
-            <div
-              className="
-                mt-4
-                text-[clamp(9px,1vw,14px)]
-                leading-[1.4]
-                text-slate-300
-              "
-            >
-              AI-Powered Financial Research
-              <br />
-              &amp; Valuation Platform
-            </div>
+  {/* Subtitle */}
 
-          </div>
+  <div
+    className="
+      mt-4
+      text-[clamp(9px,1vw,14px)]
+      leading-[1.4]
+      text-slate-300
+    "
+  >
+    AI-Powered Financial Research
+    <br />
+    &amp; Valuation Platform
+  </div>
 
-        </div>
+</div>
 
 
         {/* ====================================================
