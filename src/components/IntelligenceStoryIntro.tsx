@@ -3,28 +3,50 @@ import { useEffect, useState } from "react";
 export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
+  /*
+   * ============================================================
+   * SCROLL PROGRESS
+   * ============================================================
+   *
+   * The section is intentionally very tall.
+   *
+   * The viewport remains pinned with:
+   *
+   * sticky top-0 h-screen
+   *
+   * This means the user scrolls through a cinematic timeline
+   * instead of simply watching the page move upward.
+   * ============================================================
+   */
+
   useEffect(() => {
     let raf = 0;
 
     const update = () => {
-      const section = document.getElementById("intelligence-story");
+      const section =
+        document.getElementById(
+          "intelligence-story"
+        );
 
       if (!section) return;
 
-      const rect = section.getBoundingClientRect();
+      const rect =
+        section.getBoundingClientRect();
 
       const scrollDistance =
-        section.offsetHeight - window.innerHeight;
+        section.offsetHeight -
+        window.innerHeight;
 
       if (scrollDistance <= 0) return;
 
       const rawProgress =
         -rect.top / scrollDistance;
 
-      const nextProgress = Math.min(
-        Math.max(rawProgress, 0),
-        1
-      );
+      const nextProgress =
+        Math.min(
+          Math.max(rawProgress, 0),
+          1
+        );
 
       setProgress(nextProgress);
     };
@@ -32,14 +54,22 @@ export default function IntelligenceStoryIntro() {
     const onScroll = () => {
       cancelAnimationFrame(raf);
 
-      raf = requestAnimationFrame(update);
+      raf =
+        requestAnimationFrame(update);
     };
 
-    window.addEventListener("scroll", onScroll, {
-      passive: true,
-    });
+    window.addEventListener(
+      "scroll",
+      onScroll,
+      {
+        passive: true,
+      }
+    );
 
-    window.addEventListener("resize", onScroll);
+    window.addEventListener(
+      "resize",
+      onScroll
+    );
 
     update();
 
@@ -58,123 +88,417 @@ export default function IntelligenceStoryIntro() {
     };
   }, []);
 
+  /*
+   * ============================================================
+   * HELPERS
+   * ============================================================
+   */
+
   const clamp = (
     value: number,
     min = 0,
     max = 1
-  ) => Math.min(Math.max(value, min), max);
+  ) => {
+    return Math.min(
+      Math.max(value, min),
+      max
+    );
+  };
+
+  /*
+   * Smoothstep.
+   *
+   * Makes animation start and stop gently.
+   */
+  const ease = (
+    value: number
+  ) => {
+    const x = clamp(value);
+
+    return (
+      x *
+      x *
+      (3 - 2 * x)
+    );
+  };
 
   /*
    * ============================================================
    * STORY TIMELINE
+   * ============================================================
    *
-   * 0.00 - 0.25
-   * Hero circle
+   * 0%   → 28%
+   * HERO HOLD
    *
-   * 0.25 - 0.62
-   * Circle wipes away
+   * 28%  → 58%
+   * CIRCLE WIPE
    *
-   * 0.62 - 0.70
-   * Empty cinematic pause
+   * 58%  → 68%
+   * CINEMATIC PAUSE
    *
-   * 0.70 - 0.86
-   * AI message
+   * 68%  → 76%
+   * AI MESSAGE FADE IN
    *
-   * 0.86 - 1.00
-   * Smooth transition to page
+   * 76%  → 94%
+   * AI MESSAGE HOLD
+   *
+   * 94%  → 100%
+   * AI MESSAGE FADE OUT
+   *
    * ============================================================
    */
 
-  const circleProgress = clamp(
-    (progress - 0.25) / 0.37
-  );
-
-  const centerFade = clamp(
-    (progress - 0.25) / 0.25
-  );
-
-  const aiProgress = clamp(
-    (progress - 0.68) / 0.14
-  );
-
-  const finalProgress = clamp(
-    (progress - 0.90) / 0.10
-  );
-
   /*
-   * Circle remains physically stationary.
+   * ============================================================
+   * CIRCLE WIPE
+   * ============================================================
+   *
+   * The circle does absolutely no physical movement.
+   *
+   * Only the visible portion changes.
    */
+
+  const circleProgress =
+    ease(
+      clamp(
+        (progress - 0.28) /
+          0.30
+      )
+    );
+
   const wipeAngle =
     circleProgress * 360;
 
   /*
-   * Cinematic dark background.
-   *
-   * Stay dark for almost the entire story.
-   * Do NOT suddenly turn white.
+   * ============================================================
+   * CENTER TEXT FADE
+   * ============================================================
    */
+
+  const centerFade =
+    ease(
+      clamp(
+        (progress - 0.32) /
+          0.20
+      )
+    );
+
   /*
- * ============================================================
- * CINEMATIC BACKGROUND COLOR
- *
- * The background changes continuously throughout the story.
- *
- * 0%   → deep navy
- * 25%  → dark blue
- * 50%  → deep teal
- * 70%  → teal
- * 85%  → soft blue
- * 100% → very light background
- * ============================================================
- */
+   * ============================================================
+   * AI MESSAGE
+   * ============================================================
+   *
+   * IMPORTANT:
+   *
+   * This is intentionally separated into:
+   *
+   * FADE IN
+   * HOLD
+   * FADE OUT
+   *
+   * so the message doesn't disappear immediately.
+   * ============================================================
+   */
 
-const colorProgress = clamp(progress);
+  let aiOpacity = 0;
 
-/*
- * Smooth easing.
- * This prevents the color from changing linearly/hard.
- */
-const easedColor =
-  colorProgress * colorProgress *
-  (3 - 2 * colorProgress);
+  /*
+   * ------------------------------------------------------------
+   * FADE IN
+   *
+   * 68% → 76%
+   * ------------------------------------------------------------
+   */
 
-/*
- * Start color:
- * #0e1828
- *
- * End color:
- * #f7fafc
- */
+  if (
+    progress >= 0.68 &&
+    progress < 0.76
+  ) {
+    aiOpacity =
+      ease(
+        (progress - 0.68) /
+          0.08
+      );
+  }
 
-const startColor = {
-  r: 14,
-  g: 24,
-  b: 40,
-};
+  /*
+   * ------------------------------------------------------------
+   * HOLD
+   *
+   * 76% → 94%
+   *
+   * The message remains fully visible.
+   * ------------------------------------------------------------
+   */
 
-const endColor = {
-  r: 247,
-  g: 250,
-  b: 252,
-};
+  if (
+    progress >= 0.76 &&
+    progress < 0.94
+  ) {
+    aiOpacity = 1;
+  }
 
-const backgroundColor = `rgb(
-  ${Math.round(
-    startColor.r +
-      (endColor.r - startColor.r) *
-        easedColor
-  )},
-  ${Math.round(
-    startColor.g +
-      (endColor.g - startColor.g) *
-        easedColor
-  )},
-  ${Math.round(
-    startColor.b +
-      (endColor.b - startColor.b) *
-        easedColor
-  )}
-)`;
+  /*
+   * ------------------------------------------------------------
+   * FADE OUT
+   *
+   * 94% → 100%
+   * ------------------------------------------------------------
+   */
+
+  if (progress >= 0.94) {
+    aiOpacity =
+      1 -
+      ease(
+        (progress - 0.94) /
+          0.06
+      );
+  }
+
+  /*
+   * ============================================================
+   * FINAL CIRCLE EXIT
+   * ============================================================
+   *
+   * Circle remains gone after the wipe.
+   * It only gets a very subtle final fade at the end.
+   */
+
+  const finalProgress =
+    ease(
+      clamp(
+        (progress - 0.96) /
+          0.04
+      )
+    );
+
+  /*
+   * ============================================================
+   * CINEMATIC BACKGROUND
+   * ============================================================
+   *
+   * The background does NOT jump from dark to white.
+   *
+   * It gradually evolves:
+   *
+   * 0%   Deep Navy
+   * 20%  Dark Blue
+   * 40%  Deep Teal
+   * 60%  Emerald Teal
+   * 78%  Dark/Medium Teal
+   * 92%  Soft Blue
+   * 100% Very Light
+   *
+   * Because the story is 500vh tall, these transitions
+   * happen slowly in actual scrolling.
+   * ============================================================
+   */
+
+  type ColorStop = {
+    position: number;
+    r: number;
+    g: number;
+    b: number;
+  };
+
+  const colorStops: ColorStop[] = [
+    {
+      position: 0.00,
+      r: 14,
+      g: 24,
+      b: 40,
+    },
+
+    {
+      position: 0.20,
+      r: 12,
+      g: 31,
+      b: 48,
+    },
+
+    {
+      position: 0.40,
+      r: 9,
+      g: 49,
+      b: 58,
+    },
+
+    {
+      position: 0.60,
+      r: 7,
+      g: 68,
+      b: 67,
+    },
+
+    {
+      position: 0.78,
+      r: 10,
+      g: 79,
+      b: 75,
+    },
+
+    {
+      position: 0.92,
+      r: 76,
+      g: 119,
+      b: 126,
+    },
+
+    {
+      position: 1.00,
+      r: 247,
+      g: 250,
+      b: 252,
+    },
+  ];
+
+  const getBackgroundColor = (
+    value: number
+  ) => {
+    const p = clamp(value);
+
+    for (
+      let i = 0;
+      i <
+        colorStops.length - 1;
+      i++
+    ) {
+      const current =
+        colorStops[i];
+
+      const next =
+        colorStops[i + 1];
+
+      if (
+        p >= current.position &&
+        p <= next.position
+      ) {
+        const localProgress =
+          (p -
+            current.position) /
+          (next.position -
+            current.position);
+
+        const eased =
+          ease(localProgress);
+
+        const r =
+          Math.round(
+            current.r +
+              (next.r -
+                current.r) *
+                eased
+          );
+
+        const g =
+          Math.round(
+            current.g +
+              (next.g -
+                current.g) *
+                eased
+          );
+
+        const b =
+          Math.round(
+            current.b +
+              (next.b -
+                current.b) *
+                eased
+          );
+
+        return `rgb(${r}, ${g}, ${b})`;
+      }
+    }
+
+    return "rgb(247, 250, 252)";
+  };
+
+  const backgroundColor =
+    getBackgroundColor(
+      progress
+    );
+
+  /*
+   * ============================================================
+   * BACKGROUND GLOW
+   * ============================================================
+   *
+   * Keep the green glow visible for most of the cinematic
+   * section and slowly reduce it near the end.
+   * ============================================================
+   */
+
+  const glowOpacity =
+    progress < 0.80
+      ? 0.82
+      : 0.82 -
+        ((progress - 0.80) /
+          0.20) *
+          0.62;
+
+  /*
+   * ============================================================
+   * AI TEXT COLORS
+   * ============================================================
+   *
+   * Keep the message white while the background is dark.
+   *
+   * Near the very end, it transitions toward dark navy.
+   * ============================================================
+   */
+
+  const textTransition =
+    ease(
+      clamp(
+        (progress - 0.90) /
+          0.10
+      )
+    );
+
+  const headingColor =
+    `rgb(
+      ${Math.round(
+        255 -
+          236 *
+            textTransition
+      )},
+      ${Math.round(
+        255 -
+          226 *
+            textTransition
+      )},
+      ${Math.round(
+        255 -
+          205 *
+            textTransition
+      )}
+    )`;
+
+  const descriptionColor =
+    `rgb(
+      ${Math.round(
+        211 -
+          125 *
+            textTransition
+      )},
+      ${Math.round(
+        221 -
+          115 *
+            textTransition
+      )},
+      ${Math.round(
+        232 -
+          105 *
+            textTransition
+      )}
+    )`;
+
+  /*
+   * ============================================================
+   * RENDER
+   * ============================================================
+   */
+
   return (
     <section
       id="intelligence-story"
@@ -183,14 +507,15 @@ const backgroundColor = `rgb(
         left-1/2
         w-screen
         -translate-x-1/2
-        h-[240vh]
+        h-[500vh]
         m-0
         p-0
       "
     >
-      {/* ========================================================
-          PINNED CINEMATIC VIEW
-         ======================================================== */}
+
+      {/* ======================================================
+          PINNED VIEWPORT
+         ====================================================== */}
 
       <div
         className="
@@ -204,9 +529,10 @@ const backgroundColor = `rgb(
           backgroundColor,
         }}
       >
-        {/* ======================================================
-            BACKGROUND
-           ====================================================== */}
+
+        {/* ====================================================
+            BACKGROUND RADIAL GLOW
+           ==================================================== */}
 
         <div
           className="
@@ -217,13 +543,16 @@ const backgroundColor = `rgb(
           "
           style={{
             background:
-              "radial-gradient(circle at 50% 50%, rgba(0,210,160,0.09), transparent 42%)",
+              "radial-gradient(circle at 50% 48%, rgba(0,210,160,0.10), transparent 45%)",
+
+            opacity:
+              glowOpacity,
           }}
         />
 
-        {/* ======================================================
-            SOFT GLOW
-           ====================================================== */}
+        {/* ====================================================
+            LARGE CENTER GLOW
+           ==================================================== */}
 
         <div
           className="
@@ -231,32 +560,25 @@ const backgroundColor = `rgb(
             absolute
             left-1/2
             top-1/2
-            h-[760px]
-            w-[760px]
+            h-[800px]
+            w-[800px]
             -translate-x-1/2
             -translate-y-1/2
             rounded-full
-            blur-[120px]
+            blur-[130px]
           "
           style={{
             background:
               "radial-gradient(circle, rgba(0,210,160,0.20), transparent 68%)",
 
             opacity:
-              1 - progress * 0.9,
+              glowOpacity,
           }}
         />
 
-        {/* ======================================================
-            MAIN STORY CIRCLE
-
-            THIS NEVER MOVES.
-
-            Only:
-            - wipe
-            - opacity
-            - center text opacity
-         ====================================================== */}
+        {/* ====================================================
+            STORY CIRCLE
+           ==================================================== */}
 
         <div
           className="
@@ -272,6 +594,7 @@ const backgroundColor = `rgb(
               1 - finalProgress,
           }}
         >
+
           <div
             className="
               relative
@@ -279,6 +602,7 @@ const backgroundColor = `rgb(
               w-[min(560px,76vw)]
             "
           >
+
             {/* ==================================================
                 CIRCLE WIPE
                ================================================== */}
@@ -291,19 +615,22 @@ const backgroundColor = `rgb(
                 rounded-full
               "
               style={{
-                WebkitMaskImage: `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
-                )`,
+                WebkitMaskImage:
+                  `conic-gradient(
+                    from 0deg,
+                    transparent 0deg ${wipeAngle}deg,
+                    black ${wipeAngle}deg 360deg
+                  )`,
 
-                maskImage: `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
-                )`,
+                maskImage:
+                  `conic-gradient(
+                    from 0deg,
+                    transparent 0deg ${wipeAngle}deg,
+                    black ${wipeAngle}deg 360deg
+                  )`,
               }}
             >
+
               <img
                 src="/DCF Logo.png"
                 alt="DCF Lab Intelligence"
@@ -313,10 +640,11 @@ const backgroundColor = `rgb(
                   object-contain
                 "
               />
+
             </div>
 
             {/* ==================================================
-                CENTER
+                CENTER DARK CIRCLE
                ================================================== */}
 
             <div
@@ -341,15 +669,21 @@ const backgroundColor = `rgb(
                   1 - centerFade,
               }}
             >
+
+              {/* SPARKLE */}
+
               <div
                 className="
                   mb-3
                   text-[26px]
+                  leading-none
                   text-emerald-400
                 "
               >
                 ✦
               </div>
+
+              {/* TITLE */}
 
               <div
                 className="
@@ -357,13 +691,14 @@ const backgroundColor = `rgb(
                   flex-col
                   items-center
                   leading-none
+                  tracking-[-0.045em]
                 "
               >
+
                 <span
                   className="
                     text-[clamp(28px,4vw,48px)]
                     font-bold
-                    tracking-[-0.045em]
                     text-white
                   "
                 >
@@ -374,13 +709,15 @@ const backgroundColor = `rgb(
                   className="
                     text-[clamp(28px,4vw,48px)]
                     font-bold
-                    tracking-[-0.045em]
                     text-emerald-400
                   "
                 >
                   Intelligence
                 </span>
+
               </div>
+
+              {/* SUBTITLE */}
 
               <div
                 className="
@@ -394,114 +731,154 @@ const backgroundColor = `rgb(
                 <br />
                 &amp; Valuation Platform
               </div>
+
             </div>
+
           </div>
+
         </div>
 
-        {/* ======================================================
+        {/* ====================================================
             AI MESSAGE
-
-            It appears without moving the page.
-           ====================================================== */}
+           ==================================================== */}
 
         <div
           className="
+            pointer-events-none
             absolute
             inset-0
-            z-30
+            z-40
             flex
             items-center
             justify-center
             px-6
-            pointer-events-none
           "
           style={{
             opacity:
-              aiProgress *
-              (1 - finalProgress),
+              aiOpacity,
           }}
         >
+
           <div
             className="
-              max-w-[900px]
+              w-full
+              max-w-[1000px]
               text-center
             "
           >
+
+            {/* ==================================================
+                HEADING
+               ================================================== */}
+
             <h1
               className="
-                text-[clamp(42px,6vw,82px)]
+                text-[clamp(44px,6vw,84px)]
                 font-semibold
                 leading-[1]
                 tracking-[-0.055em]
               "
+              style={{
+                color:
+                  headingColor,
+              }}
             >
-              <span className="text-white">
+
+              <span>
                 AI reads.
-              </span>{" "}
-              <span className="text-emerald-400">
+              </span>
+
+              {" "}
+
+              <span
+                className="
+                  text-emerald-400
+                "
+              >
                 You decide.
               </span>
+
             </h1>
+
+            {/* ==================================================
+                FIRST DESCRIPTION
+               ================================================== */}
 
             <p
               className="
                 mx-auto
                 mt-8
-                max-w-[720px]
-                text-[clamp(17px,2vw,23px)]
+                max-w-[760px]
+                text-[clamp(18px,2vw,24px)]
                 leading-[1.65]
-                text-slate-300
               "
+              style={{
+                color:
+                  descriptionColor,
+              }}
             >
               DCF Lab Intelligence helps uncover
               the information behind the numbers.
             </p>
 
+            {/* ==================================================
+                SECOND DESCRIPTION
+               ================================================== */}
+
             <p
               className="
                 mx-auto
-                mt-3
-                max-w-[720px]
-                text-[clamp(17px,2vw,23px)]
+                mt-4
+                max-w-[760px]
+                text-[clamp(18px,2vw,24px)]
                 leading-[1.65]
-                text-slate-300
               "
+              style={{
+                color:
+                  descriptionColor,
+              }}
             >
               You remain in control of the assumptions
               that drive valuation.
             </p>
+
           </div>
+
         </div>
 
-        {/* ======================================================
+        {/* ====================================================
             SCROLL INDICATOR
-           ====================================================== */}
+           ==================================================== */}
 
         <div
           className="
+            pointer-events-none
             absolute
             bottom-10
             left-1/2
             z-50
             -translate-x-1/2
             text-center
-            pointer-events-none
           "
           style={{
             opacity:
-              Math.max(
-                1 - progress * 5,
-                0
-              ),
+              progress < 0.10
+                ? 1
+                : Math.max(
+                    1 -
+                      progress * 7,
+                    0
+                  ),
           }}
         >
+
           <div
             className="
               whitespace-nowrap
               text-[11px]
               font-medium
               uppercase
-              tracking-[0.3em]
+              tracking-[0.30em]
               text-white/75
             "
           >
@@ -519,13 +896,12 @@ const backgroundColor = `rgb(
               to-transparent
             "
           />
+
         </div>
 
-        {/* ======================================================
-            FINAL TRANSITION
-
-            This prevents the abrupt dark → white jump.
-           ====================================================== */}
+        {/* ====================================================
+            VERY SOFT FINAL TRANSITION
+           ==================================================== */}
 
         <div
           className="
@@ -537,10 +913,12 @@ const backgroundColor = `rgb(
           "
           style={{
             opacity:
-              finalProgress * 0.96,
+              finalProgress * 0.10,
           }}
         />
+
       </div>
+
     </section>
   );
 }
