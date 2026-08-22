@@ -315,7 +315,8 @@ return (
             HEADER
         ================================================== */}
 
-        <div className="text-center">
+        <SequenceReveal delay={0}>
+          <div className="text-center">
 
           <h1 className="relative text-[42px] font-bold leading-[1.1] tracking-[-1.2px] text-[#14243a] md:text-[46px]">
 
@@ -342,13 +343,15 @@ return (
 
           </p>
 
-        </div>
+          </div>
+        </SequenceReveal>
 
 
         {/* =================================================
             UPLOAD CARD
         ================================================== */}
 
+        <SequenceReveal delay={450}>
         <div className="mt-[32px] w-full max-w-[700px] rounded-[22px] border border-emerald-200 bg-white p-[20px] shadow-[0_18px_55px_rgba(16,185,129,0.10)]">
 
           <div
@@ -650,6 +653,7 @@ return (
           )}
 
         </div>
+        </SequenceReveal>
 
 
         {/* =====================================================
@@ -657,6 +661,7 @@ return (
         ====================================================== */}
 
         {isAnalyzing && (
+          <SequenceReveal delay={0}>
           <div className="mt-7 w-full max-w-[700px] rounded-xl border border-emerald-100 bg-white p-6 shadow-sm">
 
             <div className="flex items-center justify-between">
@@ -706,6 +711,7 @@ return (
             </div>
 
           </div>
+          </SequenceReveal>
         )}
 
 
@@ -714,6 +720,7 @@ return (
         ====================================================== */}
 
         {analysisComplete && result && (
+          <SequenceReveal delay={0}>
           <div className="mt-8 w-full max-w-[1000px] rounded-2xl border border-emerald-200 bg-white p-7 shadow-[0_15px_45px_rgba(16,185,129,0.08)]">
 
             <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-5 md:flex-row md:items-center">
@@ -867,6 +874,7 @@ return (
             </div>
 
           </div>
+          </SequenceReveal>
         )}
 
 
@@ -875,6 +883,7 @@ return (
         ====================================================== */}
 
         {!selectedFile && (
+          <SequenceReveal delay={250}>
           <div className="mt-[35px] flex w-full max-w-[1000px] items-start justify-center">
 
             {/* STEP 1 */}
@@ -1021,6 +1030,7 @@ return (
             </div>
 
           </div>
+          </SequenceReveal>
                )}
 
         {/* =====================================================
@@ -1360,4 +1370,68 @@ return (
     </main>
   </div>
 );
+}
+
+/* =============================================================
+   SEQUENTIAL SCROLL REVEAL
+
+   Important:
+   - No translate-y
+   - No slide from bottom
+   - No upward movement
+   - Only opacity + a soft blur/glow
+   - Each real analysis section reveals when the user scrolls
+     into it.
+   ============================================================= */
+
+function SequenceReveal({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.12,
+        rootMargin: "0px 0px -12% 0px",
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        filter: visible
+          ? "blur(0px)"
+          : "blur(10px)",
+        transition:
+          `opacity 900ms ease ${delay}ms, ` +
+          `filter 900ms ease ${delay}ms`,
+        willChange: "opacity, filter",
+      }}
+    >
+      {children}
+    </div>
+  );
 }
