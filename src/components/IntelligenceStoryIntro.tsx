@@ -4,83 +4,59 @@ export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    let ticking = false;
+    let raf = 0;
 
-    const updateProgress = () => {
+    const update = () => {
       const section = document.getElementById("intelligence-story");
 
       if (!section) return;
 
       const rect = section.getBoundingClientRect();
 
-      /*
-       * The story itself is 300vh tall.
-       * We calculate progress only while the story
-       * is passing through the viewport.
-       */
-      const totalScroll =
+      const scrollDistance =
         section.offsetHeight - window.innerHeight;
 
-      if (totalScroll <= 0) return;
+      if (scrollDistance <= 0) return;
 
-      const currentScroll = -rect.top;
+      const rawProgress =
+        -rect.top / scrollDistance;
 
       const nextProgress = Math.min(
-        Math.max(currentScroll / totalScroll, 0),
+        Math.max(rawProgress, 0),
         1
       );
 
       setProgress(nextProgress);
     };
 
-    const handleScroll = () => {
-      if (ticking) return;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
 
-      ticking = true;
-
-      requestAnimationFrame(() => {
-        updateProgress();
-        ticking = false;
-      });
+      raf = requestAnimationFrame(update);
     };
 
-    window.addEventListener("scroll", handleScroll, {
+    window.addEventListener("scroll", onScroll, {
       passive: true,
     });
 
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("resize", onScroll);
 
-    updateProgress();
+    update();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+      cancelAnimationFrame(raf);
+
+      window.removeEventListener(
+        "scroll",
+        onScroll
+      );
+
+      window.removeEventListener(
+        "resize",
+        onScroll
+      );
     };
   }, []);
-
-  /*
-   * ============================================================
-   * STORY TIMELINE
-   * ============================================================
-   *
-   * 0.00 → 0.18
-   * Circle stays fully visible
-   *
-   * 0.18 → 0.58
-   * Circle wipes clockwise
-   * Center text fades
-   *
-   * 0.58 → 0.68
-   * Circle disappears completely
-   *
-   * 0.68 → 0.82
-   * AI message appears
-   *
-   * 0.82 → 1.00
-   * Story fades out
-   * Actual Intelligence page appears
-   * ============================================================
-   */
 
   const clamp = (
     value: number,
@@ -89,67 +65,65 @@ export default function IntelligenceStoryIntro() {
   ) => Math.min(Math.max(value, min), max);
 
   /*
-   * CENTER TEXT
+   * ============================================================
+   * STORY TIMELINE
+   *
+   * 0.00 - 0.25
+   * Hero circle
+   *
+   * 0.25 - 0.62
+   * Circle wipes away
+   *
+   * 0.62 - 0.70
+   * Empty cinematic pause
+   *
+   * 0.70 - 0.86
+   * AI message
+   *
+   * 0.86 - 1.00
+   * Smooth transition to page
+   * ============================================================
    */
-  const centerTextProgress = clamp(
-    (progress - 0.18) / 0.40
-  );
 
-  /*
-   * OUTER CIRCLE WIPE
-   */
   const circleProgress = clamp(
-    (progress - 0.18) / 0.40
+    (progress - 0.25) / 0.37
   );
 
-  const wipeAngle = circleProgress * 360;
+  const centerFade = clamp(
+    (progress - 0.25) / 0.25
+  );
 
-  /*
-   * AI MESSAGE
-   */
-  const textProgress = clamp(
+  const aiProgress = clamp(
     (progress - 0.68) / 0.14
   );
 
-  /*
-   * FINAL EXIT
-   */
-  const exitProgress = clamp(
-    (progress - 0.84) / 0.16
+  const finalProgress = clamp(
+    (progress - 0.90) / 0.10
   );
 
   /*
-   * BACKGROUND
-   *
-   * Keep the cinematic dark background.
-   * Do NOT transition to white here.
-   * Your real page underneath handles its own background.
+   * Circle remains physically stationary.
    */
-  const backgroundProgress = clamp(
-    (progress - 0.72) / 0.28
+  const wipeAngle =
+    circleProgress * 360;
+
+  /*
+   * Cinematic dark background.
+   *
+   * Stay dark for almost the entire story.
+   * Do NOT suddenly turn white.
+   */
+  const bgFade = clamp(
+    (progress - 0.90) / 0.10
   );
 
   const backgroundColor = `rgb(
-    ${Math.round(16 + 8 * backgroundProgress)},
-    ${Math.round(26 + 12 * backgroundProgress)},
-    ${Math.round(43 + 10 * backgroundProgress)}
+    ${Math.round(14 + 241 * bgFade)},
+    ${Math.round(24 + 237 * bgFade)},
+    ${Math.round(40 + 215 * bgFade)}
   )`;
 
   return (
-    /*
-     * ============================================================
-     * FULL WIDTH STORY
-     *
-     * IMPORTANT:
-     *
-     * w-screen + relative left-1/2 + -translate-x-1/2
-     *
-     * forces this section to escape any max-width parent.
-     *
-     * This fixes your current desktop problem where the circle
-     * is appearing on the left instead of the center.
-     * ============================================================
-     */
     <section
       id="intelligence-story"
       className="
@@ -157,13 +131,13 @@ export default function IntelligenceStoryIntro() {
         left-1/2
         w-screen
         -translate-x-1/2
-        h-[300vh]
+        h-[240vh]
         m-0
         p-0
       "
     >
       {/* ========================================================
-          STICKY STORY VIEWPORT
+          PINNED CINEMATIC VIEW
          ======================================================== */}
 
       <div
@@ -179,7 +153,24 @@ export default function IntelligenceStoryIntro() {
         }}
       >
         {/* ======================================================
-            BACKGROUND GLOW
+            BACKGROUND
+           ====================================================== */}
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-0
+          "
+          style={{
+            background:
+              "radial-gradient(circle at 50% 50%, rgba(0,210,160,0.09), transparent 42%)",
+          }}
+        />
+
+        {/* ======================================================
+            SOFT GLOW
            ====================================================== */}
 
         <div
@@ -188,17 +179,16 @@ export default function IntelligenceStoryIntro() {
             absolute
             left-1/2
             top-1/2
-            z-0
-            h-[800px]
-            w-[800px]
+            h-[760px]
+            w-[760px]
             -translate-x-1/2
             -translate-y-1/2
             rounded-full
-            blur-[110px]
+            blur-[120px]
           "
           style={{
             background:
-              "radial-gradient(circle, rgba(0,210,160,0.18), transparent 68%)",
+              "radial-gradient(circle, rgba(0,210,160,0.20), transparent 68%)",
 
             opacity:
               1 - progress * 0.9,
@@ -206,45 +196,39 @@ export default function IntelligenceStoryIntro() {
         />
 
         {/* ======================================================
-            STORY CIRCLE
+            MAIN STORY CIRCLE
 
-            NEVER fixed.
-            NEVER translated by scroll.
-            NEVER moved horizontally by progress.
+            THIS NEVER MOVES.
 
-            It stays exactly in the center.
-           ====================================================== */}
+            Only:
+            - wipe
+            - opacity
+            - center text opacity
+         ====================================================== */}
 
         <div
           className="
             absolute
-            left-1/2
-            top-1/2
+            inset-0
             z-20
-            -translate-x-1/2
-            -translate-y-1/2
+            flex
+            items-center
+            justify-center
           "
           style={{
-            opacity: 1 - exitProgress,
+            opacity:
+              1 - finalProgress,
           }}
         >
-          {/* ====================================================
-              CIRCLE CONTAINER
-             ==================================================== */}
-
           <div
             className="
               relative
-              h-[min(560px,78vw)]
-              w-[min(560px,78vw)]
+              h-[min(560px,76vw)]
+              w-[min(560px,76vw)]
             "
           >
             {/* ==================================================
-                OUTER LOGO WIPE
-
-                The physical circle does NOT move.
-
-                Only the conic mask changes.
+                CIRCLE WIPE
                ================================================== */}
 
             <div
@@ -272,8 +256,6 @@ export default function IntelligenceStoryIntro() {
                 src="/DCF Logo.png"
                 alt="DCF Lab Intelligence"
                 className="
-                  absolute
-                  inset-0
                   h-full
                   w-full
                   object-contain
@@ -282,7 +264,7 @@ export default function IntelligenceStoryIntro() {
             </div>
 
             {/* ==================================================
-                INNER DARK CIRCLE
+                CENTER
                ================================================== */}
 
             <div
@@ -303,37 +285,33 @@ export default function IntelligenceStoryIntro() {
                 text-center
               "
               style={{
-                opacity: 1 - centerTextProgress,
+                opacity:
+                  1 - centerFade,
               }}
             >
-              {/* SPARKLE */}
-
               <div
                 className="
                   mb-3
                   text-[26px]
-                  leading-none
                   text-emerald-400
                 "
               >
                 ✦
               </div>
 
-              {/* TITLE */}
-
               <div
                 className="
                   flex
                   flex-col
                   items-center
-                  leading-[1]
-                  tracking-[-0.045em]
+                  leading-none
                 "
               >
                 <span
                   className="
                     text-[clamp(28px,4vw,48px)]
                     font-bold
+                    tracking-[-0.045em]
                     text-white
                   "
                 >
@@ -344,14 +322,13 @@ export default function IntelligenceStoryIntro() {
                   className="
                     text-[clamp(28px,4vw,48px)]
                     font-bold
+                    tracking-[-0.045em]
                     text-emerald-400
                   "
                 >
                   Intelligence
                 </span>
               </div>
-
-              {/* SUBTITLE */}
 
               <div
                 className="
@@ -372,12 +349,11 @@ export default function IntelligenceStoryIntro() {
         {/* ======================================================
             AI MESSAGE
 
-            Appears AFTER circle disappears.
+            It appears without moving the page.
            ====================================================== */}
 
         <div
           className="
-            pointer-events-none
             absolute
             inset-0
             z-30
@@ -385,26 +361,26 @@ export default function IntelligenceStoryIntro() {
             items-center
             justify-center
             px-6
+            pointer-events-none
           "
           style={{
             opacity:
-              textProgress *
-              (1 - exitProgress),
+              aiProgress *
+              (1 - finalProgress),
           }}
         >
           <div
             className="
-              w-full
               max-w-[900px]
               text-center
             "
           >
             <h1
               className="
-                font-semibold
-                leading-[1.02]
-                tracking-[-0.05em]
                 text-[clamp(42px,6vw,82px)]
+                font-semibold
+                leading-[1]
+                tracking-[-0.055em]
               "
             >
               <span className="text-white">
@@ -421,7 +397,7 @@ export default function IntelligenceStoryIntro() {
                 mt-8
                 max-w-[720px]
                 text-[clamp(17px,2vw,23px)]
-                leading-[1.7]
+                leading-[1.65]
                 text-slate-300
               "
             >
@@ -432,10 +408,10 @@ export default function IntelligenceStoryIntro() {
             <p
               className="
                 mx-auto
-                mt-2
+                mt-3
                 max-w-[720px]
                 text-[clamp(17px,2vw,23px)]
-                leading-[1.7]
+                leading-[1.65]
                 text-slate-300
               "
             >
@@ -451,19 +427,20 @@ export default function IntelligenceStoryIntro() {
 
         <div
           className="
-            pointer-events-none
             absolute
             bottom-10
             left-1/2
-            z-40
+            z-50
             -translate-x-1/2
             text-center
+            pointer-events-none
           "
           style={{
-            opacity: Math.max(
-              1 - progress * 4,
-              0
-            ),
+            opacity:
+              Math.max(
+                1 - progress * 5,
+                0
+              ),
           }}
         >
           <div
@@ -472,8 +449,8 @@ export default function IntelligenceStoryIntro() {
               text-[11px]
               font-medium
               uppercase
-              tracking-[0.28em]
-              text-white/80
+              tracking-[0.3em]
+              text-white/75
             "
           >
             Scroll to explore
@@ -491,6 +468,26 @@ export default function IntelligenceStoryIntro() {
             "
           />
         </div>
+
+        {/* ======================================================
+            FINAL TRANSITION
+
+            This prevents the abrupt dark → white jump.
+           ====================================================== */}
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-[100]
+            bg-white
+          "
+          style={{
+            opacity:
+              finalProgress * 0.96,
+          }}
+        />
       </div>
     </section>
   );
