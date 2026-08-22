@@ -158,20 +158,52 @@ export default function IntelligenceStoryIntro() {
      ============================================================ */
 
 
-  /* ============================================================
-     CIRCLE WIPE
-     ============================================================ */
+ {/* ==================================================
+    CIRCLE WIPE — CLOCKWISE
+   ================================================== */}
 
-  const circleProgress =
-    phase(
-      0.14,
-      0.42
-    );
+<div
+  className="
+    absolute
+    inset-0
+    overflow-hidden
+    rounded-full
+  "
+  style={{
+    WebkitMaskImage:
+      `
+      conic-gradient(
+        from -90deg,
+        transparent 0deg,
+        transparent ${circleProgress * 360}deg,
+        black ${circleProgress * 360}deg,
+        black 360deg
+      )
+      `,
 
-  const visibleAngle =
-    360 -
-    circleProgress * 360;
-
+    maskImage:
+      `
+      conic-gradient(
+        from -90deg,
+        transparent 0deg,
+        transparent ${circleProgress * 360}deg,
+        black ${circleProgress * 360}deg,
+        black 360deg
+      )
+      `,
+  }}
+>
+  <img
+    src="/DCF Logo.png"
+    alt="DCF Lab Intelligence"
+    className="
+      block
+      h-full
+      w-full
+      object-contain
+    "
+  />
+</div>
 
   /* ============================================================
      CIRCLE INNER TEXT
