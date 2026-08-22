@@ -12,7 +12,9 @@ export default function IntelligenceStoryIntro() {
 
     const updateProgress = () => {
       const section =
-        document.getElementById("intelligence-story");
+        document.getElementById(
+          "intelligence-story"
+        );
 
       if (!section) return;
 
@@ -43,7 +45,9 @@ export default function IntelligenceStoryIntro() {
     };
 
     const handleScroll = () => {
-      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(
+        animationFrame
+      );
 
       animationFrame =
         requestAnimationFrame(
@@ -67,7 +71,9 @@ export default function IntelligenceStoryIntro() {
     updateProgress();
 
     return () => {
-      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(
+        animationFrame
+      );
 
       window.removeEventListener(
         "scroll",
@@ -111,11 +117,6 @@ export default function IntelligenceStoryIntro() {
   };
 
 
-  /*
-   * Converts global scroll progress
-   * into a smooth local progress.
-   */
-
   const phase = (
     start: number,
     end: number
@@ -136,44 +137,39 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     SLOW CINEMATIC TIMELINE
+     STORY TIMELINE
 
-     The story intentionally takes a LOT of scrolling.
-
-     0.00 - 0.15
+     0.00 - 0.14
        Circle holds
 
-     0.15 - 0.45
+     0.14 - 0.42
        Circle slowly wipes
 
-     0.45 - 0.52
-       Empty pause
+     0.42 - 0.50
+       Circle disappears / pause
 
-     0.52 - 0.65
-       AI text slowly appears
+     0.50 - 0.62
+       AI message appears
 
-     0.65 - 0.78
-       AI text stays
+     0.62 - 0.77
+       AI message stays
 
-     0.78 - 0.88
-       Background slowly becomes white
+     0.77 - 0.94
+       Background slowly turns white
 
-     0.88 - 0.92
+     0.94 - 0.96
        White pause
 
-     0.92 - 0.96
-       Analysis page fades in
-
      0.96 - 0.975
-       Analysis header
+       Analysis title
 
-     0.975 - 0.99
-       Analysis workspace
+     0.975 - 0.988
+       Analysis upload panel
 
-     0.99 - 1.00
-       Analysis cards/final content
+     0.988 - 1.00
+       Analysis process steps
 
-     NOTHING SLIDES.
+     NOTHING SLIDES UP.
      ============================================================ */
 
 
@@ -183,8 +179,8 @@ export default function IntelligenceStoryIntro() {
 
   const circleProgress =
     phase(
-      0.15,
-      0.45
+      0.14,
+      0.42
     );
 
   const visibleAngle =
@@ -193,14 +189,14 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     INNER CIRCLE TEXT
+     CIRCLE INNER TEXT
      ============================================================ */
 
   const circleTextOpacity =
     1 -
     phase(
       0.20,
-      0.38
+      0.37
     );
 
 
@@ -209,31 +205,28 @@ export default function IntelligenceStoryIntro() {
      ============================================================ */
 
   const circleOpacity =
-    progress < 0.45
+    progress < 0.42
       ? 1
       : 1 -
           phase(
-            0.45,
-            0.52
+            0.42,
+            0.50
           );
 
 
   /* ============================================================
      CIRCLE GLOW
-
-     Slow breathing glow.
-     No movement.
      ============================================================ */
 
   const glowWave =
     Math.sin(
       progress *
         Math.PI *
-        5
+        4
     );
 
   const circleGlowStrength =
-    0.72 +
+    0.70 +
     glowWave * 0.06;
 
 
@@ -273,53 +266,43 @@ export default function IntelligenceStoryIntro() {
   /* ============================================================
      AI MESSAGE
 
-     Appears ONLY after the circle has gone.
+     Once it appears, it DOES NOT disappear.
 
-     Opacity only.
+     It remains visible while the background
+     slowly changes to white.
      ============================================================ */
 
-  /* ============================================================
-   AI MESSAGE
+  let aiOpacity = 0;
 
-   Appears after circle disappears
-   and STAYS visible until the white
-   background transition is completely finished.
-   ============================================================ */
+  if (progress < 0.50) {
+    aiOpacity = 0;
+  } else if (progress < 0.62) {
+    aiOpacity =
+      phase(
+        0.50,
+        0.62
+      );
+  } else {
+    aiOpacity = 1;
+  }
 
-let aiOpacity = 0;
-
-if (progress < 0.52) {
-  aiOpacity = 0;
-} else if (progress < 0.65) {
-  aiOpacity =
-    phase(
-      0.52,
-      0.65
-    );
-} else {
-  /*
-   * IMPORTANT:
-   * Once visible, it stays visible.
-   */
-  aiOpacity = 1;
-}
 
   /* ============================================================
-     AI TEXT GLOW
-
-     Strong when it appears.
-     Slowly reduces during white transition.
+     AI GLOW
      ============================================================ */
 
   const aiGlowProgress =
     phase(
-      0.70,
-      0.88
+      0.68,
+      0.94
     );
 
   const aiGlow =
-    0.75 *
-    (1 - aiGlowProgress);
+    0.72 *
+    (
+      1 -
+      aiGlowProgress
+    );
 
 
   const aiTextGlow = `
@@ -394,24 +377,24 @@ if (progress < 0.52) {
     },
 
     {
-      position: 0.80,
+      position: 0.78,
       r: 52,
       g: 100,
       b: 105,
     },
 
     {
-      position: 0.88,
-      r: 150,
-      g: 175,
-      b: 178,
+      position: 0.86,
+      r: 125,
+      g: 157,
+      b: 160,
     },
 
     {
       position: 0.94,
-      r: 220,
-      g: 229,
-      b: 230,
+      r: 225,
+      g: 232,
+      b: 233,
     },
 
     {
@@ -445,10 +428,14 @@ if (progress < 0.52) {
         p <= next.position
       ) {
         const local =
-          (p -
-            current.position) /
-          (next.position -
-            current.position);
+          (
+            p -
+            current.position
+          ) /
+          (
+            next.position -
+            current.position
+          );
 
         const e =
           ease(local);
@@ -504,22 +491,23 @@ if (progress < 0.52) {
   const backgroundGlow =
     1 -
     phase(
-      0.70,
-      0.90
+      0.68,
+      0.94
     );
 
 
   /* ============================================================
      AI TEXT COLOR
 
-     White → dark navy as background becomes white.
+     During white transition:
+     white/light → dark navy
      ============================================================ */
 
-const textTransition =
-  phase(
-    0.78,
-    0.94
-  );
+  const textTransition =
+    phase(
+      0.77,
+      0.94
+    );
 
 
   const headingColor =
@@ -565,69 +553,63 @@ const textTransition =
   /* ============================================================
      WHITE TRANSITION
 
-     Starts ONLY after AI message has had
-     a long time on screen.
+     STARTS AFTER AI MESSAGE HAS BEEN VISIBLE
+     FOR A LONG TIME.
+
+     FINISHES BEFORE ANALYSIS.
      ============================================================ */
 
   const whiteOpacity =
-  phase(
-    0.78,
-    0.94
-  );
+    phase(
+      0.77,
+      0.94
+    );
+
 
   /* ============================================================
      REAL ANALYSIS PAGE
 
-     Appears AFTER white background.
+     WHITE IS COMPLETELY FINISHED FIRST.
 
-     No movement.
-     No translate.
-     No slide.
+     THEN ANALYSIS APPEARS.
      ============================================================ */
 
-  const analysisProgress =
-  phase(
-    0.96,
-    1.00
-  );
-
   const analysisOpacity =
-    analysisProgress;
+    phase(
+      0.96,
+      0.975
+    );
 
 
   const analysisBlur =
     12 -
-    analysisProgress * 12;
+    analysisOpacity * 12;
 
 
   /* ============================================================
-     ANALYSIS INTERNAL SEQUENCE
+     ANALYSIS SUCCESSION
+
+     No movement.
+     Opacity only.
      ============================================================ */
 
   const analysisHeaderOpacity =
     phase(
-      0.955,
-      0.975
+      0.96,
+      0.972
     );
 
 
   const analysisMainOpacity =
     phase(
       0.972,
-      0.985
+      0.988
     );
 
 
   const analysisCardsOpacity =
     phase(
-      0.982,
-      0.995
-    );
-
-
-  const analysisFinalOpacity =
-    phase(
-      0.992,
+      0.988,
       1.00
     );
 
@@ -642,17 +624,14 @@ const textTransition =
       className="
         relative
         w-full
-        h-[800vh]
+        h-[1000vh]
         m-0
         p-0
       "
     >
 
       {/* ======================================================
-          STICKY VIEWPORT
-
-          EVERYTHING REMAINS IN THIS SAME SCREEN
-          POSITION WHILE USER SCROLLS.
+          FIXED STORY VIEWPORT
          ====================================================== */}
 
       <div
@@ -742,14 +721,9 @@ const textTransition =
         {/* ====================================================
             CIRCLE
 
-            FIXED POSITION.
+            FIXED SCREEN POSITION.
 
-            ONLY:
-              wipe
-              glow
-              opacity
-
-            changes.
+            NO UP/DOWN MOVEMENT.
            ==================================================== */}
 
         <div
@@ -779,7 +753,7 @@ const textTransition =
         >
 
           {/* ==================================================
-              SLOW CIRCLE WIPE
+              CIRCLE WIPE
              ================================================== */}
 
           <div
@@ -945,9 +919,11 @@ const textTransition =
         {/* ====================================================
             AI MESSAGE
 
-            APPEARS AFTER CIRCLE.
+            IMPORTANT:
+            z-110 > white z-100
 
-            STAYS COMPLETELY STATIONARY.
+            Therefore the text remains visible
+            while the background becomes white.
            ==================================================== */}
 
         <div
@@ -955,7 +931,7 @@ const textTransition =
             pointer-events-none
             absolute
             inset-0
-            z-[100]
+            z-[110]
             flex
             items-center
             justify-center
@@ -1000,6 +976,7 @@ const textTransition =
               >
                 You decide.
               </span>
+
             </h1>
 
 
@@ -1031,9 +1008,8 @@ const textTransition =
         {/* ====================================================
             WHITE BACKGROUND
 
-            BELOW AI MESSAGE.
-
-            ONLY OPACITY CHANGES.
+            z-100
+            AI text is z-110
            ==================================================== */}
 
         <div
@@ -1054,15 +1030,14 @@ const textTransition =
         {/* ====================================================
             REAL ANALYSIS PAGE
 
-            APPEARS ONLY AFTER WHITE BACKGROUND.
+            THIS IS THE IMPORTANT FIX.
 
-            NO SLIDE.
-            NO TRANSLATE.
-            NO BOTTOM ENTRANCE.
+            absolute
+            inset-0
+            overflow-hidden
 
-            ONLY:
-              opacity
-              blur
+            NO overflow-y-auto.
+            NO normal page scrolling.
            ==================================================== */}
 
         <div
@@ -1070,7 +1045,7 @@ const textTransition =
             absolute
             inset-0
             z-[120]
-            overflow-y-auto
+            overflow-hidden
             bg-white
           "
           style={{
@@ -1087,25 +1062,68 @@ const textTransition =
           }}
         >
 
+          {/* ==================================================
+              ANALYSIS BACKGROUND
+             ================================================== */}
+
           <div
             className="
-              min-h-full
-              w-full
+              absolute
+              inset-0
               bg-white
             "
           >
 
             {/* ==================================================
-                ANALYSIS HEADER
+                SOFT GREEN GLOW
                ================================================== */}
 
             <div
               className="
+                pointer-events-none
+                absolute
+                left-1/2
+                top-[55%]
+                h-[600px]
+                w-[850px]
+                -translate-x-1/2
+                -translate-y-1/2
+                rounded-full
+                blur-[120px]
+              "
+              style={{
+                background:
+                  `
+                  radial-gradient(
+                    circle,
+                    rgba(
+                      0,
+                      210,
+                      160,
+                      0.10
+                    ),
+                    transparent 68%
+                  )
+                  `,
+              }}
+            />
+
+
+            {/* ==================================================
+                ANALYSIS HEADER
+
+                FIXED POSITION.
+                NO MOVEMENT.
+               ================================================== */}
+
+            <div
+              className="
+                absolute
+                inset-x-0
+                top-[6%]
+                z-10
                 px-6
-                pb-8
-                pt-20
-                md:px-12
-                lg:px-20
+                text-center
               "
               style={{
                 opacity:
@@ -1116,7 +1134,7 @@ const textTransition =
               <div
                 className="
                   mx-auto
-                  max-w-7xl
+                  max-w-5xl
                 "
               >
 
@@ -1158,10 +1176,11 @@ const textTransition =
 
                 <p
                   className="
-                    mt-6
+                    mx-auto
+                    mt-5
                     max-w-2xl
-                    text-lg
-                    leading-8
+                    text-[clamp(15px,1.4vw,19px)]
+                    leading-7
                     text-slate-600
                   "
                 >
@@ -1177,15 +1196,24 @@ const textTransition =
 
 
             {/* ==================================================
-                ANALYSIS WORKSPACE
+                MAIN ANALYSIS WORKSPACE
+
+                FIXED POSITION.
+
+                NO:
+                  translate-y
+                  margin-top
+                  normal flow
                ================================================== */}
 
             <div
               className="
-                px-6
-                py-8
-                md:px-12
-                lg:px-20
+                absolute
+                left-1/2
+                top-[39%]
+                z-10
+                w-[min(1100px,calc(100%-48px))]
+                -translate-x-1/2
               "
               style={{
                 opacity:
@@ -1195,15 +1223,15 @@ const textTransition =
 
               <div
                 className="
-                  mx-auto
                   grid
-                  max-w-7xl
                   gap-6
                   lg:grid-cols-[1.4fr_0.6fr]
                 "
               >
 
-                {/* MAIN PANEL */}
+                {/* =================================================
+                    MAIN UPLOAD PANEL
+                   ================================================= */}
 
                 <div
                   className="
@@ -1211,8 +1239,8 @@ const textTransition =
                     border
                     border-slate-200
                     bg-white
-                    p-8
-                    shadow-sm
+                    p-6
+                    shadow-[0_20px_60px_rgba(15,23,42,0.06)]
                   "
                 >
 
@@ -1271,12 +1299,12 @@ const textTransition =
 
                   <div
                     className="
-                      mt-8
+                      mt-6
                       rounded-2xl
                       border-2
                       border-dashed
                       border-slate-200
-                      p-10
+                      p-7
                       text-center
                     "
                   >
@@ -1285,8 +1313,8 @@ const textTransition =
                       className="
                         mx-auto
                         flex
-                        h-16
-                        w-16
+                        h-14
+                        w-14
                         items-center
                         justify-center
                         rounded-2xl
@@ -1301,7 +1329,7 @@ const textTransition =
 
                     <h4
                       className="
-                        mt-5
+                        mt-4
                         text-lg
                         font-semibold
                         text-slate-900
@@ -1329,7 +1357,7 @@ const textTransition =
 
                     <button
                       className="
-                        mt-6
+                        mt-5
                         rounded-xl
                         bg-slate-900
                         px-6
@@ -1347,13 +1375,15 @@ const textTransition =
                 </div>
 
 
-                {/* AI PANEL */}
+                {/* =================================================
+                    AI PANEL
+                   ================================================= */}
 
                 <div
                   className="
                     rounded-3xl
                     bg-slate-900
-                    p-8
+                    p-7
                     text-white
                   "
                 >
@@ -1399,7 +1429,7 @@ const textTransition =
 
                   <div
                     className="
-                      mt-8
+                      mt-7
                       space-y-3
                     "
                   >
@@ -1417,6 +1447,7 @@ const textTransition =
                       Financial Statements
                     </div>
 
+
                     <div
                       className="
                         rounded-xl
@@ -1429,6 +1460,7 @@ const textTransition =
                     >
                       Management Commentary
                     </div>
+
 
                     <div
                       className="
@@ -1453,15 +1485,22 @@ const textTransition =
 
 
             {/* ==================================================
-                ANALYSIS CARDS
+                PROCESS STEPS
+
+                FIXED AT BOTTOM.
+
+                THEY FADE IN.
+                THEY DO NOT COME FROM BELOW.
                ================================================== */}
 
             <div
               className="
-                px-6
-                py-8
-                md:px-12
-                lg:px-20
+                absolute
+                bottom-[6%]
+                left-1/2
+                z-10
+                w-[min(1000px,calc(100%-48px))]
+                -translate-x-1/2
               "
               style={{
                 opacity:
@@ -1471,115 +1510,42 @@ const textTransition =
 
               <div
                 className="
-                  mx-auto
                   grid
-                  max-w-7xl
+                  grid-cols-4
                   gap-5
-                  md:grid-cols-3
                 "
               >
 
-                <AnalysisCard
-                  title="Revenue"
-                  value="Growth"
-                  description="Track historical and forward-looking growth drivers."
+                <AnalysisStep
+                  number="1"
+                  title="Upload"
+                  description="Upload your annual report or 10-K in PDF format."
+                  icon="▱"
                 />
 
-                <AnalysisCard
-                  title="Profitability"
-                  value="Margins"
-                  description="Identify changes in margins and operating performance."
+
+                <AnalysisStep
+                  number="2"
+                  title="AI Extracts"
+                  description="AI extracts financial data and key metrics instantly."
+                  icon="✳"
                 />
 
-                <AnalysisCard
-                  title="Valuation"
-                  value="DCF"
-                  description="Maintain control of assumptions driving intrinsic value."
+
+                <AnalysisStep
+                  number="3"
+                  title="Calculate"
+                  description="Calculate FCFF, WACC, Terminal Value and more."
+                  icon="▥"
                 />
 
-              </div>
 
-            </div>
-
-
-            {/* ==================================================
-                FINAL ANALYSIS SECTION
-               ================================================== */}
-
-            <div
-              className="
-                px-6
-                pb-24
-                pt-8
-                md:px-12
-                lg:px-20
-              "
-              style={{
-                opacity:
-                  analysisFinalOpacity,
-              }}
-            >
-
-              <div
-                className="
-                  mx-auto
-                  max-w-7xl
-                  rounded-3xl
-                  bg-slate-50
-                  p-8
-                  md:p-12
-                "
-              >
-
-                <div
-                  className="
-                    max-w-2xl
-                  "
-                >
-
-                  <div
-                    className="
-                      text-sm
-                      font-semibold
-                      uppercase
-                      tracking-[0.2em]
-                      text-emerald-500
-                    "
-                  >
-                    Your decision
-                  </div>
-
-
-                  <h3
-                    className="
-                      mt-4
-                      text-3xl
-                      font-semibold
-                      tracking-tight
-                      text-slate-900
-                      md:text-4xl
-                    "
-                  >
-                    AI provides the insight.
-                    <br />
-                    You control the valuation.
-                  </h3>
-
-
-                  <p
-                    className="
-                      mt-5
-                      text-base
-                      leading-7
-                      text-slate-600
-                    "
-                  >
-                    Every important assumption remains
-                    visible, editable and under your
-                    control.
-                  </p>
-
-                </div>
+                <AnalysisStep
+                  number="4"
+                  title="Insights"
+                  description="Get intrinsic value and actionable insights."
+                  icon="⊙"
+                />
 
               </div>
 
@@ -1648,57 +1614,66 @@ const textTransition =
 
 
 /* ================================================================
-   ANALYSIS CARD
+   ANALYSIS STEP
    ================================================================ */
 
-function AnalysisCard({
+function AnalysisStep({
+  number,
   title,
-  value,
   description,
+  icon,
 }: {
+  number: string;
   title: string;
-  value: string;
   description: string;
+  icon: string;
 }) {
   return (
     <div
       className="
-        rounded-2xl
-        border
-        border-slate-200
-        bg-white
-        p-6
+        relative
+        text-center
       "
     >
 
       <div
         className="
-          text-sm
-          text-slate-500
+          mx-auto
+          flex
+          h-12
+          w-12
+          items-center
+          justify-center
+          rounded-full
+          bg-emerald-50
+          text-xl
+          text-emerald-500
         "
       >
-        {title}
+        {icon}
       </div>
 
 
       <div
         className="
           mt-3
-          text-3xl
+          text-[13px]
           font-semibold
           text-slate-900
         "
       >
-        {value}
+        {number}. {title}
       </div>
 
 
       <div
         className="
-          mt-3
-          text-sm
-          leading-6
-          text-slate-500
+          mx-auto
+          mt-2
+          max-w-[190px]
+          text-[10px]
+          leading-4
+          text-slate-400
         "
       >
         {description}
