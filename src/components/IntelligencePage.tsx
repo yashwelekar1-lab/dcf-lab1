@@ -311,41 +311,7 @@ return (
 
       <section className="relative z-10 mx-auto flex min-h-[calc(100vh-70px)] w-full max-w-[1250px] flex-col items-center px-6 pt-[38px]">
 
-        {/* =================================================
-            HEADER
-        ================================================== */}
-
-        <SequenceReveal delay={0}>
-          <div className="text-center">
-
-          <h1 className="relative text-[42px] font-bold leading-[1.1] tracking-[-1.2px] text-[#14243a] md:text-[46px]">
-
-            DCF Lab{" "}
-
-            <span className="text-emerald-500">
-              Intelligence
-            </span>
-
-            <span className="absolute -right-7 -top-3 text-[21px] font-normal text-emerald-400">
-              ✦
-            </span>
-
-          </h1>
-
-          <p className="mx-auto mt-[12px] max-w-[850px] text-[14px] leading-[1.65] text-slate-500 md:text-[15px]">
-
-            Upload an Annual Report or 10-K and let AI automatically extract
-            financial statements,
-
-            <br />
-
-            calculate FCFF, WACC, Terminal Value and Intrinsic Value.
-
-          </p>
-
-          </div>
-        </SequenceReveal>
-
+   
 
         {/* =================================================
             UPLOAD CARD
