@@ -50,9 +50,9 @@ const units = [
 ];
 
 export function Header() {
-  /* -------------------------------------------------------
+  /* =========================================================
      STATE
-  ------------------------------------------------------- */
+     ========================================================= */
 
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [unitsOpen, setUnitsOpen] = useState(false);
@@ -65,9 +65,9 @@ export function Header() {
 
   const [isDark, setIsDark] = useState(true);
 
-  /* -------------------------------------------------------
+  /* =========================================================
      LOAD SAVED SETTINGS
-  ------------------------------------------------------- */
+     ========================================================= */
 
   useEffect(() => {
     const savedCurrency = localStorage.getItem("dcflab-currency");
@@ -93,9 +93,9 @@ export function Header() {
     }
   }, []);
 
-  /* -------------------------------------------------------
+  /* =========================================================
      THEME
-  ------------------------------------------------------- */
+     ========================================================= */
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDark
@@ -108,16 +108,11 @@ export function Header() {
     );
   }, [isDark]);
 
-  /* -------------------------------------------------------
-     CLOSE DROPDOWNS WHEN CLICKING OUTSIDE
-  ------------------------------------------------------- */
+  /* =========================================================
+     CLOSE DROPDOWNS / MODALS WITH ESCAPE
+     ========================================================= */
 
   useEffect(() => {
-    const handleClickOutside = () => {
-      setCurrencyOpen(false);
-      setUnitsOpen(false);
-    };
-
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setCurrencyOpen(false);
@@ -127,25 +122,16 @@ export function Header() {
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener(
-        "click",
-        handleClickOutside
-      );
-
-      document.removeEventListener(
-        "keydown",
-        handleEscape
-      );
+      document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
-  /* -------------------------------------------------------
+  /* =========================================================
      CURRENCY
-  ------------------------------------------------------- */
+     ========================================================= */
 
   const handleCurrencyChange = (selected: Currency) => {
     setCurrency(selected);
@@ -157,7 +143,6 @@ export function Header() {
 
     setCurrencyOpen(false);
 
-    // Allows the rest of DCF Lab to listen for the change.
     window.dispatchEvent(
       new CustomEvent("dcflab:currency-change", {
         detail: selected,
@@ -165,9 +150,9 @@ export function Header() {
     );
   };
 
-  /* -------------------------------------------------------
+  /* =========================================================
      UNITS
-  ------------------------------------------------------- */
+     ========================================================= */
 
   const handleUnitChange = (selectedUnit: string) => {
     setUnit(selectedUnit);
@@ -179,7 +164,6 @@ export function Header() {
 
     setUnitsOpen(false);
 
-    // Allows the DCF model to listen for unit changes.
     window.dispatchEvent(
       new CustomEvent("dcflab:unit-change", {
         detail: {
@@ -189,9 +173,9 @@ export function Header() {
     );
   };
 
-  /* -------------------------------------------------------
+  /* =========================================================
      RESET
-  ------------------------------------------------------- */
+     ========================================================= */
 
   const handleReset = () => {
     const confirmed = window.confirm(
@@ -221,9 +205,9 @@ export function Header() {
     );
   };
 
-  /* -------------------------------------------------------
+  /* =========================================================
      EXPORT JSON
-  ------------------------------------------------------- */
+     ========================================================= */
 
   const handleExport = () => {
     const exportData = {
@@ -266,9 +250,9 @@ export function Header() {
     );
   };
 
-  /* -------------------------------------------------------
+  /* =========================================================
      EXPORT CSV
-  ------------------------------------------------------- */
+     ========================================================= */
 
   const handleCSVExport = () => {
     const rows = [
@@ -327,9 +311,9 @@ export function Header() {
     );
   };
 
-  /* -------------------------------------------------------
-     THEME
-  ------------------------------------------------------- */
+  /* =========================================================
+     THEME TOGGLE
+     ========================================================= */
 
   const handleThemeToggle = () => {
     setIsDark((previous) => !previous);
@@ -343,21 +327,27 @@ export function Header() {
     );
   };
 
-  /* -------------------------------------------------------
+  /* =========================================================
      RENDER
-  ------------------------------------------------------- */
+     ========================================================= */
 
   return (
     <>
+      {/* =====================================================
+          HEADER
+          ===================================================== */}
+
       <header
         className="
           sticky
           top-0
           z-[100]
           m-0
-          h-[72px]
+          min-h-[72px]
           w-full
+          max-w-full
           shrink-0
+          overflow-visible
           border-b
           border-slate-800
           bg-[#0d1628]
@@ -368,26 +358,47 @@ export function Header() {
           className="
             mx-auto
             flex
-            h-full
+            min-h-[72px]
             w-full
             max-w-[1500px]
-            items-center
-            justify-between
-            px-6
+            min-w-0
+            flex-col
+            justify-center
+            gap-2
+            px-3
+            py-2
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            sm:gap-3
+            sm:px-4
+            sm:py-0
             lg:px-8
           "
         >
           {/* =================================================
-              LEFT — LOGO
-          ================================================= */}
+              TOP / LEFT — LOGO
+              ================================================= */}
 
-          <div className="flex items-center gap-3">
+          <div
+            className="
+              flex
+              min-w-0
+              shrink
+              items-center
+              justify-between
+              gap-2
+              sm:justify-start
+              sm:gap-3
+            "
+          >
+            {/* Logo */}
             <div
               className="
                 relative
                 flex
-                h-11
-                w-11
+                h-9
+                w-9
                 shrink-0
                 items-center
                 justify-center
@@ -397,26 +408,41 @@ export function Header() {
                 from-cyan-400
                 via-emerald-400
                 to-lime-300
+                sm:h-11
+                sm:w-11
               "
             >
               <div
                 className="
-                  h-[22px]
-                  w-[22px]
+                  h-[18px]
+                  w-[18px]
                   rounded-full
                   bg-[#0d1628]
+                  sm:h-[22px]
+                  sm:w-[22px]
                 "
               />
             </div>
 
-            <div className="flex flex-col leading-none">
+            {/* Brand */}
+            <div
+              className="
+                flex
+                min-w-0
+                flex-col
+                leading-none
+              "
+            >
               <div className="flex items-center">
                 <span
                   className="
-                    text-[32px]
+                    text-[22px]
                     font-bold
-                    tracking-[-1.5px]
+                    tracking-[-1px]
                     text-slate-100
+                    sm:text-[28px]
+                    sm:tracking-[-1.5px]
+                    lg:text-[32px]
                   "
                 >
                   DCF
@@ -424,10 +450,13 @@ export function Header() {
 
                 <span
                   className="
-                    text-[32px]
+                    text-[22px]
                     font-bold
-                    tracking-[-1.5px]
+                    tracking-[-1px]
                     text-emerald-400
+                    sm:text-[28px]
+                    sm:tracking-[-1.5px]
+                    lg:text-[32px]
                   "
                 >
                   Lab
@@ -437,33 +466,79 @@ export function Header() {
               <span
                 className="
                   mt-1
+                  hidden
                   text-[15px]
                   font-medium
                   text-slate-400
+                  sm:block
                 "
               >
                 Discounted Cash Flow Valuation Engine
               </span>
             </div>
+
+            {/* Mobile status */}
+            <div
+              className="
+                ml-auto
+                flex
+                shrink-0
+                items-center
+                gap-1
+                sm:hidden
+              "
+            >
+              <span
+                className="
+                  rounded-full
+                  border
+                  border-emerald-500/30
+                  bg-emerald-500/10
+                  px-2
+                  py-1
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-wider
+                  text-emerald-400
+                "
+              >
+                DCF
+              </span>
+            </div>
           </div>
 
           {/* =================================================
-              RIGHT — CONTROLS
-          ================================================= */}
+              CONTROLS
+              ================================================= */}
 
-          <div className="flex items-center gap-2">
+          <div
+            className="
+              flex
+              min-w-0
+              w-full
+              shrink
+              items-center
+              justify-end
+              gap-1
+              overflow-visible
+              sm:w-auto
+              sm:gap-2
+            "
+          >
             {/* =================================================
                 CURRENCY
-            ================================================= */}
+                ================================================= */}
 
             <div
-              className="relative"
+              className="relative min-w-0"
               onClick={(event) =>
                 event.stopPropagation()
               }
             >
               <button
                 type="button"
+                aria-label="Select currency"
                 onClick={() => {
                   setCurrencyOpen(
                     (previous) => !previous
@@ -472,30 +547,45 @@ export function Header() {
                 }}
                 className="
                   flex
-                  h-9
+                  h-8
+                  max-w-full
+                  min-w-0
                   items-center
-                  gap-2
-                  rounded-[9px]
+                  gap-1
+                  rounded-[8px]
                   border
                   border-slate-700
                   bg-[#172238]
-                  px-3
-                  text-sm
+                  px-2
+                  text-[11px]
                   font-medium
                   text-slate-200
                   transition
                   hover:bg-[#1b2941]
+                  sm:h-9
+                  sm:gap-2
+                  sm:px-3
+                  sm:text-sm
                 "
               >
-                <DollarSign className="h-4 w-4 text-slate-400" />
+                <DollarSign
+                  className="
+                    hidden
+                    h-4
+                    w-4
+                    shrink-0
+                    text-slate-400
+                    sm:block
+                  "
+                />
 
-                <span>
+                <span className="truncate">
                   {currency.label}
                 </span>
 
                 <span
                   className={`
-                    text-xs
+                    text-[10px]
                     text-slate-400
                     transition-transform
                     ${
@@ -514,9 +604,9 @@ export function Header() {
                   className="
                     absolute
                     right-0
-                    top-11
+                    top-10
                     z-[300]
-                    min-w-[160px]
+                    w-[155px]
                     overflow-hidden
                     rounded-lg
                     border
@@ -524,6 +614,8 @@ export function Header() {
                     bg-[#172238]
                     p-1
                     shadow-2xl
+                    sm:top-11
+                    sm:w-[170px]
                   "
                 >
                   {currencies.map((item) => (
@@ -542,19 +634,17 @@ export function Header() {
                         px-3
                         py-2
                         text-left
-                        text-sm
+                        text-xs
                         text-slate-300
                         transition
                         hover:bg-[#1b2941]
                         hover:text-white
+                        sm:text-sm
                       "
                     >
-                      <span>
-                        {item.label}
-                      </span>
+                      <span>{item.label}</span>
 
-                      {currency.code ===
-                        item.code && (
+                      {currency.code === item.code && (
                         <Check className="h-4 w-4 text-emerald-400" />
                       )}
                     </button>
@@ -565,16 +655,17 @@ export function Header() {
 
             {/* =================================================
                 UNITS
-            ================================================= */}
+                ================================================= */}
 
             <div
-              className="relative"
+              className="relative min-w-0"
               onClick={(event) =>
                 event.stopPropagation()
               }
             >
               <button
                 type="button"
+                aria-label="Select display units"
                 onClick={() => {
                   setUnitsOpen(
                     (previous) => !previous
@@ -583,28 +674,45 @@ export function Header() {
                 }}
                 className="
                   flex
-                  h-9
+                  h-8
+                  max-w-full
+                  min-w-0
                   items-center
-                  gap-2
-                  rounded-[9px]
+                  gap-1
+                  rounded-[8px]
                   border
                   border-slate-700
                   bg-[#172238]
-                  px-3
-                  text-sm
+                  px-2
+                  text-[11px]
                   font-medium
                   text-slate-200
                   transition
                   hover:bg-[#1b2941]
+                  sm:h-9
+                  sm:gap-2
+                  sm:px-3
+                  sm:text-sm
                 "
               >
-                <Layers3 className="h-4 w-4 text-slate-400" />
+                <Layers3
+                  className="
+                    hidden
+                    h-4
+                    w-4
+                    shrink-0
+                    text-slate-400
+                    sm:block
+                  "
+                />
 
-                <span>{unit}</span>
+                <span className="max-w-[72px] truncate sm:max-w-none">
+                  {unit}
+                </span>
 
                 <span
                   className={`
-                    text-xs
+                    text-[10px]
                     text-slate-400
                     transition-transform
                     ${
@@ -623,9 +731,9 @@ export function Header() {
                   className="
                     absolute
                     right-0
-                    top-11
+                    top-10
                     z-[300]
-                    min-w-[160px]
+                    w-[155px]
                     overflow-hidden
                     rounded-lg
                     border
@@ -633,6 +741,8 @@ export function Header() {
                     bg-[#172238]
                     p-1
                     shadow-2xl
+                    sm:top-11
+                    sm:w-[170px]
                   "
                 >
                   {units.map((item) => (
@@ -651,11 +761,12 @@ export function Header() {
                         px-3
                         py-2
                         text-left
-                        text-sm
+                        text-xs
                         text-slate-300
                         transition
                         hover:bg-[#1b2941]
                         hover:text-white
+                        sm:text-sm
                       "
                     >
                       <span>{item}</span>
@@ -671,108 +782,146 @@ export function Header() {
 
             {/* =================================================
                 GUIDE
-            ================================================= */}
+                ================================================= */}
 
             <button
               type="button"
+              aria-label="Open guide"
+              title="Guide"
               onClick={() => setGuideOpen(true)}
               className="
                 flex
-                h-9
+                h-8
+                w-8
+                shrink-0
                 items-center
+                justify-center
                 gap-2
-                rounded-[9px]
+                rounded-[8px]
                 border
                 border-slate-700
                 bg-[#172238]
-                px-3
-                text-sm
+                px-2
+                text-xs
                 font-medium
                 text-slate-300
                 transition
                 hover:bg-[#1b2941]
                 hover:text-white
+                sm:h-9
+                sm:w-auto
+                sm:px-3
+                sm:text-sm
               "
             >
               <BookOpen className="h-4 w-4 text-emerald-400" />
 
-              <span>Guide</span>
+              <span className="hidden sm:inline">
+                Guide
+              </span>
             </button>
 
             {/* =================================================
                 ABOUT
-            ================================================= */}
+                ================================================= */}
 
             <button
               type="button"
+              aria-label="Open about"
+              title="About"
               onClick={() => setAboutOpen(true)}
               className="
                 flex
-                h-9
+                h-8
+                w-8
+                shrink-0
                 items-center
+                justify-center
                 gap-2
-                rounded-[9px]
+                rounded-[8px]
                 border
                 border-slate-700
                 bg-[#172238]
-                px-3
-                text-sm
+                px-2
+                text-xs
                 font-medium
                 text-slate-300
                 transition
                 hover:bg-[#1b2941]
                 hover:text-white
+                sm:h-9
+                sm:w-auto
+                sm:px-3
+                sm:text-sm
               "
             >
               <Info className="h-4 w-4 text-emerald-400" />
 
-              <span>About</span>
+              <span className="hidden sm:inline">
+                About
+              </span>
             </button>
 
             {/* =================================================
                 EXPORT
-            ================================================= */}
+                ================================================= */}
 
             <button
               type="button"
+              aria-label="Export JSON"
+              title="Export JSON"
               onClick={handleExport}
               className="
                 flex
-                h-9
+                h-8
+                w-8
+                shrink-0
                 items-center
+                justify-center
                 gap-2
-                rounded-[9px]
+                rounded-[8px]
                 bg-emerald-500
-                px-4
-                text-sm
+                px-2
+                text-xs
                 font-semibold
                 text-white
                 transition
                 hover:bg-emerald-400
                 active:scale-[0.98]
+                sm:h-9
+                sm:w-auto
+                sm:px-4
+                sm:text-sm
               "
             >
               <Download className="h-4 w-4" />
 
-              <span>Export</span>
+              <span className="hidden sm:inline">
+                Export
+              </span>
             </button>
 
             {/* =================================================
                 CSV
-            ================================================= */}
+                ================================================= */}
 
             <button
               type="button"
+              aria-label="Export CSV"
+              title="Export CSV"
               onClick={handleCSVExport}
               className="
                 flex
-                h-9
+                h-8
+                w-8
+                shrink-0
                 items-center
-                rounded-[9px]
+                justify-center
+                rounded-[8px]
                 border
                 border-slate-700
                 bg-[#172238]
-                px-3
+                px-2
                 text-[13px]
                 font-semibold
                 text-slate-300
@@ -780,29 +929,35 @@ export function Header() {
                 hover:bg-[#1b2941]
                 hover:text-white
                 active:scale-[0.98]
+                sm:h-9
+                sm:w-auto
+                sm:px-3
               "
             >
-              <FileSpreadsheet className="mr-1.5 h-4 w-4" />
+              <FileSpreadsheet className="h-4 w-4 sm:mr-1.5" />
 
-              CSV
+              <span className="hidden sm:inline">
+                CSV
+              </span>
             </button>
 
             {/* =================================================
                 RESET
-            ================================================= */}
+                ================================================= */}
 
             <button
               type="button"
-              aria-label="Reset"
+              aria-label="Reset DCF Lab settings"
               title="Reset DCF Lab settings"
               onClick={handleReset}
               className="
                 flex
-                h-9
-                w-9
+                h-8
+                w-8
+                shrink-0
                 items-center
                 justify-center
-                rounded-[9px]
+                rounded-[8px]
                 border
                 border-slate-700
                 bg-[#172238]
@@ -811,6 +966,8 @@ export function Header() {
                 hover:bg-[#1b2941]
                 hover:text-white
                 active:scale-[0.95]
+                sm:h-9
+                sm:w-9
               "
             >
               <RotateCcw className="h-4 w-4" />
@@ -818,7 +975,7 @@ export function Header() {
 
             {/* =================================================
                 THEME
-            ================================================= */}
+                ================================================= */}
 
             <button
               type="button"
@@ -831,11 +988,12 @@ export function Header() {
               onClick={handleThemeToggle}
               className="
                 flex
-                h-9
-                w-9
+                h-8
+                w-8
+                shrink-0
                 items-center
                 justify-center
-                rounded-[9px]
+                rounded-[8px]
                 border
                 border-slate-700
                 bg-[#172238]
@@ -844,6 +1002,8 @@ export function Header() {
                 hover:bg-[#1b2941]
                 hover:text-yellow-300
                 active:scale-[0.95]
+                sm:h-9
+                sm:w-9
               "
             >
               {isDark ? (
@@ -858,7 +1018,7 @@ export function Header() {
 
       {/* =====================================================
           GUIDE MODAL
-      ===================================================== */}
+          ===================================================== */}
 
       {guideOpen && (
         <div
@@ -869,17 +1029,21 @@ export function Header() {
             flex
             items-center
             justify-center
+            overflow-y-auto
             bg-black/70
-            p-6
+            p-3
             backdrop-blur-sm
+            sm:p-6
           "
           onClick={() => setGuideOpen(false)}
         >
           <div
             className="
+              my-auto
               w-full
               max-w-2xl
-              overflow-hidden
+              max-h-[90vh]
+              overflow-y-auto
               rounded-2xl
               border
               border-slate-700
@@ -890,32 +1054,37 @@ export function Header() {
               event.stopPropagation()
             }
           >
-            {/* Header */}
+            {/* Modal Header */}
             <div
               className="
                 flex
                 items-center
                 justify-between
+                gap-3
                 border-b
                 border-slate-700
-                px-6
-                py-4
+                px-4
+                py-3
+                sm:px-6
+                sm:py-4
               "
             >
-              <div>
-                <h2 className="text-lg font-semibold text-white">
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold text-white sm:text-lg">
                   DCF Lab Guide
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-xs text-slate-400 sm:text-sm">
                   Discounted Cash Flow Valuation Workflow
                 </p>
               </div>
 
               <button
                 type="button"
+                aria-label="Close guide"
                 onClick={() => setGuideOpen(false)}
                 className="
+                  shrink-0
                   rounded-lg
                   p-2
                   text-slate-400
@@ -928,8 +1097,8 @@ export function Header() {
               </button>
             </div>
 
-            {/* Content */}
-            <div className="space-y-5 px-6 py-6">
+            {/* Modal Content */}
+            <div className="space-y-5 px-4 py-5 sm:px-6 sm:py-6">
               <GuideStep
                 number="01"
                 title="Company & Financials"
@@ -972,7 +1141,7 @@ export function Header() {
 
       {/* =====================================================
           ABOUT MODAL
-      ===================================================== */}
+          ===================================================== */}
 
       {aboutOpen && (
         <div
@@ -983,17 +1152,21 @@ export function Header() {
             flex
             items-center
             justify-center
+            overflow-y-auto
             bg-black/70
-            p-6
+            p-3
             backdrop-blur-sm
+            sm:p-6
           "
           onClick={() => setAboutOpen(false)}
         >
           <div
             className="
+              my-auto
               w-full
               max-w-lg
-              overflow-hidden
+              max-h-[90vh]
+              overflow-y-auto
               rounded-2xl
               border
               border-slate-700
@@ -1004,23 +1177,28 @@ export function Header() {
               event.stopPropagation()
             }
           >
+            {/* About Header */}
             <div
               className="
                 flex
                 items-center
                 justify-between
+                gap-3
                 border-b
                 border-slate-700
-                px-6
-                py-4
+                px-4
+                py-3
+                sm:px-6
+                sm:py-4
               "
             >
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 <div
                   className="
                     flex
-                    h-10
-                    w-10
+                    h-9
+                    w-9
+                    shrink-0
                     items-center
                     justify-center
                     rounded-full
@@ -1028,13 +1206,15 @@ export function Header() {
                     from-cyan-400
                     via-emerald-400
                     to-lime-300
+                    sm:h-10
+                    sm:w-10
                   "
                 >
-                  <div className="h-5 w-5 rounded-full bg-[#101a2d]" />
+                  <div className="h-4 w-4 rounded-full bg-[#101a2d] sm:h-5 sm:w-5" />
                 </div>
 
-                <div>
-                  <h2 className="text-lg font-semibold text-white">
+                <div className="min-w-0">
+                  <h2 className="text-base font-semibold text-white sm:text-lg">
                     DCF Lab
                   </h2>
 
@@ -1046,8 +1226,10 @@ export function Header() {
 
               <button
                 type="button"
+                aria-label="Close about"
                 onClick={() => setAboutOpen(false)}
                 className="
+                  shrink-0
                   rounded-lg
                   p-2
                   text-slate-400
@@ -1060,14 +1242,15 @@ export function Header() {
               </button>
             </div>
 
-            <div className="space-y-5 px-6 py-6">
+            {/* About Content */}
+            <div className="space-y-5 px-4 py-5 sm:px-6 sm:py-6">
               <p className="text-sm leading-6 text-slate-300">
                 DCF Lab is a financial valuation engine
                 designed to structure the complete
                 discounted cash flow analysis workflow.
               </p>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <AboutItem
                   title="Financial Modeling"
                   description="Forecasting & FCF"
@@ -1102,23 +1285,32 @@ export function Header() {
                   Current display
                 </p>
 
-                <div className="mt-2 flex gap-4">
-                  <div>
+                <div
+                  className="
+                    mt-3
+                    grid
+                    grid-cols-1
+                    gap-3
+                    sm:grid-cols-2
+                    sm:gap-4
+                  "
+                >
+                  <div className="min-w-0">
                     <p className="text-xs text-slate-500">
                       Currency
                     </p>
 
-                    <p className="text-sm font-medium text-white">
+                    <p className="truncate text-sm font-medium text-white">
                       {currency.label}
                     </p>
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs text-slate-500">
                       Units
                     </p>
 
-                    <p className="text-sm font-medium text-white">
+                    <p className="truncate text-sm font-medium text-white">
                       {unit}
                     </p>
                   </div>
@@ -1134,7 +1326,7 @@ export function Header() {
 
 /* ===========================================================
    GUIDE STEP
-=========================================================== */
+   =========================================================== */
 
 function GuideStep({
   number,
@@ -1146,7 +1338,7 @@ function GuideStep({
   description: string;
 }) {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-3 sm:gap-4">
       <div
         className="
           flex
@@ -1167,7 +1359,7 @@ function GuideStep({
         {number}
       </div>
 
-      <div>
+      <div className="min-w-0">
         <h3 className="text-sm font-semibold text-white">
           {title}
         </h3>
@@ -1182,7 +1374,7 @@ function GuideStep({
 
 /* ===========================================================
    ABOUT ITEM
-=========================================================== */
+   =========================================================== */
 
 function AboutItem({
   title,
@@ -1194,6 +1386,7 @@ function AboutItem({
   return (
     <div
       className="
+        min-w-0
         rounded-xl
         border
         border-slate-700
