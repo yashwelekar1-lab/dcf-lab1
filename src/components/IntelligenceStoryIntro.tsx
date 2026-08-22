@@ -4,33 +4,38 @@ export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
   /* ============================================================
-     SCROLL PROGRESS
+     SCROLL ENGINE
      ============================================================ */
 
   useEffect(() => {
-    let raf = 0;
+    let frame = 0;
 
     const updateProgress = () => {
       const section =
-        document.getElementById("intelligence-story");
+        document.getElementById(
+          "intelligence-story"
+        );
 
       if (!section) return;
 
-      const rect = section.getBoundingClientRect();
+      const rect =
+        section.getBoundingClientRect();
 
-      const totalScroll =
-        section.offsetHeight - window.innerHeight;
+      const scrollDistance =
+        section.offsetHeight -
+        window.innerHeight;
 
-      if (totalScroll <= 0) {
+      if (scrollDistance <= 0) {
         setProgress(0);
         return;
       }
 
-      const distanceScrolled =
+      const scrolled =
         Math.max(0, -rect.top);
 
       const value =
-        distanceScrolled / totalScroll;
+        scrolled /
+        scrollDistance;
 
       setProgress(
         Math.min(
@@ -40,18 +45,21 @@ export default function IntelligenceStoryIntro() {
       );
     };
 
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
+    const handleScroll = () => {
+      cancelAnimationFrame(frame);
 
-      raf = requestAnimationFrame(
-        updateProgress
-      );
+      frame =
+        requestAnimationFrame(
+          updateProgress
+        );
     };
 
     window.addEventListener(
       "scroll",
-      onScroll,
-      { passive: true }
+      handleScroll,
+      {
+        passive: true,
+      }
     );
 
     window.addEventListener(
@@ -62,11 +70,11 @@ export default function IntelligenceStoryIntro() {
     updateProgress();
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(frame);
 
       window.removeEventListener(
         "scroll",
-        onScroll
+        handleScroll
       );
 
       window.removeEventListener(
@@ -106,100 +114,109 @@ export default function IntelligenceStoryIntro() {
   };
 
 
-  /* ============================================================
-     SEQUENTIAL TIMELINE
-
-     0.00 ───────── 0.10
-       Circle introduction / glow
-
-     0.10 ───────── 0.56
-       Circle wipes away
-
-     0.56 ───────── 0.62
-       Empty pause
-
-     0.62 ───────── 0.72
-       AI message appears
-
-     0.72 ───────── 0.86
-       AI message stays
-
-     0.86 ───────── 1.00
-       Background becomes white
-
-     IMPORTANT:
-     NOTHING MOVES VERTICALLY.
-     ============================================================ */
-
-
-  /* ============================================================
-     1. CIRCLE WIPE
-     ============================================================ */
-
-  const circleWipeProgress =
-    ease(
+  const phase = (
+    start: number,
+    end: number
+  ) => {
+    return ease(
       clamp(
-        (progress - 0.10) /
-          0.46
+        (progress - start) /
+          (end - start)
       )
     );
+  };
 
+
+  /* ============================================================
+     STORY TIMELINE
+
+     0.00 - 0.12
+     Circle holds + glows
+
+     0.12 - 0.50
+     Circle wipes
+
+     0.50 - 0.58
+     Pause
+
+     0.58 - 0.68
+     AI message appears
+
+     0.68 - 0.80
+     AI message holds
+
+     0.80 - 0.88
+     Background becomes white
+
+     0.88 - 0.93
+     Analysis page fades in
+
+     0.93 - 0.96
+     Analysis heading appears
+
+     0.96 - 0.98
+     Analysis cards appear
+
+     0.98 - 1.00
+     Analysis content completes
+
+     NOTHING MOVES UP.
+     ============================================================ */
+
+
+  /* ============================================================
+     CIRCLE WIPE
+     ============================================================ */
+
+  const circleProgress =
+    phase(
+      0.12,
+      0.50
+    );
 
   const visibleAngle =
     360 -
-    circleWipeProgress * 360;
+    circleProgress * 360;
 
 
   /* ============================================================
-     2. CIRCLE CONTENT
-
-     Inner text disappears slightly before
-     the outer circle finishes.
+     CIRCLE INNER TEXT
      ============================================================ */
 
   const circleTextOpacity =
     1 -
-    ease(
-      clamp(
-        (progress - 0.16) /
-          0.28
-      )
+    phase(
+      0.18,
+      0.40
     );
 
 
   /* ============================================================
-     3. CIRCLE OPACITY
-
-     Only fades at the very end of the wipe.
+     CIRCLE EXIT
      ============================================================ */
 
   const circleOpacity =
-    progress < 0.55
+    progress < 0.47
       ? 1
       : 1 -
-          ease(
-            clamp(
-              (progress - 0.55) /
-                0.07
-            )
+          phase(
+            0.47,
+            0.53
           );
 
 
   /* ============================================================
-     4. CIRCLE GLOW
-
-     Gentle pulsing glow.
-     No movement.
+     CIRCLE GLOW
      ============================================================ */
 
   const pulse =
-    0.72 +
+    0.68 +
     Math.sin(
       progress *
         Math.PI *
         6
     ) *
-      0.07;
+      0.08;
 
 
   const circleGlow = `
@@ -214,7 +231,7 @@ export default function IntelligenceStoryIntro() {
     )
 
     drop-shadow(
-      0 0 45px
+      0 0 42px
       rgba(
         0,
         220,
@@ -229,35 +246,27 @@ export default function IntelligenceStoryIntro() {
         0,
         220,
         170,
-        ${pulse * 0.30}
+        ${pulse * 0.28}
       )
     )
   `;
 
 
   /* ============================================================
-     5. AI MESSAGE APPEARANCE
-
-     IMPORTANT:
-
-     It starts ONLY after circle disappears.
-
-     It uses opacity only.
-     No translate.
-     No movement.
+     AI MESSAGE
      ============================================================ */
 
   let aiOpacity = 0;
 
-  if (progress < 0.62) {
+  if (progress < 0.58) {
     aiOpacity = 0;
   }
 
-  else if (progress < 0.72) {
+  else if (progress < 0.68) {
     aiOpacity =
-      ease(
-        (progress - 0.62) /
-          0.10
+      phase(
+        0.58,
+        0.68
       );
   }
 
@@ -267,24 +276,18 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     6. AI GLOW
-
-     Strong when it first appears.
-     Gradually becomes softer as screen
-     transitions to white.
+     AI TEXT GLOW
      ============================================================ */
 
   const aiGlow =
-    progress < 0.76
-      ? 0.85
-      : 0.85 *
+    progress < 0.72
+      ? 0.75
+      : 0.75 *
           (
             1 -
-            ease(
-              clamp(
-                (progress - 0.76) /
-                  0.24
-              )
+            phase(
+              0.72,
+              0.88
             )
           );
 
@@ -301,19 +304,19 @@ export default function IntelligenceStoryIntro() {
     )
 
     drop-shadow(
-      0 0 50px
+      0 0 45px
       rgba(
         0,
         220,
         170,
-        ${aiGlow * 0.45}
+        ${aiGlow * 0.40}
       )
     )
   `;
 
 
   /* ============================================================
-     7. BACKGROUND COLOR
+     BACKGROUND COLOR
      ============================================================ */
 
   type ColorStop = {
@@ -340,38 +343,38 @@ export default function IntelligenceStoryIntro() {
     },
 
     {
-      p: 0.36,
-      r: 9,
+      p: 0.38,
+      r: 8,
       g: 48,
-      b: 56,
+      b: 57,
     },
 
     {
       p: 0.55,
       r: 7,
-      g: 65,
+      g: 66,
       b: 65,
     },
 
     {
       p: 0.70,
-      r: 13,
-      g: 79,
-      b: 76,
+      r: 12,
+      g: 80,
+      b: 77,
     },
 
     {
-      p: 0.84,
-      r: 78,
-      g: 119,
-      b: 122,
+      p: 0.82,
+      r: 74,
+      g: 116,
+      b: 120,
     },
 
     {
-      p: 0.93,
-      r: 190,
-      g: 207,
-      b: 209,
+      p: 0.90,
+      r: 185,
+      g: 205,
+      b: 207,
     },
 
     {
@@ -455,38 +458,27 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     8. BACKGROUND GLOW
-
-     Glow disappears gradually.
+     BACKGROUND GLOW
      ============================================================ */
 
   const backgroundGlow =
     progress < 0.72
       ? 1
       : 1 -
-          ease(
-            clamp(
-              (progress - 0.72) /
-                0.28
-            )
+          phase(
+            0.72,
+            0.90
           );
 
 
   /* ============================================================
-     9. AI TEXT COLOR
-
-     White on dark background.
-     Dark navy on white background.
-
-     "You decide." remains emerald.
+     AI TEXT COLOR
      ============================================================ */
 
   const textTransition =
-    ease(
-      clamp(
-        (progress - 0.76) /
-          0.24
-      )
+    phase(
+      0.72,
+      0.90
     );
 
 
@@ -531,18 +523,75 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     10. FINAL WHITE TRANSITION
-
-     Only opacity changes.
-     No movement.
+     WHITE BACKGROUND TRANSITION
      ============================================================ */
 
   const whiteOpacity =
-    ease(
-      clamp(
-        (progress - 0.92) /
-          0.08
-      )
+    phase(
+      0.80,
+      0.90
+    );
+
+
+  /* ============================================================
+     ANALYSIS PAGE
+
+     THIS IS THE IMPORTANT PART.
+
+     The complete analysis page does NOT slide upward.
+
+     It appears using:
+
+       opacity
+       blur
+
+     only.
+     ============================================================ */
+
+  const analysisOpacity =
+    phase(
+      0.88,
+      0.93
+    );
+
+
+  const analysisBlur =
+    14 -
+    analysisOpacity * 14;
+
+
+  /* ============================================================
+     ANALYSIS INTERNAL SEQUENCE
+
+     These are optional stages that let the actual
+     analysis interface reveal progressively.
+     ============================================================ */
+
+  const analysisHeaderOpacity =
+    phase(
+      0.90,
+      0.935
+    );
+
+
+  const analysisMainOpacity =
+    phase(
+      0.925,
+      0.965
+    );
+
+
+  const analysisCardsOpacity =
+    phase(
+      0.95,
+      0.985
+    );
+
+
+  const analysisBottomOpacity =
+    phase(
+      0.975,
+      1.00
     );
 
 
@@ -556,18 +605,15 @@ export default function IntelligenceStoryIntro() {
       className="
         relative
         w-full
-        h-[300vh]
+        h-[400vh]
         m-0
         p-0
       "
     >
 
-      {/* ========================================================
-          STICKY CINEMATIC VIEWPORT
-
-          This keeps everything in the same
-          screen position while scrolling.
-         ======================================================== */}
+      {/* ======================================================
+          STICKY STORY VIEWPORT
+         ====================================================== */}
 
       <div
         className="
@@ -582,9 +628,9 @@ export default function IntelligenceStoryIntro() {
         }}
       >
 
-        {/* ======================================================
-            CENTRAL BACKGROUND GLOW
-           ====================================================== */}
+        {/* ====================================================
+            BACKGROUND GLOW
+           ==================================================== */}
 
         <div
           className="
@@ -602,7 +648,7 @@ export default function IntelligenceStoryIntro() {
                   0,
                   220,
                   170,
-                  0.16
+                  0.15
                 ),
                 transparent 50%
               )
@@ -614,9 +660,9 @@ export default function IntelligenceStoryIntro() {
         />
 
 
-        {/* ======================================================
+        {/* ====================================================
             LARGE SOFT GLOW
-           ====================================================== */}
+           ==================================================== */}
 
         <div
           className="
@@ -653,20 +699,18 @@ export default function IntelligenceStoryIntro() {
         />
 
 
-        {/* ======================================================
+        {/* ====================================================
             CIRCLE
 
-            IMPORTANT:
+            FIXED POSITION.
 
-            There is NO scroll-based transform.
+            NO MOVEMENT.
 
-            It is always:
-
-            left: 50%
-            top: 54%
-
-            Only the mask and opacity change.
-           ====================================================== */}
+            Only:
+              - wipe
+              - opacity
+              - glow
+           ==================================================== */}
 
         <div
           className="
@@ -677,21 +721,11 @@ export default function IntelligenceStoryIntro() {
             z-20
           "
           style={{
-            /*
-             * Automatic screen sizing.
-             */
-
             width:
               "clamp(340px, min(58vw, 58vh), 520px)",
 
             height:
               "clamp(340px, min(58vw, 58vh), 520px)",
-
-            /*
-             * Permanent centering.
-             *
-             * NOT animated.
-             */
 
             transform:
               "translate(-50%, -50%)",
@@ -704,13 +738,9 @@ export default function IntelligenceStoryIntro() {
           }}
         >
 
-          {/* ====================================================
-              OUTER CIRCLE WIPE
-
-              The circle itself does NOT move.
-
-              The mask reveals less and less of it.
-             ==================================================== */}
+          {/* ==================================================
+              WIPE MASK
+             ================================================== */}
 
           <div
             className="
@@ -724,8 +754,12 @@ export default function IntelligenceStoryIntro() {
                 `
                 conic-gradient(
                   from -90deg,
-                  black 0deg ${visibleAngle}deg,
-                  transparent ${visibleAngle}deg 360deg
+                  black
+                  0deg
+                  ${visibleAngle}deg,
+                  transparent
+                  ${visibleAngle}deg
+                  360deg
                 )
                 `,
 
@@ -733,8 +767,12 @@ export default function IntelligenceStoryIntro() {
                 `
                 conic-gradient(
                   from -90deg,
-                  black 0deg ${visibleAngle}deg,
-                  transparent ${visibleAngle}deg 360deg
+                  black
+                  0deg
+                  ${visibleAngle}deg,
+                  transparent
+                  ${visibleAngle}deg
+                  360deg
                 )
                 `,
             }}
@@ -754,9 +792,9 @@ export default function IntelligenceStoryIntro() {
           </div>
 
 
-          {/* ====================================================
+          {/* ==================================================
               INNER CIRCLE
-             ==================================================== */}
+             ================================================== */}
 
           <div
             className="
@@ -790,7 +828,7 @@ export default function IntelligenceStoryIntro() {
                   0.20
                 ),
 
-                0 0 65px
+                0 0 60px
                 rgba(
                   0,
                   220,
@@ -801,12 +839,10 @@ export default function IntelligenceStoryIntro() {
             }}
           >
 
-            {/* SPARK */}
-
             <div
               className="
                 mb-3
-                text-[24px]
+                text-[26px]
                 leading-none
                 text-emerald-400
               "
@@ -814,8 +850,6 @@ export default function IntelligenceStoryIntro() {
               ✦
             </div>
 
-
-            {/* TITLE */}
 
             <div
               className="
@@ -850,8 +884,6 @@ export default function IntelligenceStoryIntro() {
             </div>
 
 
-            {/* DESCRIPTION */}
-
             <div
               className="
                 mt-4
@@ -870,20 +902,20 @@ export default function IntelligenceStoryIntro() {
         </div>
 
 
-        {/* ======================================================
+        {/* ====================================================
             AI MESSAGE
 
-            THIS DOES NOT MOVE.
+            NO MOVEMENT.
 
-            It appears using opacity only.
-           ====================================================== */}
+            ONLY OPACITY + GLOW.
+           ==================================================== */}
 
         <div
           className="
             pointer-events-none
             absolute
             inset-0
-            z-[110]
+            z-[60]
             flex
             items-center
             justify-center
@@ -906,16 +938,12 @@ export default function IntelligenceStoryIntro() {
             "
           >
 
-            {/* ==================================================
-                HEADING
-               ================================================== */}
-
             <h1
               className="
                 m-0
-                text-[clamp(42px,6vw,82px)]
+                text-[clamp(44px,6vw,84px)]
                 font-semibold
-                leading-[1.05]
+                leading-[1]
                 tracking-[-0.055em]
               "
               style={{
@@ -935,27 +963,24 @@ export default function IntelligenceStoryIntro() {
             </h1>
 
 
-            {/* ==================================================
-                DESCRIPTION
-               ================================================== */}
-
             <p
               className="
                 mx-auto
                 mt-8
-                max-w-[850px]
-                text-[clamp(18px,2vw,25px)]
-                leading-[1.6]
+                max-w-[760px]
+                text-[clamp(18px,2vw,24px)]
+                leading-[1.65]
               "
               style={{
                 color:
                   descriptionColor,
               }}
             >
-              DCF Lab Intelligence uncovers the
-              hidden insights behind financial
-              data—while keeping you in complete
-              control of your valuation assumptions.
+              DCF Lab Intelligence uncovers
+              the hidden insights behind
+              financial data—while keeping
+              you in complete control of
+              your valuation assumptions.
             </p>
 
           </div>
@@ -963,12 +988,696 @@ export default function IntelligenceStoryIntro() {
         </div>
 
 
-        {/* ======================================================
-            SCROLL INDICATOR
+        {/* ====================================================
+            WHITE TRANSITION
 
-            Only opacity changes.
+            AI text remains above this layer.
+           ==================================================== */}
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-[100]
+            bg-white
+          "
+          style={{
+            opacity:
+              whiteOpacity,
+          }}
+        />
+
+
+        {/* ====================================================
+            REAL ANALYSIS PAGE
+
+            IMPORTANT:
+
+            This is ABOVE the white layer.
+
             It does NOT move.
-           ====================================================== */}
+
+            It simply becomes visible.
+           ==================================================== */}
+
+        <div
+          className="
+            absolute
+            inset-0
+            z-[120]
+            overflow-hidden
+            bg-white
+          "
+          style={{
+            opacity:
+              analysisOpacity,
+
+            filter:
+              `blur(${analysisBlur}px)`,
+
+            pointerEvents:
+              analysisOpacity > 0.98
+                ? "auto"
+                : "none",
+          }}
+        >
+
+          {/* ==================================================
+              ANALYSIS CONTENT
+
+              Replace this section with your existing
+              real analysis UI.
+
+              Each stage uses opacity only.
+             ================================================== */}
+
+          <div
+            className="
+              min-h-full
+              w-full
+              bg-white
+            "
+          >
+
+            {/* =================================================
+                ANALYSIS HEADER
+               ================================================= */}
+
+            <div
+              className="
+                px-6
+                pb-8
+                pt-20
+                md:px-12
+                lg:px-20
+              "
+              style={{
+                opacity:
+                  analysisHeaderOpacity,
+              }}
+            >
+
+              <div
+                className="
+                  mx-auto
+                  max-w-7xl
+                "
+              >
+
+                <div
+                  className="
+                    mb-3
+                    text-sm
+                    font-semibold
+                    uppercase
+                    tracking-[0.25em]
+                    text-emerald-500
+                  "
+                >
+                  DCF Lab Intelligence
+                </div>
+
+
+                <h2
+                  className="
+                    text-[clamp(36px,5vw,72px)]
+                    font-semibold
+                    leading-[1.05]
+                    tracking-[-0.05em]
+                    text-slate-900
+                  "
+                >
+                  Financial analysis,
+                  <br />
+
+                  <span
+                    className="
+                      text-emerald-500
+                    "
+                  >
+                    without the noise.
+                  </span>
+                </h2>
+
+
+                <p
+                  className="
+                    mt-6
+                    max-w-2xl
+                    text-lg
+                    leading-8
+                    text-slate-600
+                  "
+                >
+                  Transform financial data into
+                  structured insights while
+                  maintaining complete control
+                  over your valuation assumptions.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* =================================================
+                MAIN ANALYSIS AREA
+               ================================================= */}
+
+            <div
+              className="
+                px-6
+                py-8
+                md:px-12
+                lg:px-20
+              "
+              style={{
+                opacity:
+                  analysisMainOpacity,
+              }}
+            >
+
+              <div
+                className="
+                  mx-auto
+                  grid
+                  max-w-7xl
+                  gap-6
+                  lg:grid-cols-[1.4fr_0.6fr]
+                "
+              >
+
+                {/* =============================================
+                    UPLOAD / ANALYSIS PANEL
+                   ============================================= */}
+
+                <div
+                  className="
+                    rounded-3xl
+                    border
+                    border-slate-200
+                    bg-white
+                    p-8
+                    shadow-sm
+                  "
+                >
+
+                  <div
+                    className="
+                      flex
+                      items-center
+                      justify-between
+                    "
+                  >
+
+                    <div>
+
+                      <div
+                        className="
+                          text-sm
+                          font-medium
+                          text-slate-500
+                        "
+                      >
+                        Financial Intelligence
+                      </div>
+
+                      <h3
+                        className="
+                          mt-2
+                          text-2xl
+                          font-semibold
+                          text-slate-900
+                        "
+                      >
+                        Start your analysis
+                      </h3>
+
+                    </div>
+
+
+                    <div
+                      className="
+                        flex
+                        h-12
+                        w-12
+                        items-center
+                        justify-center
+                        rounded-2xl
+                        bg-emerald-50
+                        text-xl
+                        text-emerald-500
+                      "
+                    >
+                      ✦
+                    </div>
+
+                  </div>
+
+
+                  <div
+                    className="
+                      mt-8
+                      rounded-2xl
+                      border-2
+                      border-dashed
+                      border-slate-200
+                      p-10
+                      text-center
+                    "
+                  >
+
+                    <div
+                      className="
+                        mx-auto
+                        flex
+                        h-16
+                        w-16
+                        items-center
+                        justify-center
+                        rounded-2xl
+                        bg-slate-100
+                        text-2xl
+                        text-slate-500
+                      "
+                    >
+                      ↑
+                    </div>
+
+
+                    <h4
+                      className="
+                        mt-5
+                        text-lg
+                        font-semibold
+                        text-slate-900
+                      "
+                    >
+                      Upload Annual Report
+                    </h4>
+
+
+                    <p
+                      className="
+                        mx-auto
+                        mt-2
+                        max-w-md
+                        text-sm
+                        leading-6
+                        text-slate-500
+                      "
+                    >
+                      Upload a company annual report
+                      and let DCF Lab Intelligence
+                      extract the financial information.
+                    </p>
+
+
+                    <button
+                      className="
+                        mt-6
+                        rounded-xl
+                        bg-slate-900
+                        px-6
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-white
+                      "
+                    >
+                      Upload Report
+                    </button>
+
+                  </div>
+
+                </div>
+
+
+                {/* =============================================
+                    INSIGHT PANEL
+                   ============================================= */}
+
+                <div
+                  className="
+                    rounded-3xl
+                    bg-slate-900
+                    p-8
+                    text-white
+                  "
+                >
+
+                  <div
+                    className="
+                      text-sm
+                      font-medium
+                      text-emerald-400
+                    "
+                  >
+                    AI Intelligence
+                  </div>
+
+
+                  <h3
+                    className="
+                      mt-3
+                      text-2xl
+                      font-semibold
+                    "
+                  >
+                    From numbers
+                    <br />
+                    to insights.
+                  </h3>
+
+
+                  <p
+                    className="
+                      mt-5
+                      text-sm
+                      leading-7
+                      text-slate-300
+                    "
+                  >
+                    Understand financial statements,
+                    management commentary, KPIs,
+                    valuation drivers and hidden
+                    signals in one structured workflow.
+                  </p>
+
+
+                  <div
+                    className="
+                      mt-8
+                      space-y-3
+                    "
+                  >
+
+                    <div
+                      className="
+                        rounded-xl
+                        bg-white/5
+                        px-4
+                        py-3
+                        text-sm
+                        text-slate-200
+                      "
+                    >
+                      Financial Statements
+                    </div>
+
+                    <div
+                      className="
+                        rounded-xl
+                        bg-white/5
+                        px-4
+                        py-3
+                        text-sm
+                        text-slate-200
+                      "
+                    >
+                      Management Commentary
+                    </div>
+
+                    <div
+                      className="
+                        rounded-xl
+                        bg-white/5
+                        px-4
+                        py-3
+                        text-sm
+                        text-slate-200
+                      "
+                    >
+                      Valuation Drivers
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* =================================================
+                ANALYSIS CARDS
+               ================================================= */}
+
+            <div
+              className="
+                px-6
+                py-8
+                md:px-12
+                lg:px-20
+              "
+              style={{
+                opacity:
+                  analysisCardsOpacity,
+              }}
+            >
+
+              <div
+                className="
+                  mx-auto
+                  grid
+                  max-w-7xl
+                  gap-5
+                  md:grid-cols-3
+                "
+              >
+
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    p-6
+                  "
+                >
+
+                  <div
+                    className="
+                      text-sm
+                      text-slate-500
+                    "
+                  >
+                    Revenue
+                  </div>
+
+                  <div
+                    className="
+                      mt-3
+                      text-3xl
+                      font-semibold
+                      text-slate-900
+                    "
+                  >
+                    Growth
+                  </div>
+
+                  <div
+                    className="
+                      mt-3
+                      text-sm
+                      leading-6
+                      text-slate-500
+                    "
+                  >
+                    Track historical and
+                    forward-looking growth drivers.
+                  </div>
+
+                </div>
+
+
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    p-6
+                  "
+                >
+
+                  <div
+                    className="
+                      text-sm
+                      text-slate-500
+                    "
+                  >
+                    Profitability
+                  </div>
+
+                  <div
+                    className="
+                      mt-3
+                      text-3xl
+                      font-semibold
+                      text-slate-900
+                    "
+                  >
+                    Margins
+                  </div>
+
+                  <div
+                    className="
+                      mt-3
+                      text-sm
+                      leading-6
+                      text-slate-500
+                    "
+                  >
+                    Identify changes in margins
+                    and operating performance.
+                  </div>
+
+                </div>
+
+
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    bg-white
+                    p-6
+                  "
+                >
+
+                  <div
+                    className="
+                      text-sm
+                      text-slate-500
+                    "
+                  >
+                    Valuation
+                  </div>
+
+                  <div
+                    className="
+                      mt-3
+                      text-3xl
+                      font-semibold
+                      text-slate-900
+                    "
+                  >
+                    DCF
+                  </div>
+
+                  <div
+                    className="
+                      mt-3
+                      text-sm
+                      leading-6
+                      text-slate-500
+                    "
+                  >
+                    Maintain control of assumptions
+                    driving intrinsic value.
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* =================================================
+                FINAL ANALYSIS SECTION
+               ================================================= */}
+
+            <div
+              className="
+                px-6
+                pb-24
+                pt-8
+                md:px-12
+                lg:px-20
+              "
+              style={{
+                opacity:
+                  analysisBottomOpacity,
+              }}
+            >
+
+              <div
+                className="
+                  mx-auto
+                  max-w-7xl
+                  rounded-3xl
+                  bg-slate-50
+                  p-8
+                  md:p-12
+                "
+              >
+
+                <div
+                  className="
+                    max-w-2xl
+                  "
+                >
+
+                  <div
+                    className="
+                      text-sm
+                      font-semibold
+                      uppercase
+                      tracking-[0.2em]
+                      text-emerald-500
+                    "
+                  >
+                    Your decision
+                  </div>
+
+
+                  <h3
+                    className="
+                      mt-4
+                      text-3xl
+                      font-semibold
+                      tracking-tight
+                      text-slate-900
+                      md:text-4xl
+                    "
+                  >
+                    AI provides the insight.
+                    <br />
+                    You control the valuation.
+                  </h3>
+
+
+                  <p
+                    className="
+                      mt-5
+                      text-base
+                      leading-7
+                      text-slate-600
+                    "
+                  >
+                    Every important assumption remains
+                    visible, editable and under your
+                    control.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* ====================================================
+            SCROLL INDICATOR
+           ==================================================== */}
 
         <div
           className="
@@ -976,7 +1685,7 @@ export default function IntelligenceStoryIntro() {
             absolute
             bottom-10
             left-1/2
-            z-[50]
+            z-[70]
             -translate-x-1/2
             text-center
           "
@@ -1001,6 +1710,7 @@ export default function IntelligenceStoryIntro() {
             Scroll to explore
           </div>
 
+
           <div
             className="
               mx-auto
@@ -1014,37 +1724,6 @@ export default function IntelligenceStoryIntro() {
           />
 
         </div>
-
-
-        {/* ======================================================
-            WHITE BACKGROUND
-
-            It is BELOW the AI text.
-
-            Therefore:
-
-            WHITE BACKGROUND
-                  ↓
-            AI TEXT
-                  ↓
-            STILL VISIBLE
-
-            No movement.
-           ====================================================== */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[100]
-            bg-white
-          "
-          style={{
-            opacity:
-              whiteOpacity,
-          }}
-        />
 
       </div>
 
