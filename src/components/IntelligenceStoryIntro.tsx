@@ -137,6 +137,19 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
+     CIRCLE WIPE PROGRESS
+
+     The wipe starts at 12 o'clock and grows clockwise.
+     It is deliberately slow so the circle remains visible.
+     ============================================================ */
+
+  const circleProgress = phase(0.14, 0.42);
+
+  // CSS conic-gradient angles increase clockwise.
+  const wipeAngle = circleProgress * 360;
+
+
+  /* ============================================================
      FINAL STORY TIMELINE
 
      0.00 - 0.14   Circle holds
@@ -158,52 +171,6 @@ export default function IntelligenceStoryIntro() {
      ============================================================ */
 
 
- {/* ==================================================
-    CIRCLE WIPE — CLOCKWISE
-   ================================================== */}
-
-<div
-  className="
-    absolute
-    inset-0
-    overflow-hidden
-    rounded-full
-  "
-  style={{
-    WebkitMaskImage:
-      `
-      conic-gradient(
-        from -90deg,
-        transparent 0deg,
-        transparent ${circleProgress * 360}deg,
-        black ${circleProgress * 360}deg,
-        black 360deg
-      )
-      `,
-
-    maskImage:
-      `
-      conic-gradient(
-        from -90deg,
-        transparent 0deg,
-        transparent ${circleProgress * 360}deg,
-        black ${circleProgress * 360}deg,
-        black 360deg
-      )
-      `,
-  }}
->
-  <img
-    src="/DCF Logo.png"
-    alt="DCF Lab Intelligence"
-    className="
-      block
-      h-full
-      w-full
-      object-contain
-    "
-  />
-</div>
 
   /* ============================================================
      CIRCLE INNER TEXT
@@ -760,26 +727,27 @@ export default function IntelligenceStoryIntro() {
     "
     style={{
       WebkitMaskImage:
-        `
-        conic-gradient(
+        `conic-gradient(
           from -90deg,
-          black 0deg,
-          ${visibleAngle}deg,
-          transparent ${visibleAngle}deg,
-          360deg
-        )
-        `,
+          transparent 0deg,
+          transparent ${wipeAngle}deg,
+          black ${wipeAngle}deg,
+          black 360deg
+        )`,
 
       maskImage:
-        `
-        conic-gradient(
+        `conic-gradient(
           from -90deg,
-          black 0deg,
-          ${visibleAngle}deg,
-          transparent ${visibleAngle}deg,
-          360deg
-        )
-        `,
+          transparent 0deg,
+          transparent ${wipeAngle}deg,
+          black ${wipeAngle}deg,
+          black 360deg
+        )`,
+
+      WebkitMaskRepeat: "no-repeat",
+      maskRepeat: "no-repeat",
+      WebkitMaskSize: "100% 100%",
+      maskSize: "100% 100%", 
     }}
   >
     <img
