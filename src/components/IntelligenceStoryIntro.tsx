@@ -160,38 +160,24 @@ export default function IntelligenceStoryIntro() {
      0.94 - 0.96
        AI message fades out
 
-     0.96 - 0.98
-       Pure white pause
+     0.96 - 0.99
+       PURE WHITE PAUSE
+       Nothing else is visible
 
-     0.98 - 0.992
-       Analysis heading
+     0.99 - 0.994
+       Analysis heading fades in
 
-     0.992 - 0.998
-       Analysis workspace
+     0.994 - 0.998
+       Analysis workspace fades in
 
      0.998 - 1.00
-       Analysis cards
+       Analysis cards fade in
 
      IMPORTANT:
      Nothing moves upward.
      Nothing slides from bottom.
+     The analysis page is hidden until 0.99.
      ============================================================ */
-
-
-  /* ============================================================
-     CIRCLE WIPE
-     ============================================================ */
-
-  const circleProgress =
-    phase(
-      0.14,
-      0.42
-    );
-
-  const visibleAngle =
-    360 -
-    circleProgress * 360;
-
 
   /* ============================================================
      CIRCLE INNER TEXT
@@ -595,93 +581,63 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-   REAL ANALYSIS PAGE
-   ============================================================ */
+     REAL ANALYSIS PAGE
+     ============================================================ */
 
-/*
- * IMPORTANT:
- *
- * The real analysis page stays completely invisible
- * until the AI story is completely finished.
- *
- * 0.00 - 0.94  → AI story
- * 0.94 - 0.96  → AI fades out
- * 0.96 - 0.995 → PURE WHITE
- * 0.995+       → Analysis begins
- */
+  /*
+   * STRICT SEPARATION:
+   *
+   * 0.96 - 0.99  = PURE WHITE
+   * 0.99+        = analysis page starts
+   *
+   * The analysis container is visibility:hidden before 0.99,
+   * so none of its children can appear during the white pause.
+   */
 
+  const analysisStarted =
+    progress >= 0.99;
 
-/* ============================================================
-   MASTER ANALYSIS VISIBILITY
-   ============================================================ */
+  const analysisOpacity =
+    analysisStarted
+      ? phase(
+          0.99,
+          0.994
+        )
+      : 0;
 
-const analysisStarted =
-  progress >= 0.995;
+  const analysisBlur =
+    analysisStarted
+      ? 10 -
+        phase(
+          0.99,
+          0.994
+        ) * 10
+      : 10;
 
+  /* ============================================================
+     ANALYSIS SUCCESSION
+     ============================================================ */
 
-/* ============================================================
-   ENTIRE ANALYSIS PAGE
-   ============================================================ */
+  /* STEP 1 — heading */
+  const analysisHeaderOpacity =
+    phase(
+      0.99,
+      0.994
+    );
 
-const analysisOpacity =
-  analysisStarted
-    ? phase(
-        0.995,
-        0.998
-      )
-    : 0;
+  /* STEP 2 — workspace */
+  const analysisMainOpacity =
+    phase(
+      0.994,
+      0.998
+    );
 
-
-/* ============================================================
-   ANALYSIS BLUR
-   ============================================================ */
-
-const analysisBlur =
-  analysisStarted
-    ? 10 -
-      phase(
-        0.995,
-        0.998
-      ) * 10
-    : 10;
-
-
-/* ============================================================
-   ANALYSIS SUCCESSION
-   ============================================================ */
-
-/*
- * 1. Header appears first
- */
-
-const analysisHeaderOpacity =
-  phase(
-    0.995,
-    0.997
-  );
-
-
-/*
- * 2. Main analysis panel appears second
- */
-
-const analysisMainOpacity =
-  phase(
-    0.997,
-    0.999
-  );
-
-
-/*
- * 3. Analysis cards appear last
- */
-
-const analysisCardsOpacity =
-  phase(
-    0.999,
-    1.00
-  );
-
+  /* STEP 3 — cards */
+  const analysisCardsOpacity =
+    phase(
+      0.998,
+      1.00
+    );
 
   /* ============================================================
      RENDER
@@ -693,7 +649,7 @@ const analysisCardsOpacity =
       className="
         relative
         m-0
-        h-[1000vh]
+        h-[1600vh]
         w-full
         p-0
       "
