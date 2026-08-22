@@ -625,16 +625,16 @@ export default function IntelligenceStoryIntro() {
             pointer-events-none
             absolute
             left-1/2
-            top-1/2
+            top-[54%]
             z-20
           "
           style={{
             width:
-              "min(600px, 78vw)",
+  "clamp(280px, min(62vw, 62vh), 560px)",
 
-            height:
-              "min(600px, 78vw)",
-
+height:
+  "clamp(280px, min(62vw, 62vh), 560px)",
+            
             transform:
               "translate(-50%, -50%)",
 
