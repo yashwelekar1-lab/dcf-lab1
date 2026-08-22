@@ -137,7 +137,7 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     STORY TIMELINE
+     FINAL STORY TIMELINE
 
      0.00 - 0.14
        Circle holds
@@ -146,30 +146,35 @@ export default function IntelligenceStoryIntro() {
        Circle slowly wipes
 
      0.42 - 0.50
-       Circle disappears / pause
+       Circle disappears
 
      0.50 - 0.62
        AI message appears
 
-     0.62 - 0.77
-       AI message stays
+     0.62 - 0.88
+       AI message remains fully visible
 
-     0.77 - 0.94
-       Background slowly turns white
+     0.88 - 0.94
+       Background slowly becomes white
 
      0.94 - 0.96
-       White pause
+       AI message fades out
 
-     0.96 - 0.975
-       Analysis title
+     0.96 - 0.98
+       Pure white pause
 
-     0.975 - 0.988
-       Analysis upload panel
+     0.98 - 0.992
+       Analysis heading
 
-     0.988 - 1.00
-       Analysis process steps
+     0.992 - 0.998
+       Analysis workspace
 
-     NOTHING SLIDES UP.
+     0.998 - 1.00
+       Analysis cards
+
+     IMPORTANT:
+     Nothing moves upward.
+     Nothing slides from bottom.
      ============================================================ */
 
 
@@ -196,7 +201,7 @@ export default function IntelligenceStoryIntro() {
     1 -
     phase(
       0.20,
-      0.37
+      0.38
     );
 
 
@@ -222,11 +227,11 @@ export default function IntelligenceStoryIntro() {
     Math.sin(
       progress *
         Math.PI *
-        4
+        5
     );
 
   const circleGlowStrength =
-    0.70 +
+    0.72 +
     glowWave * 0.06;
 
 
@@ -266,29 +271,53 @@ export default function IntelligenceStoryIntro() {
   /* ============================================================
      AI MESSAGE
 
-     Once it appears, it DOES NOT disappear.
+     THIS IS THE IMPORTANT FIX.
 
-     It remains visible while the background
-     slowly changes to white.
+     The message:
+       appears
+       stays
+       survives the white transition
+       then fades OUT
+
+     BEFORE analysis begins.
      ============================================================ */
 
   let aiOpacity = 0;
 
   if (progress < 0.50) {
     aiOpacity = 0;
+
   } else if (progress < 0.62) {
     aiOpacity =
       phase(
         0.50,
         0.62
       );
-  } else {
+
+  } else if (progress < 0.94) {
+    /*
+     * Fully visible for a long time.
+     */
     aiOpacity = 1;
+
+  } else if (progress < 0.96) {
+    /*
+     * Fade out BEFORE analysis.
+     */
+    aiOpacity =
+      1 -
+      phase(
+        0.94,
+        0.96
+      );
+
+  } else {
+    aiOpacity = 0;
   }
 
 
   /* ============================================================
-     AI GLOW
+     AI TEXT GLOW
      ============================================================ */
 
   const aiGlowProgress =
@@ -329,7 +358,7 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     BACKGROUND COLOR
+     BACKGROUND COLORS
      ============================================================ */
 
   type ColorStop = {
@@ -384,17 +413,17 @@ export default function IntelligenceStoryIntro() {
     },
 
     {
-      position: 0.86,
-      r: 125,
-      g: 157,
-      b: 160,
+      position: 0.88,
+      r: 150,
+      g: 175,
+      b: 178,
     },
 
     {
       position: 0.94,
-      r: 225,
-      g: 232,
-      b: 233,
+      r: 220,
+      g: 229,
+      b: 230,
     },
 
     {
@@ -491,7 +520,7 @@ export default function IntelligenceStoryIntro() {
   const backgroundGlow =
     1 -
     phase(
-      0.68,
+      0.70,
       0.94
     );
 
@@ -499,13 +528,13 @@ export default function IntelligenceStoryIntro() {
   /* ============================================================
      AI TEXT COLOR
 
-     During white transition:
-     white/light → dark navy
+     Changes gradually from light to dark
+     while background becomes white.
      ============================================================ */
 
   const textTransition =
     phase(
-      0.77,
+      0.78,
       0.94
     );
 
@@ -553,63 +582,66 @@ export default function IntelligenceStoryIntro() {
   /* ============================================================
      WHITE TRANSITION
 
-     STARTS AFTER AI MESSAGE HAS BEEN VISIBLE
-     FOR A LONG TIME.
+     Starts AFTER AI has been visible.
 
-     FINISHES BEFORE ANALYSIS.
+     Finishes BEFORE AI disappears.
      ============================================================ */
 
   const whiteOpacity =
     phase(
-      0.77,
-      0.94
+      0.88,
+      0.96
     );
 
 
   /* ============================================================
      REAL ANALYSIS PAGE
 
-     WHITE IS COMPLETELY FINISHED FIRST.
+     IMPORTANT:
 
-     THEN ANALYSIS APPEARS.
+     0.96 - 0.98 = white pause
+
+     Analysis only starts at 0.98.
+     Therefore it CANNOT overlap the AI message.
      ============================================================ */
 
   const analysisOpacity =
     phase(
-      0.96,
-      0.975
+      0.98,
+      0.992
     );
 
 
   const analysisBlur =
-    12 -
-    analysisOpacity * 12;
+    10 -
+    analysisOpacity * 10;
 
 
   /* ============================================================
      ANALYSIS SUCCESSION
 
-     No movement.
-     Opacity only.
+     EVERYTHING IS FIXED.
+
+     ONLY OPACITY CHANGES.
      ============================================================ */
 
   const analysisHeaderOpacity =
     phase(
-      0.96,
-      0.972
+      0.98,
+      0.988
     );
 
 
   const analysisMainOpacity =
     phase(
-      0.972,
-      0.988
+      0.988,
+      0.996
     );
 
 
   const analysisCardsOpacity =
     phase(
-      0.988,
+      0.996,
       1.00
     );
 
@@ -623,15 +655,17 @@ export default function IntelligenceStoryIntro() {
       id="intelligence-story"
       className="
         relative
-        w-full
-        h-[1000vh]
         m-0
+        h-[1000vh]
+        w-full
         p-0
       "
     >
 
       {/* ======================================================
-          FIXED STORY VIEWPORT
+          STICKY STORY VIEWPORT
+
+          THIS NEVER MOVES.
          ====================================================== */}
 
       <div
@@ -721,9 +755,8 @@ export default function IntelligenceStoryIntro() {
         {/* ====================================================
             CIRCLE
 
-            FIXED SCREEN POSITION.
-
-            NO UP/DOWN MOVEMENT.
+            FIXED POSITION.
+            NEVER MOVES UP OR DOWN.
            ==================================================== */}
 
         <div
@@ -919,11 +952,9 @@ export default function IntelligenceStoryIntro() {
         {/* ====================================================
             AI MESSAGE
 
-            IMPORTANT:
-            z-110 > white z-100
+            z-[110]
 
-            Therefore the text remains visible
-            while the background becomes white.
+            It sits ABOVE the white layer.
            ==================================================== */}
 
         <div
@@ -1008,8 +1039,10 @@ export default function IntelligenceStoryIntro() {
         {/* ====================================================
             WHITE BACKGROUND
 
-            z-100
-            AI text is z-110
+            z-[100]
+
+            AI text is z-[110].
+            Analysis is z-[120].
            ==================================================== */}
 
         <div
@@ -1030,14 +1063,16 @@ export default function IntelligenceStoryIntro() {
         {/* ====================================================
             REAL ANALYSIS PAGE
 
-            THIS IS THE IMPORTANT FIX.
+            CRITICAL FIX:
 
             absolute
             inset-0
             overflow-hidden
 
-            NO overflow-y-auto.
-            NO normal page scrolling.
+            NO:
+              overflow-y-auto
+              min-h-full
+              normal vertical flow
            ==================================================== */}
 
         <div
@@ -1070,6 +1105,7 @@ export default function IntelligenceStoryIntro() {
             className="
               absolute
               inset-0
+              overflow-hidden
               bg-white
             "
           >
@@ -1112,15 +1148,15 @@ export default function IntelligenceStoryIntro() {
             {/* ==================================================
                 ANALYSIS HEADER
 
-                FIXED POSITION.
-                NO MOVEMENT.
+                FIXED.
+                NO UPWARD MOVEMENT.
                ================================================== */}
 
             <div
               className="
                 absolute
                 inset-x-0
-                top-[6%]
+                top-[5%]
                 z-10
                 px-6
                 text-center
@@ -1154,7 +1190,7 @@ export default function IntelligenceStoryIntro() {
                 <h2
                   className="
                     mt-4
-                    text-[clamp(38px,5vw,72px)]
+                    text-[clamp(36px,5vw,72px)]
                     font-semibold
                     leading-[1.05]
                     tracking-[-0.05em]
@@ -1179,7 +1215,7 @@ export default function IntelligenceStoryIntro() {
                     mx-auto
                     mt-5
                     max-w-2xl
-                    text-[clamp(15px,1.4vw,19px)]
+                    text-[clamp(14px,1.4vw,19px)]
                     leading-7
                     text-slate-600
                   "
@@ -1196,21 +1232,17 @@ export default function IntelligenceStoryIntro() {
 
 
             {/* ==================================================
-                MAIN ANALYSIS WORKSPACE
+                ANALYSIS WORKSPACE
 
                 FIXED POSITION.
-
-                NO:
-                  translate-y
-                  margin-top
-                  normal flow
+                ONLY OPACITY CHANGES.
                ================================================== */}
 
             <div
               className="
                 absolute
                 left-1/2
-                top-[39%]
+                top-[38%]
                 z-10
                 w-[min(1100px,calc(100%-48px))]
                 -translate-x-1/2
@@ -1263,6 +1295,7 @@ export default function IntelligenceStoryIntro() {
                       >
                         Financial Intelligence
                       </div>
+
 
                       <h3
                         className="
@@ -1335,7 +1368,7 @@ export default function IntelligenceStoryIntro() {
                         text-slate-900
                       "
                     >
-                      Upload Annual Report
+                      Upload Annual Report / 10-K
                     </h4>
 
 
@@ -1359,16 +1392,36 @@ export default function IntelligenceStoryIntro() {
                       className="
                         mt-5
                         rounded-xl
-                        bg-slate-900
+                        bg-emerald-500
                         px-6
                         py-3
                         text-sm
                         font-semibold
                         text-white
+                        shadow-[0_8px_20px_rgba(0,190,150,0.18)]
                       "
                     >
-                      Upload Report
+                      ↑&nbsp;&nbsp; Begin Analysis
                     </button>
+
+
+                    <div
+                      className="
+                        mt-4
+                        text-[11px]
+                        text-slate-400
+                      "
+                    >
+                      PDF only
+                      <span className="mx-2 text-emerald-400">
+                        •
+                      </span>
+                      Max file size: 50MB
+                      <span className="mx-2 text-emerald-400">
+                        •
+                      </span>
+                      Annual Reports / 10-K
+                    </div>
 
                   </div>
 
@@ -1485,12 +1538,10 @@ export default function IntelligenceStoryIntro() {
 
 
             {/* ==================================================
-                PROCESS STEPS
+                ANALYSIS CARDS
 
-                FIXED AT BOTTOM.
-
-                THEY FADE IN.
-                THEY DO NOT COME FROM BELOW.
+                FIXED.
+                NO BOTTOM SLIDE.
                ================================================== */}
 
             <div
@@ -1511,44 +1562,65 @@ export default function IntelligenceStoryIntro() {
               <div
                 className="
                   grid
-                  grid-cols-4
+                  grid-cols-3
                   gap-5
                 "
               >
 
-                <AnalysisStep
-                  number="1"
-                  title="Upload"
-                  description="Upload your annual report or 10-K in PDF format."
-                  icon="▱"
+                <AnalysisCard
+                  title="Revenue"
+                  value="Growth"
+                  description="Track historical and forward-looking growth drivers."
                 />
 
 
-                <AnalysisStep
-                  number="2"
-                  title="AI Extracts"
-                  description="AI extracts financial data and key metrics instantly."
-                  icon="✳"
+                <AnalysisCard
+                  title="Profitability"
+                  value="Margins"
+                  description="Identify changes in margins and operating performance."
                 />
 
 
-                <AnalysisStep
-                  number="3"
-                  title="Calculate"
-                  description="Calculate FCFF, WACC, Terminal Value and more."
-                  icon="▥"
-                />
-
-
-                <AnalysisStep
-                  number="4"
-                  title="Insights"
-                  description="Get intrinsic value and actionable insights."
-                  icon="⊙"
+                <AnalysisCard
+                  title="Valuation"
+                  value="DCF"
+                  description="Maintain control of assumptions driving intrinsic value."
                 />
 
               </div>
 
+            </div>
+
+
+            {/* ==================================================
+                SMALL FINAL MESSAGE
+
+                APPEARS AT THE SAME FIXED POSITION.
+               ================================================== */}
+
+            <div
+              className="
+                pointer-events-none
+                absolute
+                bottom-[1.5%]
+                left-1/2
+                z-20
+                -translate-x-1/2
+                whitespace-nowrap
+                text-center
+                text-[10px]
+                font-medium
+                uppercase
+                tracking-[0.22em]
+                text-slate-400
+              "
+              style={{
+                opacity:
+                  analysisCardsOpacity,
+              }}
+            >
+              AI provides the insight.
+              You control the valuation.
             </div>
 
           </div>
@@ -1614,66 +1686,58 @@ export default function IntelligenceStoryIntro() {
 
 
 /* ================================================================
-   ANALYSIS STEP
+   ANALYSIS CARD
    ================================================================ */
 
-function AnalysisStep({
-  number,
+function AnalysisCard({
   title,
+  value,
   description,
-  icon,
 }: {
-  number: string;
   title: string;
+  value: string;
   description: string;
-  icon: string;
 }) {
   return (
     <div
       className="
-        relative
-        text-center
+        rounded-2xl
+        border
+        border-slate-200
+        bg-white
+        p-5
+        shadow-[0_10px_30px_rgba(15,23,42,0.04)]
       "
     >
 
       <div
         className="
-          mx-auto
-          flex
-          h-12
-          w-12
-          items-center
-          justify-center
-          rounded-full
-          bg-emerald-50
-          text-xl
-          text-emerald-500
+          text-sm
+          text-slate-500
         "
       >
-        {icon}
+        {title}
       </div>
 
 
       <div
         className="
-          mt-3
-          text-[13px]
+          mt-2
+          text-2xl
           font-semibold
           text-slate-900
         "
       >
-        {number}. {title}
+        {value}
       </div>
 
 
       <div
         className="
-          mx-auto
           mt-2
-          max-w-[190px]
-          text-[10px]
-          leading-4
-          text-slate-400
+          text-sm
+          leading-6
+          text-slate-500
         "
       >
         {description}
