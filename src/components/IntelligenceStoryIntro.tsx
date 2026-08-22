@@ -3,73 +3,49 @@ import { useEffect, useState } from "react";
 export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
-  /*
-   * ============================================================
-   * SCROLL PROGRESS
-   * ============================================================
-   *
-   * The section is intentionally very tall.
-   *
-   * The viewport remains pinned with:
-   *
-   * sticky top-0 h-screen
-   *
-   * This means the user scrolls through a cinematic timeline
-   * instead of simply watching the page move upward.
-   * ============================================================
-   */
+  /* ============================================================
+     SCROLL PROGRESS
+     ============================================================ */
 
   useEffect(() => {
     let raf = 0;
 
     const update = () => {
-      const section =
-        document.getElementById(
-          "intelligence-story"
-        );
+      const section = document.getElementById(
+        "intelligence-story"
+      );
 
       if (!section) return;
 
-      const rect =
-        section.getBoundingClientRect();
+      const rect = section.getBoundingClientRect();
 
       const scrollDistance =
-        section.offsetHeight -
-        window.innerHeight;
+        section.offsetHeight - window.innerHeight;
 
       if (scrollDistance <= 0) return;
 
       const rawProgress =
         -rect.top / scrollDistance;
 
-      const nextProgress =
-        Math.min(
-          Math.max(rawProgress, 0),
-          1
-        );
+      const nextProgress = Math.min(
+        Math.max(rawProgress, 0),
+        1
+      );
 
       setProgress(nextProgress);
     };
 
-    const onScroll = () => {
+    const handleScroll = () => {
       cancelAnimationFrame(raf);
 
-      raf =
-        requestAnimationFrame(update);
+      raf = requestAnimationFrame(update);
     };
 
-    window.addEventListener(
-      "scroll",
-      onScroll,
-      {
-        passive: true,
-      }
-    );
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
 
-    window.addEventListener(
-      "resize",
-      onScroll
-    );
+    window.addEventListener("resize", update);
 
     update();
 
@@ -78,21 +54,19 @@ export default function IntelligenceStoryIntro() {
 
       window.removeEventListener(
         "scroll",
-        onScroll
+        handleScroll
       );
 
       window.removeEventListener(
         "resize",
-        onScroll
+        update
       );
     };
   }, []);
 
-  /*
-   * ============================================================
-   * HELPERS
-   * ============================================================
-   */
+  /* ============================================================
+     HELPERS
+     ============================================================ */
 
   const clamp = (
     value: number,
@@ -105,194 +79,142 @@ export default function IntelligenceStoryIntro() {
     );
   };
 
-  /*
-   * Smoothstep.
-   *
-   * Makes animation start and stop gently.
-   */
-  const ease = (
-    value: number
-  ) => {
+  const ease = (value: number) => {
     const x = clamp(value);
 
-    return (
-      x *
-      x *
-      (3 - 2 * x)
-    );
+    return x * x * (3 - 2 * x);
   };
 
-  /*
-   * ============================================================
-   * STORY TIMELINE
-   * ============================================================
-   *
-   * 0%   → 28%
-   * HERO HOLD
-   *
-   * 28%  → 58%
-   * CIRCLE WIPE
-   *
-   * 58%  → 68%
-   * CINEMATIC PAUSE
-   *
-   * 68%  → 76%
-   * AI MESSAGE FADE IN
-   *
-   * 76%  → 94%
-   * AI MESSAGE HOLD
-   *
-   * 94%  → 100%
-   * AI MESSAGE FADE OUT
-   *
-   * ============================================================
-   */
+  /* ============================================================
+     STORY TIMELINE
+     ============================================================
 
-  /*
-   * ============================================================
-   * CIRCLE WIPE
-   * ============================================================
-   *
-   * The circle does absolutely no physical movement.
-   *
-   * Only the visible portion changes.
-   */
+     0.00 ───────── 0.25
+              Circle holds
 
-  const circleProgress =
-    ease(
-      clamp(
-        (progress - 0.28) /
-          0.30
-      )
-    );
+     0.25 ───────── 0.55
+              Circle slowly wipes
+
+     0.55 ───────── 0.65
+              Cinematic pause
+
+     0.65 ───────── 0.73
+              AI fades in
+
+     0.73 ───────── 0.96
+              AI stays visible
+
+     0.96 ───────── 1.00
+              Background reaches white
+              AI fades away
+
+     ============================================================ */
+
+  /* ============================================================
+     CIRCLE WIPE
+     ============================================================ */
+
+  const circleProgress = ease(
+    clamp(
+      (progress - 0.25) / 0.30
+    )
+  );
 
   const wipeAngle =
     circleProgress * 360;
 
-  /*
-   * ============================================================
-   * CENTER TEXT FADE
-   * ============================================================
-   */
+  /* ============================================================
+     CENTER TEXT FADE
+     ============================================================ */
 
-  const centerFade =
-    ease(
-      clamp(
-        (progress - 0.32) /
-          0.20
-      )
-    );
+  const centerFade = ease(
+    clamp(
+      (progress - 0.29) / 0.22
+    )
+  );
 
-  /*
-   * ============================================================
-   * AI MESSAGE
-   * ============================================================
-   *
-   * IMPORTANT:
-   *
-   * This is intentionally separated into:
-   *
-   * FADE IN
-   * HOLD
-   * FADE OUT
-   *
-   * so the message doesn't disappear immediately.
-   * ============================================================
-   */
+  /* ============================================================
+     AI MESSAGE
+     ============================================================ */
 
   let aiOpacity = 0;
 
   /*
-   * ------------------------------------------------------------
    * FADE IN
-   *
-   * 68% → 76%
-   * ------------------------------------------------------------
+   * 65% → 73%
    */
 
   if (
-    progress >= 0.68 &&
-    progress < 0.76
+    progress >= 0.65 &&
+    progress < 0.73
   ) {
-    aiOpacity =
-      ease(
-        (progress - 0.68) /
-          0.08
-      );
+    aiOpacity = ease(
+      (progress - 0.65) / 0.08
+    );
   }
 
   /*
-   * ------------------------------------------------------------
    * HOLD
    *
-   * 76% → 94%
+   * 73% → 96%
    *
-   * The message remains fully visible.
-   * ------------------------------------------------------------
+   * The AI message stays fully visible.
    */
 
   if (
-    progress >= 0.76 &&
-    progress < 0.94
+    progress >= 0.73 &&
+    progress < 0.96
   ) {
     aiOpacity = 1;
   }
 
   /*
-   * ------------------------------------------------------------
-   * FADE OUT
+   * FINAL FADE
    *
-   * 94% → 100%
-   * ------------------------------------------------------------
+   * Only after the background is almost white.
+   *
+   * 96% → 100%
    */
 
-  if (progress >= 0.94) {
+  if (progress >= 0.96) {
     aiOpacity =
       1 -
       ease(
-        (progress - 0.94) /
-          0.06
+        (progress - 0.96) / 0.04
       );
   }
 
-  /*
-   * ============================================================
-   * FINAL CIRCLE EXIT
-   * ============================================================
-   *
-   * Circle remains gone after the wipe.
-   * It only gets a very subtle final fade at the end.
-   */
+  /* ============================================================
+     FINAL CIRCLE EXIT
+     ============================================================ */
 
-  const finalProgress =
-    ease(
-      clamp(
-        (progress - 0.96) /
-          0.04
-      )
-    );
+  const circleExit = ease(
+    clamp(
+      (progress - 0.96) / 0.04
+    )
+  );
 
-  /*
-   * ============================================================
-   * CINEMATIC BACKGROUND
-   * ============================================================
-   *
-   * The background does NOT jump from dark to white.
-   *
-   * It gradually evolves:
-   *
-   * 0%   Deep Navy
-   * 20%  Dark Blue
-   * 40%  Deep Teal
-   * 60%  Emerald Teal
-   * 78%  Dark/Medium Teal
-   * 92%  Soft Blue
-   * 100% Very Light
-   *
-   * Because the story is 500vh tall, these transitions
-   * happen slowly in actual scrolling.
-   * ============================================================
-   */
+  /* ============================================================
+     BACKGROUND COLOR
+     ============================================================
+
+     The background changes VERY gradually.
+
+     Navy
+       ↓
+     Blue
+       ↓
+     Deep Teal
+       ↓
+     Emerald Teal
+       ↓
+     Soft Teal
+       ↓
+     Light Blue
+       ↓
+     White
+
+     ============================================================ */
 
   type ColorStop = {
     position: number;
@@ -310,38 +232,52 @@ export default function IntelligenceStoryIntro() {
     },
 
     {
-      position: 0.20,
+      position: 0.18,
       r: 12,
-      g: 31,
-      b: 48,
+      g: 30,
+      b: 47,
     },
 
     {
-      position: 0.40,
-      r: 9,
-      g: 49,
-      b: 58,
+      position: 0.36,
+      r: 10,
+      g: 43,
+      b: 55,
     },
 
     {
-      position: 0.60,
-      r: 7,
-      g: 68,
-      b: 67,
+      position: 0.54,
+      r: 8,
+      g: 58,
+      b: 63,
+    },
+
+    {
+      position: 0.68,
+      r: 8,
+      g: 72,
+      b: 69,
     },
 
     {
       position: 0.78,
-      r: 10,
-      g: 79,
-      b: 75,
+      r: 18,
+      g: 84,
+      b: 80,
     },
 
     {
-      position: 0.92,
-      r: 76,
-      g: 119,
-      b: 126,
+      position: 0.88,
+      r: 58,
+      g: 110,
+      b: 115,
+    },
+
+    {
+      position: 0.95,
+      r: 151,
+      g: 178,
+      b: 182,
     },
 
     {
@@ -359,8 +295,7 @@ export default function IntelligenceStoryIntro() {
 
     for (
       let i = 0;
-      i <
-        colorStops.length - 1;
+      i < colorStops.length - 1;
       i++
     ) {
       const current =
@@ -374,37 +309,33 @@ export default function IntelligenceStoryIntro() {
         p <= next.position
       ) {
         const localProgress =
-          (p -
-            current.position) /
+          (p - current.position) /
           (next.position -
             current.position);
 
         const eased =
           ease(localProgress);
 
-        const r =
-          Math.round(
-            current.r +
-              (next.r -
-                current.r) *
-                eased
-          );
+        const r = Math.round(
+          current.r +
+            (next.r -
+              current.r) *
+              eased
+        );
 
-        const g =
-          Math.round(
-            current.g +
-              (next.g -
-                current.g) *
-                eased
-          );
+        const g = Math.round(
+          current.g +
+            (next.g -
+              current.g) *
+              eased
+        );
 
-        const b =
-          Math.round(
-            current.b +
-              (next.b -
-                current.b) *
-                eased
-          );
+        const b = Math.round(
+          current.b +
+            (next.b -
+              current.b) *
+              eased
+        );
 
         return `rgb(${r}, ${g}, ${b})`;
       }
@@ -414,90 +345,74 @@ export default function IntelligenceStoryIntro() {
   };
 
   const backgroundColor =
-    getBackgroundColor(
-      progress
-    );
+    getBackgroundColor(progress);
 
-  /*
-   * ============================================================
-   * BACKGROUND GLOW
-   * ============================================================
-   *
-   * Keep the green glow visible for most of the cinematic
-   * section and slowly reduce it near the end.
-   * ============================================================
-   */
+  /* ============================================================
+     BACKGROUND GLOW
+     ============================================================ */
 
   const glowOpacity =
-    progress < 0.80
-      ? 0.82
-      : 0.82 -
-        ((progress - 0.80) /
-          0.20) *
-          0.62;
+    progress < 0.82
+      ? 0.85
+      : 0.85 -
+        ((progress - 0.82) / 0.18) *
+          0.75;
 
-  /*
-   * ============================================================
-   * AI TEXT COLORS
-   * ============================================================
-   *
-   * Keep the message white while the background is dark.
-   *
-   * Near the very end, it transitions toward dark navy.
-   * ============================================================
-   */
+  /* ============================================================
+     AI TEXT COLOR
+     ============================================================
 
-  const textTransition =
-    ease(
-      clamp(
-        (progress - 0.90) /
-          0.10
-      )
-    );
+     Keep the AI message bright and readable.
+
+     Only near the final white transition do we move toward
+     dark text.
+     ============================================================ */
+
+  const textTransition = ease(
+    clamp(
+      (progress - 0.94) / 0.06
+    )
+  );
+
+  const headingR = Math.round(
+    255 -
+      235 * textTransition
+  );
+
+  const headingG = Math.round(
+    255 -
+      225 * textTransition
+  );
+
+  const headingB = Math.round(
+    255 -
+      205 * textTransition
+  );
 
   const headingColor =
-    `rgb(
-      ${Math.round(
-        255 -
-          236 *
-            textTransition
-      )},
-      ${Math.round(
-        255 -
-          226 *
-            textTransition
-      )},
-      ${Math.round(
-        255 -
-          205 *
-            textTransition
-      )}
-    )`;
+    `rgb(${headingR}, ${headingG}, ${headingB})`;
+
+  const descriptionR = Math.round(
+    211 -
+      125 * textTransition
+  );
+
+  const descriptionG = Math.round(
+    221 -
+      115 * textTransition
+  );
+
+  const descriptionB = Math.round(
+    232 -
+      105 * textTransition
+  );
 
   const descriptionColor =
-    `rgb(
-      ${Math.round(
-        211 -
-          125 *
-            textTransition
-      )},
-      ${Math.round(
-        221 -
-          115 *
-            textTransition
-      )},
-      ${Math.round(
-        232 -
-          105 *
-            textTransition
-      )}
-    )`;
+    `rgb(${descriptionR}, ${descriptionG}, ${descriptionB})`;
 
-  /*
-   * ============================================================
-   * RENDER
-   * ============================================================
-   */
+  /* ============================================================
+     RENDER
+     ============================================================ */
 
   return (
     <section
@@ -513,9 +428,9 @@ export default function IntelligenceStoryIntro() {
       "
     >
 
-      {/* ======================================================
-          PINNED VIEWPORT
-         ====================================================== */}
+      {/* ========================================================
+          STICKY CINEMATIC VIEWPORT
+         ======================================================== */}
 
       <div
         className="
@@ -530,9 +445,9 @@ export default function IntelligenceStoryIntro() {
         }}
       >
 
-        {/* ====================================================
+        {/* ======================================================
             BACKGROUND RADIAL GLOW
-           ==================================================== */}
+           ====================================================== */}
 
         <div
           className="
@@ -543,16 +458,16 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             background:
-              "radial-gradient(circle at 50% 48%, rgba(0,210,160,0.10), transparent 45%)",
+              "radial-gradient(circle at 50% 48%, rgba(0,210,160,0.11), transparent 46%)",
 
             opacity:
               glowOpacity,
           }}
         />
 
-        {/* ====================================================
-            LARGE CENTER GLOW
-           ==================================================== */}
+        {/* ======================================================
+            CENTER GREEN GLOW
+           ====================================================== */}
 
         <div
           className="
@@ -576,9 +491,9 @@ export default function IntelligenceStoryIntro() {
           }}
         />
 
-        {/* ====================================================
+        {/* ======================================================
             STORY CIRCLE
-           ==================================================== */}
+           ====================================================== */}
 
         <div
           className="
@@ -591,7 +506,7 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             opacity:
-              1 - finalProgress,
+              1 - circleExit,
           }}
         >
 
@@ -604,7 +519,7 @@ export default function IntelligenceStoryIntro() {
           >
 
             {/* ==================================================
-                CIRCLE WIPE
+                OUTER CIRCLE
                ================================================== */}
 
             <div
@@ -644,7 +559,7 @@ export default function IntelligenceStoryIntro() {
             </div>
 
             {/* ==================================================
-                CENTER DARK CIRCLE
+                INNER CIRCLE
                ================================================== */}
 
             <div
@@ -670,8 +585,6 @@ export default function IntelligenceStoryIntro() {
               }}
             >
 
-              {/* SPARKLE */}
-
               <div
                 className="
                   mb-3
@@ -682,8 +595,6 @@ export default function IntelligenceStoryIntro() {
               >
                 ✦
               </div>
-
-              {/* TITLE */}
 
               <div
                 className="
@@ -717,8 +628,6 @@ export default function IntelligenceStoryIntro() {
 
               </div>
 
-              {/* SUBTITLE */}
-
               <div
                 className="
                   mt-4
@@ -738,9 +647,9 @@ export default function IntelligenceStoryIntro() {
 
         </div>
 
-        {/* ====================================================
+        {/* ======================================================
             AI MESSAGE
-           ==================================================== */}
+           ====================================================== */}
 
         <div
           className="
@@ -766,10 +675,6 @@ export default function IntelligenceStoryIntro() {
               text-center
             "
           >
-
-            {/* ==================================================
-                HEADING
-               ================================================== */}
 
             <h1
               className="
@@ -800,10 +705,6 @@ export default function IntelligenceStoryIntro() {
 
             </h1>
 
-            {/* ==================================================
-                FIRST DESCRIPTION
-               ================================================== */}
-
             <p
               className="
                 mx-auto
@@ -820,10 +721,6 @@ export default function IntelligenceStoryIntro() {
               DCF Lab Intelligence helps uncover
               the information behind the numbers.
             </p>
-
-            {/* ==================================================
-                SECOND DESCRIPTION
-               ================================================== */}
 
             <p
               className="
@@ -846,9 +743,9 @@ export default function IntelligenceStoryIntro() {
 
         </div>
 
-        {/* ====================================================
+        {/* ======================================================
             SCROLL INDICATOR
-           ==================================================== */}
+           ====================================================== */}
 
         <div
           className="
@@ -862,11 +759,11 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             opacity:
-              progress < 0.10
+              progress < 0.08
                 ? 1
                 : Math.max(
                     1 -
-                      progress * 7,
+                      progress * 8,
                     0
                   ),
           }}
@@ -899,9 +796,17 @@ export default function IntelligenceStoryIntro() {
 
         </div>
 
-        {/* ====================================================
-            VERY SOFT FINAL TRANSITION
-           ==================================================== */}
+        {/* ======================================================
+            FINAL WHITE TRANSITION
+           ======================================================
+
+           IMPORTANT:
+
+           This starts only at 99%.
+
+           The actual background itself has already been
+           gradually changing toward white.
+           ====================================================== */}
 
         <div
           className="
@@ -913,12 +818,16 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             opacity:
-              finalProgress * 0.10,
+              progress >= 0.99
+                ? ease(
+                    (progress - 0.99) /
+                      0.01
+                  ) * 0.10
+                : 0,
           }}
         />
 
       </div>
-
     </section>
   );
 }
