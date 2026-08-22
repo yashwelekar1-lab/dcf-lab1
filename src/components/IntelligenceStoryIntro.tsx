@@ -698,10 +698,10 @@ export default function IntelligenceStoryIntro() {
   "
   style={{
     width:
-      "clamp(340px, min(58vw, 58vh), 520px)",
+      "clamp(420px, min(72vw, 72vh), 700px)",
 
     height:
-      "clamp(340px, min(58vw, 58vh), 520px)",
+      "clamp(420px, min(72vw, 72vh), 700px)",
 
     transform:
       "translate(-50%, -50%)",
