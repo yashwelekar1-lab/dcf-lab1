@@ -30,6 +30,13 @@ export default function IntelligenceStoryIntro() {
         return;
       }
 
+      /*
+       * Story progress
+       *
+       * 0 = story begins
+       * 1 = story ends
+       */
+
       const scrolled =
         Math.max(0, -rect.top);
 
@@ -115,29 +122,29 @@ export default function IntelligenceStoryIntro() {
     );
   };
 
+
   /* ============================================================
      STORY TIMELINE
 
      0.00 - 0.15
-       Circle fully visible
+       Circle completely visible
 
      0.15 - 0.58
        Circle wipes
 
      0.58 - 0.64
-       Pause
+       Small pause
 
      0.64 - 0.72
        AI message appears
 
-     0.72 - 0.90
-       AI message stays fully visible
+     0.72 - 0.94
+       AI message stays visible
 
-     0.90 - 1.00
-       Background becomes WHITE
+     0.94 - 1.00
+       Background becomes completely white
 
-       IMPORTANT:
-       AI MESSAGE DOES NOT DISAPPEAR.
+       AI TEXT STAYS VISIBLE
 
      ============================================================ */
 
@@ -153,6 +160,11 @@ export default function IntelligenceStoryIntro() {
           0.43
       )
     );
+
+  /*
+   * 360° = fully visible
+   * 0°   = completely wiped
+   */
 
   const visibleAngle =
     360 -
@@ -187,44 +199,45 @@ export default function IntelligenceStoryIntro() {
       0.08;
 
   const circleGlow =
-    `drop-shadow(
-      0 0 18px
-      rgba(
-        0,
-        220,
-        170,
-        ${glowPulse}
+    `
+      drop-shadow(
+        0 0 18px
+        rgba(
+          0,
+          220,
+          170,
+          ${glowPulse}
+        )
       )
-    )
-    drop-shadow(
-      0 0 45px
-      rgba(
-        0,
-        220,
-        170,
-        ${glowPulse * 0.65}
+
+      drop-shadow(
+        0 0 45px
+        rgba(
+          0,
+          220,
+          170,
+          ${glowPulse * 0.65}
+        )
       )
-    )
-    drop-shadow(
-      0 0 90px
-      rgba(
-        0,
-        220,
-        170,
-        ${glowPulse * 0.30}
+
+      drop-shadow(
+        0 0 90px
+        rgba(
+          0,
+          220,
+          170,
+          ${glowPulse * 0.30}
+        )
       )
-    )`;
+    `;
 
 
   /* ============================================================
      AI MESSAGE
-
+     
      IMPORTANT:
-
-     The AI message NEVER fades away.
-
-     Once it appears, it remains visible
-     all the way through the white background.
+     Once the AI message appears,
+     it NEVER disappears.
      ============================================================ */
 
   let aiOpacity = 0;
@@ -242,23 +255,12 @@ export default function IntelligenceStoryIntro() {
   }
 
   else {
-    /*
-     * IMPORTANT
-     *
-     * Keep this at 1.
-     *
-     * Do NOT fade it out.
-     */
-
     aiOpacity = 1;
   }
 
 
   /* ============================================================
      AI GLOW
-
-     Glow slowly reduces as the background
-     becomes white.
      ============================================================ */
 
   const aiGlowFade =
@@ -277,24 +279,27 @@ export default function IntelligenceStoryIntro() {
     aiGlowFade;
 
   const aiTextGlow =
-    `drop-shadow(
-      0 0 18px
-      rgba(
-        0,
-        220,
-        170,
-        ${aiGlowIntensity}
+    `
+      drop-shadow(
+        0 0 18px
+        rgba(
+          0,
+          220,
+          170,
+          ${aiGlowIntensity}
+        )
       )
-    )
-    drop-shadow(
-      0 0 45px
-      rgba(
-        0,
-        220,
-        170,
-        ${aiGlowIntensity * 0.45}
+
+      drop-shadow(
+        0 0 45px
+        rgba(
+          0,
+          220,
+          170,
+          ${aiGlowIntensity * 0.45}
+        )
       )
-    )`;
+    `;
 
 
   /* ============================================================
@@ -454,16 +459,11 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     TEXT COLOR
-
-     IMPORTANT:
-
-     As the background becomes white,
-     the AI text changes from white
-     to DARK BLUE.
-
-     This means it stays readable
-     on the white background.
+     AI TEXT COLOR
+     
+     WHITE while background is dark.
+     Gradually becomes dark blue as
+     background becomes white.
      ============================================================ */
 
   const textTransition =
@@ -516,11 +516,7 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     FINAL WHITE TRANSITION
-
-     Background reaches TRUE WHITE.
-
-     The text remains above this layer.
+     WHITE TRANSITION
      ============================================================ */
 
   const whiteTransition =
@@ -549,7 +545,7 @@ export default function IntelligenceStoryIntro() {
     >
 
       {/* ======================================================
-          STICKY VIEWPORT
+          STICKY STORY VIEWPORT
          ====================================================== */}
 
       <div
@@ -566,7 +562,7 @@ export default function IntelligenceStoryIntro() {
       >
 
         {/* ====================================================
-            BACKGROUND GLOW
+            BACKGROUND RADIAL GLOW
            ==================================================== */}
 
         <div
@@ -587,7 +583,7 @@ export default function IntelligenceStoryIntro() {
 
 
         {/* ====================================================
-            LARGE GLOW
+            LARGE CENTRAL GLOW
            ==================================================== */}
 
         <div
@@ -615,9 +611,16 @@ export default function IntelligenceStoryIntro() {
 
 
         {/* ====================================================
-            CIRCLE
+            MAIN CIRCLE
 
-            Stays at EXACT same position.
+            IMPORTANT:
+
+            - Starts directly below navigation
+            - Centered horizontally
+            - Positioned at 54%
+            - Responsive size
+            - NEVER moves during scrolling
+            - Only wipe/glow changes
            ==================================================== */}
 
         <div
@@ -629,17 +632,41 @@ export default function IntelligenceStoryIntro() {
             z-20
           "
           style={{
-            width:
-  "clamp(280px, min(62vw, 62vh), 560px)",
+            /*
+             * Responsive sizing.
+             *
+             * Uses the smaller viewport dimension.
+             *
+             * Maximum: 520px
+             * Minimum: 360px
+             */
 
-height:
-  "clamp(280px, min(62vw, 62vh), 560px)",
-            
+            width:
+              "clamp(360px, min(58vw, 58vh), 520px)",
+
+            height:
+              "clamp(360px, min(58vw, 58vh), 520px)",
+
+            /*
+             * Permanent centering.
+             *
+             * NOT an animation.
+             */
+
             transform:
               "translate(-50%, -50%)",
 
+            /*
+             * Cinematic glow.
+             */
+
             filter:
               circleGlow,
+
+            /*
+             * Circle remains visible
+             * until wipe is complete.
+             */
 
             opacity:
               progress >= 0.58
@@ -724,14 +751,16 @@ height:
 
               boxShadow:
                 `
-                0 0 25px
-                rgba(0,220,170,0.20),
+                  0 0 25px
+                  rgba(0,220,170,0.20),
 
-                0 0 60px
-                rgba(0,220,170,0.12)
+                  0 0 60px
+                  rgba(0,220,170,0.12)
                 `,
             }}
           >
+
+            {/* Spark */}
 
             <div
               className="
@@ -744,6 +773,8 @@ height:
               ✦
             </div>
 
+
+            {/* Title */}
 
             <div
               className="
@@ -778,6 +809,8 @@ height:
             </div>
 
 
+            {/* Description */}
+
             <div
               className="
                 mt-4
@@ -799,10 +832,11 @@ height:
         {/* ====================================================
             AI MESSAGE
 
-            z-[110]
+            Same position.
+            No bottom entrance.
+            No upward movement.
 
-            IMPORTANT:
-            It is ABOVE the white background layer.
+            It simply glows into existence.
            ==================================================== */}
 
         <div
@@ -934,14 +968,12 @@ height:
 
 
         {/* ====================================================
-            WHITE BACKGROUND TRANSITION
+            WHITE TRANSITION
 
-            IMPORTANT:
+            BELOW AI TEXT.
 
-            This is BELOW the AI text.
-
-            Therefore the text stays visible
-            while the entire screen becomes white.
+            This makes the entire background white
+            while AI text remains visible.
            ==================================================== */}
 
         <div
