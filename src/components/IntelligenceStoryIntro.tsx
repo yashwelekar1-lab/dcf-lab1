@@ -278,12 +278,31 @@ export default function IntelligenceStoryIntro() {
      Opacity only.
      ============================================================ */
 
-  const aiOpacity =
+  /* ============================================================
+   AI MESSAGE
+
+   Appears after circle disappears
+   and STAYS visible until the white
+   background transition is completely finished.
+   ============================================================ */
+
+let aiOpacity = 0;
+
+if (progress < 0.52) {
+  aiOpacity = 0;
+} else if (progress < 0.65) {
+  aiOpacity =
     phase(
       0.52,
       0.65
     );
-
+} else {
+  /*
+   * IMPORTANT:
+   * Once visible, it stays visible.
+   */
+  aiOpacity = 1;
+}
 
   /* ============================================================
      AI TEXT GLOW
