@@ -6,8 +6,6 @@ export default function IntelligenceStoryIntro() {
   /*
    * ============================================================
    * SCROLL PROGRESS
-   *
-   * The entire Intelligence experience remains scroll-driven.
    * ============================================================
    */
 
@@ -24,16 +22,19 @@ export default function IntelligenceStoryIntro() {
       const totalScroll =
         section.offsetHeight - window.innerHeight;
 
-      if (totalScroll <= 0) return;
+      if (totalScroll <= 0) {
+        setProgress(0);
+        return;
+      }
 
       const currentScroll = -rect.top;
 
-      const value = Math.min(
+      const nextProgress = Math.min(
         Math.max(currentScroll / totalScroll, 0),
         1
       );
 
-      setProgress(value);
+      setProgress(nextProgress);
     };
 
     window.addEventListener("scroll", handleScroll, {
@@ -43,35 +44,33 @@ export default function IntelligenceStoryIntro() {
     handleScroll();
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
     };
   }, []);
 
   /*
    * ============================================================
    * STORY TIMELINE
+   * ============================================================
    *
-   * 0.00 - 0.18
-   * Circle + center text visible
+   * 0.00 → 0.18
+   * Initial Intelligence circle
    *
-   * 0.18 - 0.58
+   * 0.18 → 0.58
    * Center text fades
-   * Outer circle wipes clockwise
+   * Circle wipes clockwise
    *
-   * 0.58 - 0.68
-   * Circle finishes disappearing
+   * 0.58 → 0.68
+   * Circle completes transition
    *
-   * 0.68 - 0.80
+   * 0.68 → 0.80
    * AI message appears
    *
-   * 0.80 - 1.00
-   * Transition to next content
-   * ============================================================
-   */
-
-  /*
-   * ============================================================
-   * INNER TEXT FADE
+   * 0.82 → 1.00
+   * Story exits
    * ============================================================
    */
 
@@ -83,12 +82,6 @@ export default function IntelligenceStoryIntro() {
     1
   );
 
-  /*
-   * ============================================================
-   * OUTER CIRCLE WIPE
-   * ============================================================
-   */
-
   const circleProgress = Math.min(
     Math.max(
       (progress - 0.18) / 0.4,
@@ -97,13 +90,8 @@ export default function IntelligenceStoryIntro() {
     1
   );
 
-  const wipeAngle = circleProgress * 360;
-
-  /*
-   * ============================================================
-   * AI MESSAGE
-   * ============================================================
-   */
+  const wipeAngle =
+    circleProgress * 360;
 
   const textProgress = Math.min(
     Math.max(
@@ -113,12 +101,6 @@ export default function IntelligenceStoryIntro() {
     1
   );
 
-  /*
-   * ============================================================
-   * FINAL STORY FADE
-   * ============================================================
-   */
-
   const exitProgress = Math.min(
     Math.max(
       (progress - 0.82) / 0.18,
@@ -127,12 +109,6 @@ export default function IntelligenceStoryIntro() {
     1
   );
 
-  /*
-   * ============================================================
-   * BACKGROUND TRANSITION
-   * ============================================================
-   */
-
   const backgroundProgress = Math.min(
     Math.max(
       (progress - 0.7) / 0.3,
@@ -140,6 +116,12 @@ export default function IntelligenceStoryIntro() {
     ),
     1
   );
+
+  /*
+   * ============================================================
+   * BACKGROUND COLOR
+   * ============================================================
+   */
 
   const backgroundColor = `rgb(
     ${Math.round(
@@ -168,11 +150,7 @@ export default function IntelligenceStoryIntro() {
     >
       {/* ========================================================
           STICKY STORY VIEWPORT
-
-          IMPORTANT:
-          Keep this sticky because the storytelling is driven
-          by scroll progress.
-      ========================================================= */}
+          ======================================================== */}
 
       <div
         className="
@@ -189,7 +167,7 @@ export default function IntelligenceStoryIntro() {
       >
         {/* ======================================================
             BACKGROUND GLOW
-        ======================================================= */}
+            ====================================================== */}
 
         <div
           className="
@@ -198,12 +176,15 @@ export default function IntelligenceStoryIntro() {
             left-1/2
             top-1/2
             z-0
-            h-[500px]
-            w-[500px]
+            h-[450px]
+            w-[450px]
             -translate-x-1/2
             -translate-y-1/2
             rounded-full
-            blur-[75px]
+            blur-[70px]
+
+            min-[390px]:h-[500px]
+            min-[390px]:w-[500px]
 
             sm:h-[650px]
             sm:w-[650px]
@@ -222,33 +203,34 @@ export default function IntelligenceStoryIntro() {
         />
 
         {/* ======================================================
-            FIXED DCF LAB INTELLIGENCE CIRCLE
+            INTELLIGENCE CIRCLE
 
             IMPORTANT:
-
-            Keep this FIXED.
-
-            The fixed element is what allows the circle to stay
-            in the viewport while scrolling drives the animation.
+            This remains FIXED so the scroll-driven animation
+            continues working.
 
             Mobile:
-            top-[440px]
+            starts below Header + Navigation.
 
             Desktop:
-            returns to approximately the original position.
-        ======================================================= */}
+            returns to the original upper position.
+            ====================================================== */}
 
         <div
           className="
             pointer-events-none
             fixed
             left-1/2
-            top-[440px]
+            top-[435px]
             z-[20]
             -translate-x-1/2
 
+            min-[390px]:top-[440px]
+
             sm:top-[155px]
+
             md:top-[165px]
+
             lg:top-[150px]
           "
           style={{
@@ -257,18 +239,17 @@ export default function IntelligenceStoryIntro() {
           }}
         >
           {/* ====================================================
-              RESPONSIVE OUTER CIRCLE SIZE
-          ===================================================== */}
+              RESPONSIVE CIRCLE
+              ==================================================== */}
 
           <div
             className="
               relative
+              h-[290px]
+              w-[290px]
 
-              h-[300px]
-              w-[300px]
-
-              min-[390px]:h-[320px]
-              min-[390px]:w-[320px]
+              min-[390px]:h-[310px]
+              min-[390px]:w-[310px]
 
               sm:h-[380px]
               sm:w-[380px]
@@ -281,10 +262,8 @@ export default function IntelligenceStoryIntro() {
             "
           >
             {/* ==================================================
-                CLOCKWISE OUTER CIRCLE WIPE
-
-                This is preserved from your original storytelling.
-            =================================================== */}
+                OUTER CIRCLE WIPE
+                ================================================== */}
 
             <div
               className="
@@ -294,16 +273,18 @@ export default function IntelligenceStoryIntro() {
                 rounded-full
               "
               style={{
-                WebkitMaskImage: `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
-                )`,
-                maskImage: `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
-                )`,
+                WebkitMaskImage:
+                  `conic-gradient(
+                    from 0deg,
+                    transparent 0deg ${wipeAngle}deg,
+                    black ${wipeAngle}deg 360deg
+                  )`,
+                maskImage:
+                  `conic-gradient(
+                    from 0deg,
+                    transparent 0deg ${wipeAngle}deg,
+                    black ${wipeAngle}deg 360deg
+                  )`,
               }}
             >
               <img
@@ -321,7 +302,7 @@ export default function IntelligenceStoryIntro() {
 
             {/* ==================================================
                 INNER DARK CIRCLE
-            =================================================== */}
+                ================================================== */}
 
             <div
               className="
@@ -348,18 +329,18 @@ export default function IntelligenceStoryIntro() {
             >
               {/* =================================================
                   SPARKLE
-              ================================================== */}
+                  ================================================= */}
 
               <div
                 className="
-                  mb-2
-                  text-[18px]
+                  mb-1
+                  text-[16px]
                   leading-none
                   text-emerald-400
 
-                  min-[390px]:text-[20px]
+                  min-[390px]:text-[18px]
 
-                  sm:mb-3
+                  sm:mb-2
                   sm:text-[22px]
 
                   md:text-[25px]
@@ -370,7 +351,7 @@ export default function IntelligenceStoryIntro() {
 
               {/* =================================================
                   TITLE
-              ================================================== */}
+                  ================================================= */}
 
               <div
                 className="
@@ -383,11 +364,11 @@ export default function IntelligenceStoryIntro() {
               >
                 <span
                   className="
-                    text-[20px]
+                    text-[19px]
                     font-bold
                     text-white
 
-                    min-[390px]:text-[22px]
+                    min-[390px]:text-[21px]
 
                     sm:text-[28px]
 
@@ -401,11 +382,11 @@ export default function IntelligenceStoryIntro() {
 
                 <span
                   className="
-                    text-[20px]
+                    text-[19px]
                     font-bold
                     text-emerald-400
 
-                    min-[390px]:text-[22px]
+                    min-[390px]:text-[21px]
 
                     sm:text-[28px]
 
@@ -420,18 +401,18 @@ export default function IntelligenceStoryIntro() {
 
               {/* =================================================
                   SUBTITLE
-              ================================================== */}
+                  ================================================= */}
 
               <div
                 className="
-                  mt-2
-                  text-[8px]
+                  mt-1
+                  text-[7px]
                   leading-[1.35]
                   text-slate-300
 
-                  min-[390px]:text-[9px]
+                  min-[390px]:text-[8px]
 
-                  sm:mt-3
+                  sm:mt-2
                   sm:text-[10px]
 
                   md:text-[11px]
@@ -449,9 +430,7 @@ export default function IntelligenceStoryIntro() {
 
         {/* ======================================================
             AI MESSAGE
-
-            The original scroll-driven transition is preserved.
-        ======================================================= */}
+            ====================================================== */}
 
         <div
           className="
@@ -470,11 +449,8 @@ export default function IntelligenceStoryIntro() {
               textProgress *
               (1 - exitProgress * 0.2),
 
-            transform: `
-              translateY(
-                ${35 - textProgress * 35}px
-              )
-            `,
+            transform:
+              `translateY(${35 - textProgress * 35}px)`,
           }}
         >
           <div
@@ -486,14 +462,16 @@ export default function IntelligenceStoryIntro() {
           >
             {/* =================================================
                 MAIN MESSAGE
-            ================================================== */}
+                ================================================= */}
 
             <h1
               className="
-                text-[36px]
+                text-[34px]
                 font-semibold
                 leading-[1.02]
                 tracking-[-0.045em]
+
+                min-[390px]:text-[38px]
 
                 sm:text-[48px]
 
@@ -520,15 +498,17 @@ export default function IntelligenceStoryIntro() {
 
             {/* =================================================
                 FIRST DESCRIPTION
-            ================================================== */}
+                ================================================= */}
 
             <p
               className="
                 mx-auto
-                mt-6
+                mt-5
                 max-w-[700px]
-                text-[15px]
+                text-[14px]
                 leading-[1.6]
+
+                min-[390px]:text-[15px]
 
                 sm:mt-8
                 sm:text-[18px]
@@ -548,15 +528,17 @@ export default function IntelligenceStoryIntro() {
 
             {/* =================================================
                 SECOND DESCRIPTION
-            ================================================== */}
+                ================================================= */}
 
             <p
               className="
                 mx-auto
                 mt-2
                 max-w-[700px]
-                text-[15px]
+                text-[14px]
                 leading-[1.6]
+
+                min-[390px]:text-[15px]
 
                 sm:text-[18px]
 
@@ -577,7 +559,7 @@ export default function IntelligenceStoryIntro() {
 
         {/* ======================================================
             SCROLL INDICATOR
-        ======================================================= */}
+            ====================================================== */}
 
         <div
           className="
@@ -630,10 +612,9 @@ export default function IntelligenceStoryIntro() {
               sm:h-8
             "
             style={{
-              style={{
-  background:
-    "linear-gradient(to bottom, #00c98b, transparent)",
-}}
+              background:
+                "linear-gradient(to bottom, #00c98b, transparent)",
+            }}
           />
         </div>
       </div>
