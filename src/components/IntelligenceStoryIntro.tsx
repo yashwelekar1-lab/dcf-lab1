@@ -1,247 +1,366 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const animationRef = useRef<number | null>(null);
-
-  const isAutoScrolling = useRef(false);
-  const hasPlayed = useRef(false);
-  const userInteracting = useRef(false);
-
-  const STORY_DURATION = 12000;
-
-  const updateProgress = () => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const rect = section.getBoundingClientRect();
-    const totalScroll = section.offsetHeight - window.innerHeight;
-
-    if (totalScroll <= 0) {
-      setProgress(0);
-      return;
-    }
-
-    const currentScroll = -rect.top;
-    const nextProgress = Math.min(
-      Math.max(currentScroll / totalScroll, 0),
-      1
-    );
-
-    setProgress(nextProgress);
-  };
-
   useEffect(() => {
-    const handleScroll = () => {
-      updateProgress();
+    let ticking = false;
+
+    const updateProgress = () => {
+      const section = document.getElementById("intelligence-story");
+
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+
+      /*
+       * The story itself is 300vh tall.
+       * We calculate progress only while the story
+       * is passing through the viewport.
+       */
+      const totalScroll =
+        section.offsetHeight - window.innerHeight;
+
+      if (totalScroll <= 0) return;
+
+      const currentScroll = -rect.top;
+
+      const nextProgress = Math.min(
+        Math.max(currentScroll / totalScroll, 0),
+        1
+      );
+
+      setProgress(nextProgress);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const handleScroll = () => {
+      if (ticking) return;
+
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        updateProgress();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", handleScroll);
+
     updateProgress();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
   }, []);
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
+  /*
+   * ============================================================
+   * STORY TIMELINE
+   * ============================================================
+   *
+   * 0.00 → 0.18
+   * Circle stays fully visible
+   *
+   * 0.18 → 0.58
+   * Circle wipes clockwise
+   * Center text fades
+   *
+   * 0.58 → 0.68
+   * Circle disappears completely
+   *
+   * 0.68 → 0.82
+   * AI message appears
+   *
+   * 0.82 → 1.00
+   * Story fades out
+   * Actual Intelligence page appears
+   * ============================================================
+   */
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry.isIntersecting || hasPlayed.current) return;
-        if (entry.intersectionRatio < 0.35) return;
+  const clamp = (
+    value: number,
+    min = 0,
+    max = 1
+  ) => Math.min(Math.max(value, min), max);
 
-        hasPlayed.current = true;
-        startAutomaticStory();
-      },
-      { threshold: [0.35, 0.5, 0.75] }
-    );
+  /*
+   * CENTER TEXT
+   */
+  const centerTextProgress = clamp(
+    (progress - 0.18) / 0.40
+  );
 
-    observer.observe(section);
+  /*
+   * OUTER CIRCLE WIPE
+   */
+  const circleProgress = clamp(
+    (progress - 0.18) / 0.40
+  );
 
-    return () => {
-      observer.disconnect();
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
-
-  const startAutomaticStory = () => {
-    const section = sectionRef.current;
-    if (!section || isAutoScrolling.current || userInteracting.current) return;
-
-    const sectionTop = window.scrollY + section.getBoundingClientRect().top;
-    const maxScroll = section.offsetHeight - window.innerHeight;
-    const startScroll = sectionTop;
-    const endScroll = sectionTop + Math.max(maxScroll, 0);
-
-    if (window.scrollY >= endScroll - 30) return;
-
-    isAutoScrolling.current = true;
-    const startTime = performance.now();
-
-    const animate = (currentTime: number) => {
-      if (userInteracting.current) {
-        isAutoScrolling.current = false;
-        return;
-      }
-
-      const elapsed = currentTime - startTime;
-      const rawProgress = Math.min(elapsed / STORY_DURATION, 1);
-
-      const easedProgress =
-        rawProgress < 0.5
-          ? 2 * rawProgress * rawProgress
-          : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2;
-
-      const targetScroll = startScroll + (endScroll - startScroll) * easedProgress;
-
-      window.scrollTo(0, targetScroll);
-      updateProgress();
-
-      if (rawProgress < 1) {
-        animationRef.current = requestAnimationFrame(animate);
-      } else {
-        window.scrollTo(0, endScroll);
-        updateProgress();
-        isAutoScrolling.current = false;
-        animationRef.current = null;
-      }
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-  };
-
-  useEffect(() => {
-    const stopAutoScroll = () => {
-      if (!isAutoScrolling.current) return;
-      userInteracting.current = true;
-      isAutoScrolling.current = false;
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
-      }
-    };
-
-    window.addEventListener("pointerdown", stopAutoScroll, { passive: true });
-    window.addEventListener("wheel", stopAutoScroll, { passive: true });
-    window.addEventListener("touchstart", stopAutoScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("pointerdown", stopAutoScroll);
-      window.removeEventListener("wheel", stopAutoScroll);
-      window.removeEventListener("touchstart", stopAutoScroll);
-    };
-  }, []);
-
-  // Timeline values
-  const centerTextProgress = Math.min(Math.max((progress - 0.18) / 0.4, 0), 1);
-  const circleProgress = Math.min(Math.max((progress - 0.18) / 0.4, 0), 1);
   const wipeAngle = circleProgress * 360;
 
-  const textProgress = Math.min(Math.max((progress - 0.68) / 0.12, 0), 1);
-  const exitProgress = Math.min(Math.max((progress - 0.82) / 0.18, 0), 1);
-
-  const backgroundProgress = Math.min(Math.max((progress - 0.7) / 0.3, 0), 1);
-  const backgroundColor = `rgb(${Math.round(16 + 235 * backgroundProgress)}, ${Math.round(
-    26 + 232 * backgroundProgress
-  )}, ${Math.round(43 + 212 * backgroundProgress)})`;
-
-  const messageY = 35 - textProgress * 35;
-
-  /* 
-   * 3D TRANSFORMATIONS 
+  /*
+   * AI MESSAGE
    */
-  const circle3DScale = 1 + circleProgress * 0.25 - exitProgress * 0.4;
-  const circle3DRotateX = (1 - circleProgress) * 20 - exitProgress * 15;
-  const circle3DRotateY = Math.sin(circleProgress * Math.PI) * 12;
-  const circle3DTranslateZ = circleProgress * 100 - exitProgress * 200;
+  const textProgress = clamp(
+    (progress - 0.68) / 0.14
+  );
 
-  const message3DScale = 0.85 + textProgress * 0.15;
-  const message3DRotateX = (1 - textProgress) * 15;
-  const message3DTranslateZ = textProgress * 50;
+  /*
+   * FINAL EXIT
+   */
+  const exitProgress = clamp(
+    (progress - 0.84) / 0.16
+  );
+
+  /*
+   * BACKGROUND
+   *
+   * Keep the cinematic dark background.
+   * Do NOT transition to white here.
+   * Your real page underneath handles its own background.
+   */
+  const backgroundProgress = clamp(
+    (progress - 0.72) / 0.28
+  );
+
+  const backgroundColor = `rgb(
+    ${Math.round(16 + 8 * backgroundProgress)},
+    ${Math.round(26 + 12 * backgroundProgress)},
+    ${Math.round(43 + 10 * backgroundProgress)}
+  )`;
 
   return (
+    /*
+     * ============================================================
+     * FULL WIDTH STORY
+     *
+     * IMPORTANT:
+     *
+     * w-screen + relative left-1/2 + -translate-x-1/2
+     *
+     * forces this section to escape any max-width parent.
+     *
+     * This fixes your current desktop problem where the circle
+     * is appearing on the left instead of the center.
+     * ============================================================
+     */
     <section
-      ref={sectionRef}
       id="intelligence-story"
-      className="relative m-0 h-[280vh] w-full max-w-full overflow-x-hidden p-0"
+      className="
+        relative
+        left-1/2
+        w-screen
+        -translate-x-1/2
+        h-[300vh]
+        m-0
+        p-0
+      "
     >
+      {/* ========================================================
+          STICKY STORY VIEWPORT
+         ======================================================== */}
+
       <div
-        className="sticky top-0 h-screen w-full max-w-full overflow-hidden"
+        className="
+          sticky
+          top-0
+          h-screen
+          w-screen
+          overflow-hidden
+        "
         style={{
           backgroundColor,
-          perspective: "1200px", // Enables 3D perspective space
         }}
       >
-        {/* BACKGROUND GLOW */}
+        {/* ======================================================
+            BACKGROUND GLOW
+           ====================================================== */}
+
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[70px] min-[390px]:h-[500px] min-[390px]:w-[500px] sm:h-[650px] sm:w-[650px] lg:h-[750px] lg:w-[750px]"
+          className="
+            pointer-events-none
+            absolute
+            left-1/2
+            top-1/2
+            z-0
+            h-[800px]
+            w-[800px]
+            -translate-x-1/2
+            -translate-y-1/2
+            rounded-full
+            blur-[110px]
+          "
           style={{
             background:
-              "radial-gradient(circle, rgba(0,210,160,0.16), transparent 68%)",
-            opacity: 1 - progress * 0.85,
-            transform: `translate(-50%, -50%) scale(${1 + circleProgress * 0.3})`,
-            transition: "transform 0.1s ease-out",
+              "radial-gradient(circle, rgba(0,210,160,0.18), transparent 68%)",
+
+            opacity:
+              1 - progress * 0.9,
           }}
         />
 
-        {/* 3D INTELLIGENCE CIRCLE */}
+        {/* ======================================================
+            STORY CIRCLE
+
+            NEVER fixed.
+            NEVER translated by scroll.
+            NEVER moved horizontally by progress.
+
+            It stays exactly in the center.
+           ====================================================== */}
+
         <div
-          className="pointer-events-none absolute left-1/2 top-[25px] z-[20] -translate-x-1/2 min-[390px]:top-[35px] sm:top-[45px] md:top-[55px] lg:top-[65px]"
+          className="
+            absolute
+            left-1/2
+            top-1/2
+            z-20
+            -translate-x-1/2
+            -translate-y-1/2
+          "
           style={{
             opacity: 1 - exitProgress,
-            transformStyle: "preserve-3d",
-            transform: `translateX(-50%) translateZ(${circle3DTranslateZ}px) rotateX(${circle3DRotateX}deg) rotateY(${circle3DRotateY}deg) scale(${circle3DScale})`,
-            willChange: "transform, opacity",
           }}
         >
-          <div className="relative h-[285px] w-[285px] min-[390px]:h-[310px] min-[390px]:w-[310px] sm:h-[380px] sm:w-[380px] md:h-[440px] md:w-[440px] lg:h-[520px] lg:w-[520px]">
-            
-            {/* CLOCKWISE WIPE LAYER */}
+          {/* ====================================================
+              CIRCLE CONTAINER
+             ==================================================== */}
+
+          <div
+            className="
+              relative
+              h-[min(560px,78vw)]
+              w-[min(560px,78vw)]
+            "
+          >
+            {/* ==================================================
+                OUTER LOGO WIPE
+
+                The physical circle does NOT move.
+
+                Only the conic mask changes.
+               ================================================== */}
+
             <div
-              className="absolute inset-0 overflow-hidden rounded-full shadow-2xl"
+              className="
+                absolute
+                inset-0
+                overflow-hidden
+                rounded-full
+              "
               style={{
-                WebkitMaskImage: `conic-gradient(from 0deg, transparent 0deg ${wipeAngle}deg, black ${wipeAngle}deg 360deg)`,
-                maskImage: `conic-gradient(from 0deg, transparent 0deg ${wipeAngle}deg, black ${wipeAngle}deg 360deg)`,
-                filter: `drop-shadow(0 ${20 * circleProgress}px ${30 * circleProgress}px rgba(0,210,160,0.25))`,
+                WebkitMaskImage: `conic-gradient(
+                  from 0deg,
+                  transparent 0deg ${wipeAngle}deg,
+                  black ${wipeAngle}deg 360deg
+                )`,
+
+                maskImage: `conic-gradient(
+                  from 0deg,
+                  transparent 0deg ${wipeAngle}deg,
+                  black ${wipeAngle}deg 360deg
+                )`,
               }}
             >
               <img
                 src="/DCF Logo.png"
                 alt="DCF Lab Intelligence"
-                className="absolute inset-0 h-full w-full object-contain"
+                className="
+                  absolute
+                  inset-0
+                  h-full
+                  w-full
+                  object-contain
+                "
               />
             </div>
 
-            {/* INNER CIRCLE */}
+            {/* ==================================================
+                INNER DARK CIRCLE
+               ================================================== */}
+
             <div
-              className="absolute left-1/2 top-1/2 flex aspect-square w-[48%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-[#101a2b] px-2 text-center shadow-inner"
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                flex
+                aspect-square
+                w-[48%]
+                -translate-x-1/2
+                -translate-y-1/2
+                flex-col
+                items-center
+                justify-center
+                rounded-full
+                bg-[#101a2b]
+                text-center
+              "
               style={{
                 opacity: 1 - centerTextProgress,
-                transform: "translate(-50%, -50%) translateZ(20px)", // Elevates inner content forward
               }}
             >
-              <div className="mb-1 text-[16px] leading-none text-emerald-400 min-[390px]:text-[18px] sm:mb-2 sm:text-[22px] md:text-[25px]">
+              {/* SPARKLE */}
+
+              <div
+                className="
+                  mb-3
+                  text-[26px]
+                  leading-none
+                  text-emerald-400
+                "
+              >
                 ✦
               </div>
 
-              <div className="flex flex-col items-center leading-[1.02] tracking-[-0.04em]">
-                <span className="text-[19px] font-bold text-white min-[390px]:text-[21px] sm:text-[28px] md:text-[34px] lg:text-[43px]">
+              {/* TITLE */}
+
+              <div
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  leading-[1]
+                  tracking-[-0.045em]
+                "
+              >
+                <span
+                  className="
+                    text-[clamp(28px,4vw,48px)]
+                    font-bold
+                    text-white
+                  "
+                >
                   DCF Lab
                 </span>
-                <span className="text-[19px] font-bold text-emerald-400 min-[390px]:text-[21px] sm:text-[28px] md:text-[34px] lg:text-[43px]">
+
+                <span
+                  className="
+                    text-[clamp(28px,4vw,48px)]
+                    font-bold
+                    text-emerald-400
+                  "
+                >
                   Intelligence
                 </span>
               </div>
 
-              <div className="mt-1 text-[7px] leading-[1.35] text-slate-300 min-[390px]:text-[8px] sm:mt-2 sm:text-[10px] md:text-[11px] lg:text-[13px]">
+              {/* SUBTITLE */}
+
+              <div
+                className="
+                  mt-4
+                  text-[clamp(9px,1vw,14px)]
+                  leading-[1.4]
+                  text-slate-300
+                "
+              >
                 AI-Powered Financial Research
                 <br />
                 &amp; Valuation Platform
@@ -250,73 +369,126 @@ export default function IntelligenceStoryIntro() {
           </div>
         </div>
 
-        {/* 3D AI MESSAGE */}
+        {/* ======================================================
+            AI MESSAGE
+
+            Appears AFTER circle disappears.
+           ====================================================== */}
+
         <div
-          className="absolute inset-0 z-10 flex items-center justify-center px-4 sm:px-6"
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-30
+            flex
+            items-center
+            justify-center
+            px-6
+          "
           style={{
-            opacity: textProgress * (1 - exitProgress * 0.2),
-            transformStyle: "preserve-3d",
-            transform: `translateY(${messageY}px) translateZ(${message3DTranslateZ}px) rotateX(${message3DRotateX}deg) scale(${message3DScale})`,
-            willChange: "transform, opacity",
+            opacity:
+              textProgress *
+              (1 - exitProgress),
           }}
         >
-          <div className="w-full max-w-[850px] text-center">
+          <div
+            className="
+              w-full
+              max-w-[900px]
+              text-center
+            "
+          >
             <h1
-              className="text-[34px] font-semibold leading-[1.02] tracking-[-0.045em] min-[390px]:text-[38px] sm:text-[48px] md:text-[72px]"
-              style={{
-                color: progress < 0.72 ? "#ffffff" : "#0b1b38",
-              }}
+              className="
+                font-semibold
+                leading-[1.02]
+                tracking-[-0.05em]
+                text-[clamp(42px,6vw,82px)]
+              "
             >
-              <span>AI reads.</span>{" "}
-              <span style={{ color: "#00bd87" }}>You decide.</span>
+              <span className="text-white">
+                AI reads.
+              </span>{" "}
+              <span className="text-emerald-400">
+                You decide.
+              </span>
             </h1>
 
             <p
-              className="mx-auto mt-5 max-w-[700px] text-[14px] leading-[1.6] min-[390px]:text-[15px] sm:mt-8 sm:text-[18px] md:text-[22px]"
-              style={{
-                color: progress < 0.72 ? "#cbd5e1" : "#526581",
-              }}
+              className="
+                mx-auto
+                mt-8
+                max-w-[720px]
+                text-[clamp(17px,2vw,23px)]
+                leading-[1.7]
+                text-slate-300
+              "
             >
-              DCF Lab Intelligence helps uncover the information behind the numbers.
+              DCF Lab Intelligence helps uncover
+              the information behind the numbers.
             </p>
 
             <p
-              className="mx-auto mt-2 max-w-[700px] text-[14px] leading-[1.6] min-[390px]:text-[15px] sm:text-[18px] md:text-[22px]"
-              style={{
-                color: progress < 0.72 ? "#cbd5e1" : "#526581",
-              }}
+              className="
+                mx-auto
+                mt-2
+                max-w-[720px]
+                text-[clamp(17px,2vw,23px)]
+                leading-[1.7]
+                text-slate-300
+              "
             >
-              You remain in control of the assumptions that drive valuation.
+              You remain in control of the assumptions
+              that drive valuation.
             </p>
           </div>
         </div>
 
-        {/* SCROLL INDICATOR */}
+        {/* ======================================================
+            SCROLL INDICATOR
+           ====================================================== */}
+
         <div
-          className="pointer-events-none absolute bottom-[12%] left-1/2 z-[100] -translate-x-1/2 text-center sm:bottom-auto sm:top-[82%]"
+          className="
+            pointer-events-none
+            absolute
+            bottom-10
+            left-1/2
+            z-40
+            -translate-x-1/2
+            text-center
+          "
           style={{
-            opacity: Math.max(1 - progress, 0),
+            opacity: Math.max(
+              1 - progress * 4,
+              0
+            ),
           }}
         >
           <div
-            className="whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.2em] sm:text-[12px] sm:tracking-[0.25em]"
-            style={{ color: "rgba(255,255,255,0.85)" }}
+            className="
+              whitespace-nowrap
+              text-[11px]
+              font-medium
+              uppercase
+              tracking-[0.28em]
+              text-white/80
+            "
           >
             Scroll to explore
           </div>
-          <div
-            className="mx-auto mt-2 h-6 w-[2px] sm:mt-3 sm:h-8"
-            style={{
-              background: "linear-gradient(to bottom, #00c98b, transparent)",
-            }}
-          />
-        </div>
 
-        {/* STORY PROGRESS BAR */}
-        <div className="pointer-events-none absolute bottom-3 left-1/2 z-[100] h-[2px] w-[120px] -translate-x-1/2 overflow-hidden rounded-full bg-white/10">
           <div
-            className="h-full rounded-full bg-emerald-400"
-            style={{ width: `${progress * 100}%` }}
+            className="
+              mx-auto
+              mt-3
+              h-8
+              w-[2px]
+              bg-gradient-to-b
+              from-emerald-400
+              to-transparent
+            "
           />
         </div>
       </div>
