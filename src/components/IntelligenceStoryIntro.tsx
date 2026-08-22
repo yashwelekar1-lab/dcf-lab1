@@ -4,31 +4,42 @@ export default function IntelligenceStoryIntro() {
   const [progress, setProgress] = useState(0);
 
   /* ============================================================
-     SCROLL ENGINE
+     SCROLL PROGRESS
      ============================================================ */
 
   useEffect(() => {
-    let animationFrame = 0;
+    let frame = 0;
 
-    const calculateProgress = () => {
-      const section = document.getElementById(
-        "intelligence-story"
-      );
+    const updateProgress = () => {
+      const section =
+        document.getElementById(
+          "intelligence-story"
+        );
 
       if (!section) return;
 
-      const rect = section.getBoundingClientRect();
+      const rect =
+        section.getBoundingClientRect();
 
-      const scrollableDistance =
-        section.offsetHeight - window.innerHeight;
+      const scrollDistance =
+        section.offsetHeight -
+        window.innerHeight;
 
-      if (scrollableDistance <= 0) {
+      if (scrollDistance <= 0) {
         setProgress(0);
         return;
       }
 
+      /*
+       * 0 = story just entered
+       * 1 = story completely finished
+       */
+
+      const current =
+        Math.max(0, -rect.top);
+
       const value =
-        -rect.top / scrollableDistance;
+        current / scrollDistance;
 
       setProgress(
         Math.min(
@@ -38,43 +49,39 @@ export default function IntelligenceStoryIntro() {
       );
     };
 
-    const handleScroll = () => {
-      cancelAnimationFrame(animationFrame);
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
 
-      animationFrame =
+      frame =
         requestAnimationFrame(
-          calculateProgress
+          updateProgress
         );
     };
 
     window.addEventListener(
       "scroll",
-      handleScroll,
-      {
-        passive: true,
-      }
+      onScroll,
+      { passive: true }
     );
 
     window.addEventListener(
       "resize",
-      calculateProgress
+      updateProgress
     );
 
-    calculateProgress();
+    updateProgress();
 
     return () => {
-      cancelAnimationFrame(
-        animationFrame
-      );
+      cancelAnimationFrame(frame);
 
       window.removeEventListener(
         "scroll",
-        handleScroll
+        onScroll
       );
 
       window.removeEventListener(
         "resize",
-        calculateProgress
+        updateProgress
       );
     };
   }, []);
@@ -87,12 +94,11 @@ export default function IntelligenceStoryIntro() {
     value: number,
     min = 0,
     max = 1
-  ) => {
-    return Math.min(
+  ) =>
+    Math.min(
       Math.max(value, min),
       max
     );
-  };
 
   const smooth = (
     value: number
@@ -109,52 +115,62 @@ export default function IntelligenceStoryIntro() {
   /* ============================================================
      STORY TIMELINE
 
-     0.00 - 0.30
-       Circle completely visible
+     0.00 - 0.15
+       Circle holds
 
-     0.30 - 0.60
+     0.15 - 0.55
        Circle wipes
 
-     0.60 - 0.68
-       Pause
+     0.55 - 0.62
+       Small pause
 
-     0.68 - 0.72
-       AI fades in
+     0.62 - 0.70
+       AI message appears
 
-     0.72 - 0.98
-       AI fully visible
+     0.70 - 0.94
+       AI message remains visible
 
-     0.98 - 1.00
-       AI disappears
+     0.94 - 1.00
+       Message fades away
 
      ============================================================ */
+
 
   /* ============================================================
      CIRCLE WIPE
      ============================================================ */
 
-  const circleProgress = smooth(
-    clamp(
-      (progress - 0.30) /
-        0.30
-    )
-  );
+  const wipeProgress =
+    smooth(
+      clamp(
+        (progress - 0.15) /
+          0.40
+      )
+    );
 
-  const wipeAngle =
-    circleProgress * 360;
+  /*
+   * 360 = completely visible
+   * 0   = completely invisible
+   */
+
+  const visibleAngle =
+    360 -
+    wipeProgress * 360;
+
 
   /* ============================================================
-     CENTER TEXT
+     CENTER CONTENT
      ============================================================ */
 
   const centerOpacity =
     1 -
     smooth(
       clamp(
-        (progress - 0.32) /
-          0.20
+        (progress - 0.18) /
+          0.27
       )
     );
+
 
   /* ============================================================
      AI MESSAGE
@@ -162,178 +178,85 @@ export default function IntelligenceStoryIntro() {
 
   let aiOpacity = 0;
 
-  if (progress < 0.68) {
+  if (progress < 0.62) {
     aiOpacity = 0;
-  } else if (progress < 0.72) {
+  }
+
+  else if (progress < 0.70) {
     aiOpacity =
       smooth(
-        (progress - 0.68) /
-          0.04
-      );
-  } else if (progress < 0.98) {
-    aiOpacity = 1;
-  } else {
-    aiOpacity =
-      1 -
-      smooth(
-        (progress - 0.98) /
-          0.02
+        (progress - 0.62) /
+          0.08
       );
   }
 
+  else if (progress < 0.94) {
+    aiOpacity = 1;
+  }
+
+  else {
+    aiOpacity =
+      1 -
+      smooth(
+        (progress - 0.94) /
+          0.06
+      );
+  }
+
+
   /* ============================================================
-     BACKGROUND COLORS
+     BACKGROUND
      ============================================================ */
 
-  type ColorStop = {
-    position: number;
-    r: number;
-    g: number;
-    b: number;
-  };
-
-  const colors: ColorStop[] = [
-    {
-      position: 0.00,
-      r: 14,
-      g: 24,
-      b: 40,
-    },
-    {
-      position: 0.20,
-      r: 12,
-      g: 31,
-      b: 48,
-    },
-    {
-      position: 0.40,
-      r: 9,
-      g: 48,
-      b: 57,
-    },
-    {
-      position: 0.60,
-      r: 7,
-      g: 67,
-      b: 66,
-    },
-    {
-      position: 0.72,
-      r: 12,
-      g: 79,
-      b: 76,
-    },
-    {
-      position: 0.84,
-      r: 48,
-      g: 103,
-      b: 108,
-    },
-    {
-      position: 0.94,
-      r: 145,
-      g: 173,
-      b: 178,
-    },
-    {
-      position: 1.00,
-      r: 247,
-      g: 250,
-      b: 252,
-    },
-  ];
-
-  const getBackgroundColor = (
-    value: number
-  ) => {
-    const p = clamp(value);
-
-    for (
-      let i = 0;
-      i < colors.length - 1;
-      i++
-    ) {
-      const current =
-        colors[i];
-
-      const next =
-        colors[i + 1];
-
-      if (
-        p >= current.position &&
-        p <= next.position
-      ) {
-        const localProgress =
-          (p -
-            current.position) /
-          (next.position -
-            current.position);
-
-        const eased =
-          smooth(
-            localProgress
-          );
-
-        const r =
-          Math.round(
-            current.r +
-              (next.r -
-                current.r) *
-                eased
-          );
-
-        const g =
-          Math.round(
-            current.g +
-              (next.g -
-                current.g) *
-                eased
-          );
-
-        const b =
-          Math.round(
-            current.b +
-              (next.b -
-                current.b) *
-                eased
-          );
-
-        return `rgb(${r}, ${g}, ${b})`;
-      }
-    }
-
-    return "rgb(247,250,252)";
-  };
-
-  const backgroundColor =
-    getBackgroundColor(
-      progress
+  const darkToLight =
+    smooth(
+      clamp(
+        (progress - 0.72) /
+          0.28
+      )
     );
 
+  const backgroundColor =
+    `rgb(
+      ${Math.round(
+        14 +
+          (247 - 14) *
+            darkToLight
+      )},
+      ${Math.round(
+        24 +
+          (250 - 24) *
+            darkToLight
+      )},
+      ${Math.round(
+        40 +
+          (252 - 40) *
+            darkToLight
+      )}
+    )`;
+
+
   /* ============================================================
-     BACKGROUND GLOW
+     GLOW
      ============================================================ */
 
   const glowOpacity =
-    progress < 0.80
-      ? 0.85
-      : Math.max(
-          0.85 -
-            ((progress - 0.80) /
-              0.20) *
-              0.75,
-          0
-        );
+    Math.max(
+      0.85 -
+        progress * 1.1,
+      0
+    );
+
 
   /* ============================================================
-     AI TEXT COLOR
+     AI TEXT COLORS
      ============================================================ */
 
   const textTransition =
     smooth(
       clamp(
-        (progress - 0.94) /
-          0.06
+        (progress - 0.86) /
+          0.14
       )
     );
 
@@ -341,7 +264,7 @@ export default function IntelligenceStoryIntro() {
     `rgb(
       ${Math.round(
         255 -
-          235 *
+          225 *
             textTransition
       )},
       ${Math.round(
@@ -351,7 +274,7 @@ export default function IntelligenceStoryIntro() {
       )},
       ${Math.round(
         255 -
-          205 *
+          210 *
             textTransition
       )}
     )`;
@@ -360,44 +283,21 @@ export default function IntelligenceStoryIntro() {
     `rgb(
       ${Math.round(
         211 -
-          125 *
+          105 *
             textTransition
       )},
       ${Math.round(
         221 -
-          115 *
+          105 *
             textTransition
       )},
       ${Math.round(
         232 -
-          105 *
+          100 *
             textTransition
       )}
     )`;
 
-  /* ============================================================
-     CIRCLE EXIT
-     ============================================================ */
-
-  const circleExit =
-    progress >= 0.96
-      ? smooth(
-          (progress - 0.96) /
-            0.04
-        )
-      : 0;
-
-  /* ============================================================
-     FINAL WHITE OVERLAY
-     ============================================================ */
-
-  const whiteOverlay =
-    progress >= 0.995
-      ? smooth(
-          (progress - 0.995) /
-            0.005
-        )
-      : 0;
 
   /* ============================================================
      RENDER
@@ -408,10 +308,8 @@ export default function IntelligenceStoryIntro() {
       id="intelligence-story"
       className="
         relative
-        left-1/2
-        w-screen
-        -translate-x-1/2
-        h-[500vh]
+        w-full
+        h-[280vh]
         m-0
         p-0
       "
@@ -419,6 +317,8 @@ export default function IntelligenceStoryIntro() {
 
       {/* ======================================================
           STICKY VIEWPORT
+
+          This is what locks everything to the screen.
          ====================================================== */}
 
       <div
@@ -426,7 +326,7 @@ export default function IntelligenceStoryIntro() {
           sticky
           top-0
           h-screen
-          w-screen
+          w-full
           overflow-hidden
         "
         style={{
@@ -447,14 +347,16 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             background:
-              "radial-gradient(circle at 50% 48%, rgba(0,210,160,0.11), transparent 46%)",
+              "radial-gradient(circle at 50% 50%, rgba(0,210,160,0.16), transparent 45%)",
+
             opacity:
               glowOpacity,
           }}
         />
 
+
         {/* ====================================================
-            LARGE CENTRAL GLOW
+            LARGE SOFT GLOW
            ==================================================== */}
 
         <div
@@ -463,60 +365,56 @@ export default function IntelligenceStoryIntro() {
             absolute
             left-1/2
             top-1/2
-            h-[800px]
-            w-[800px]
+            h-[850px]
+            w-[850px]
             -translate-x-1/2
             -translate-y-1/2
             rounded-full
-            blur-[130px]
+            blur-[140px]
           "
           style={{
             background:
-              "radial-gradient(circle, rgba(0,210,160,0.20), transparent 68%)",
+              "radial-gradient(circle, rgba(0,210,160,0.18), transparent 68%)",
+
             opacity:
               glowOpacity,
           }}
         />
 
+
         {/* ====================================================
-            FIXED CIRCLE LAYER
+            CIRCLE
 
             IMPORTANT:
-            This is deliberately fixed to the viewport.
+            absolute inside sticky viewport.
 
-            The circle itself NEVER changes position.
+            It NEVER moves vertically.
 
-            Only:
-              - mask
-              - opacity
-
-            change with scroll.
+            Scroll ONLY changes the wipe.
            ==================================================== */}
 
         <div
           className="
             pointer-events-none
-            fixed
+            absolute
             left-1/2
             top-1/2
             z-20
           "
           style={{
             width:
-              "min(560px, 76vw)",
+              "min(600px, 78vw)",
+
             height:
-              "min(560px, 76vw)",
+              "min(600px, 78vw)",
 
             transform:
               "translate(-50%, -50%)",
-
-            opacity:
-              1 - circleExit,
           }}
         >
 
           {/* ==================================================
-              CIRCLE WIPE
+              OUTER CIRCLE
              ================================================== */}
 
           <div
@@ -529,16 +427,16 @@ export default function IntelligenceStoryIntro() {
             style={{
               WebkitMaskImage:
                 `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
+                  from -90deg,
+                  black 0deg ${visibleAngle}deg,
+                  transparent ${visibleAngle}deg 360deg
                 )`,
 
               maskImage:
                 `conic-gradient(
-                  from 0deg,
-                  transparent 0deg ${wipeAngle}deg,
-                  black ${wipeAngle}deg 360deg
+                  from -90deg,
+                  black 0deg ${visibleAngle}deg,
+                  transparent ${visibleAngle}deg 360deg
                 )`,
             }}
           >
@@ -547,6 +445,7 @@ export default function IntelligenceStoryIntro() {
               src="/DCF Logo.png"
               alt="DCF Lab Intelligence"
               className="
+                block
                 h-full
                 w-full
                 object-contain
@@ -555,8 +454,9 @@ export default function IntelligenceStoryIntro() {
 
           </div>
 
+
           {/* ==================================================
-              INNER CIRCLE
+              INNER TEXT CIRCLE
              ================================================== */}
 
           <div
@@ -574,6 +474,7 @@ export default function IntelligenceStoryIntro() {
               justify-center
               rounded-full
               bg-[#101a2b]
+              px-4
               text-center
             "
             style={{
@@ -593,6 +494,7 @@ export default function IntelligenceStoryIntro() {
               ✦
             </div>
 
+
             <div
               className="
                 flex
@@ -605,7 +507,7 @@ export default function IntelligenceStoryIntro() {
 
               <span
                 className="
-                  text-[clamp(28px,4vw,48px)]
+                  text-[clamp(26px,4vw,50px)]
                   font-bold
                   text-white
                 "
@@ -615,7 +517,7 @@ export default function IntelligenceStoryIntro() {
 
               <span
                 className="
-                  text-[clamp(28px,4vw,48px)]
+                  text-[clamp(26px,4vw,50px)]
                   font-bold
                   text-emerald-400
                 "
@@ -624,6 +526,7 @@ export default function IntelligenceStoryIntro() {
               </span>
 
             </div>
+
 
             <div
               className="
@@ -642,10 +545,11 @@ export default function IntelligenceStoryIntro() {
 
         </div>
 
+
         {/* ====================================================
             AI MESSAGE
 
-            Also viewport locked.
+            Same viewport position as circle.
            ==================================================== */}
 
         <div
@@ -653,7 +557,7 @@ export default function IntelligenceStoryIntro() {
             pointer-events-none
             absolute
             inset-0
-            z-[60]
+            z-40
             flex
             items-center
             justify-center
@@ -675,9 +579,9 @@ export default function IntelligenceStoryIntro() {
 
             <h1
               className="
-                text-[clamp(44px,6vw,84px)]
+                text-[clamp(42px,6vw,82px)]
                 font-semibold
-                leading-[1]
+                leading-[1.05]
                 tracking-[-0.055em]
               "
               style={{
@@ -696,43 +600,30 @@ export default function IntelligenceStoryIntro() {
               </span>
             </h1>
 
-            <p
-              className="
-                mx-auto
-                mt-8
-                max-w-[760px]
-                text-[clamp(18px,2vw,24px)]
-                leading-[1.65]
-              "
-              style={{
-                color:
-                  descriptionColor,
-              }}
-            >
-              DCF Lab Intelligence helps uncover
-              the information behind the numbers.
-            </p>
 
             <p
               className="
                 mx-auto
-                mt-4
-                max-w-[760px]
-                text-[clamp(18px,2vw,24px)]
-                leading-[1.65]
+                mt-8
+                max-w-[850px]
+                text-[clamp(18px,2vw,25px)]
+                leading-[1.6]
               "
               style={{
                 color:
                   descriptionColor,
               }}
             >
-              You remain in control of the assumptions
-              that drive valuation.
+              DCF Lab Intelligence uncovers the
+              hidden insights behind financial
+              data—while keeping you in complete
+              control of your valuation assumptions.
             </p>
 
           </div>
 
         </div>
+
 
         {/* ====================================================
             SCROLL INDICATOR
@@ -744,7 +635,7 @@ export default function IntelligenceStoryIntro() {
             absolute
             bottom-10
             left-1/2
-            z-[70]
+            z-50
             -translate-x-1/2
             text-center
           "
@@ -763,7 +654,7 @@ export default function IntelligenceStoryIntro() {
               font-medium
               uppercase
               tracking-[0.30em]
-              text-white/75
+              text-white/70
             "
           >
             Scroll to explore
@@ -783,8 +674,9 @@ export default function IntelligenceStoryIntro() {
 
         </div>
 
+
         {/* ====================================================
-            FINAL WHITE OVERLAY
+            FINAL TRANSITION
            ==================================================== */}
 
         <div
@@ -797,7 +689,12 @@ export default function IntelligenceStoryIntro() {
           "
           style={{
             opacity:
-              whiteOverlay * 0.12,
+              progress > 0.96
+                ? smooth(
+                    (progress - 0.96) /
+                      0.04
+                  )
+                : 0,
           }}
         />
 
