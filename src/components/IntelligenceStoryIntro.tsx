@@ -595,55 +595,92 @@ export default function IntelligenceStoryIntro() {
 
 
   /* ============================================================
-     REAL ANALYSIS PAGE
+   REAL ANALYSIS PAGE
+   ============================================================ */
 
-     IMPORTANT:
-
-     0.96 - 0.98 = white pause
-
-     Analysis only starts at 0.98.
-     Therefore it CANNOT overlap the AI message.
-     ============================================================ */
-
-  const analysisOpacity =
-    phase(
-      0.98,
-      0.992
-    );
-
-
-  const analysisBlur =
-    10 -
-    analysisOpacity * 10;
+/*
+ * IMPORTANT:
+ *
+ * The real analysis page stays completely invisible
+ * until the AI story is completely finished.
+ *
+ * 0.00 - 0.94  → AI story
+ * 0.94 - 0.96  → AI fades out
+ * 0.96 - 0.995 → PURE WHITE
+ * 0.995+       → Analysis begins
+ */
 
 
-  /* ============================================================
-     ANALYSIS SUCCESSION
+/* ============================================================
+   MASTER ANALYSIS VISIBILITY
+   ============================================================ */
 
-     EVERYTHING IS FIXED.
-
-     ONLY OPACITY CHANGES.
-     ============================================================ */
-
-  const analysisHeaderOpacity =
-    phase(
-      0.98,
-      0.988
-    );
+const analysisStarted =
+  progress >= 0.995;
 
 
-  const analysisMainOpacity =
-    phase(
-      0.988,
-      0.996
-    );
+/* ============================================================
+   ENTIRE ANALYSIS PAGE
+   ============================================================ */
+
+const analysisOpacity =
+  analysisStarted
+    ? phase(
+        0.995,
+        0.998
+      )
+    : 0;
 
 
-  const analysisCardsOpacity =
-    phase(
-      0.996,
-      1.00
-    );
+/* ============================================================
+   ANALYSIS BLUR
+   ============================================================ */
+
+const analysisBlur =
+  analysisStarted
+    ? 10 -
+      phase(
+        0.995,
+        0.998
+      ) * 10
+    : 10;
+
+
+/* ============================================================
+   ANALYSIS SUCCESSION
+   ============================================================ */
+
+/*
+ * 1. Header appears first
+ */
+
+const analysisHeaderOpacity =
+  phase(
+    0.995,
+    0.997
+  );
+
+
+/*
+ * 2. Main analysis panel appears second
+ */
+
+const analysisMainOpacity =
+  phase(
+    0.997,
+    0.999
+  );
+
+
+/*
+ * 3. Analysis cards appear last
+ */
+
+const analysisCardsOpacity =
+  phase(
+    0.999,
+    1.00
+  );
 
 
   /* ============================================================
@@ -1074,28 +1111,31 @@ export default function IntelligenceStoryIntro() {
               min-h-full
               normal vertical flow
            ==================================================== */}
+<div
+  className="
+    absolute
+    inset-0
+    z-[120]
+    overflow-hidden
+    bg-white
+  "
+  style={{
+    opacity: analysisOpacity,
 
-        <div
-          className="
-            absolute
-            inset-0
-            z-[120]
-            overflow-hidden
-            bg-white
-          "
-          style={{
-            opacity:
-              analysisOpacity,
+    filter:
+      `blur(${analysisBlur}px)`,
 
-            filter:
-              `blur(${analysisBlur}px)`,
+    visibility:
+      analysisStarted
+        ? "visible"
+        : "hidden",
 
-            pointerEvents:
-              analysisOpacity > 0.98
-                ? "auto"
-                : "none",
-          }}
-        >
+    pointerEvents:
+      analysisStarted
+        ? "auto"
+        : "none",
+  }}
+>
 
           {/* ==================================================
               ANALYSIS BACKGROUND
