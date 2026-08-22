@@ -693,7 +693,7 @@ export default function IntelligenceStoryIntro() {
     pointer-events-none
     absolute
     left-1/2
-    top-[54%]
+    top-1/2
     z-20
   "
   style={{
@@ -777,7 +777,7 @@ export default function IntelligenceStoryIntro() {
     pointer-events-none
     absolute
     left-1/2
-    top-[54%]
+    top-1/2
     z-30
     flex
     flex-col
